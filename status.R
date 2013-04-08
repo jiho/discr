@@ -7,7 +7,7 @@
 #--------------------------------------------------------------------------
 
 
-discus_status <- function(dir="deployments") {
+disc_status <- function(dir="deployments") {
 
   suppressPackageStartupMessages(require("plyr", quietly=TRUE))
   
@@ -57,7 +57,7 @@ discus_status <- function(dir="deployments") {
   d <- d[,-1]
   row.names(d) <- deploys
 
-  class(d) <- c("discus_status", "data.frame")
+  class(d) <- c("disc_status", "data.frame")
   
   return(d)
   
@@ -114,7 +114,7 @@ discus_status <- function(dir="deployments") {
 }
 
 
-print.discus_status <- function(x) {
+print.disc_status <- function(x) {
   x[x==FALSE] <- "-"
   x[x==TRUE] <- "✔"
   print.data.frame(x)
