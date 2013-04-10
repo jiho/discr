@@ -20,17 +20,19 @@ disc_read_options <- function(file="disc.conf", quiet=TRUE) {
 }
 
 disc_write_options <- function(op, file="disc.conf") {
-  # transform options list into a character string representation
-  opStr <- deparse(op, control=NULL, width.cutoff=500)
+  # # transform options list into a character string representation
+  # opStr <- deparse(op, control=NULL, width.cutoff=500)
+  # 
+  # # reformat it to be human readable
+  # suppressPackageStartupMessages(require("stringr", quietly=TRUE))
+  # opStr <- str_c(opStr, collapse="")
+  # opStr <- str_replace(opStr, ")$", "\n)\n")
+  # opStr <- str_replace_all(opStr, "disc", "\n\tdisc")
+  # 
+  # # write it in the options file
+  # cat(opStr, file=file)
 
-  # reformat it to be human readable
-  suppressPackageStartupMessages(require("stringr", quietly=TRUE))
-  opStr <- str_c(opStr, collapse="")
-  opStr <- str_replace(opStr, ")$", "\n)\n")
-  opStr <- str_replace_all(opStr, "disc", "\n\tdisc")
-  
-  # write it in the options file
-  cat(opStr, file=file)
+  dput(op, file=file)
   
   return(invisible(file))
 }
