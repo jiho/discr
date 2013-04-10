@@ -1,13 +1,17 @@
 disc_read_options <- function(file="disc.conf", quiet=TRUE) {
   # read disc specific options
-  opDisc <- dget(file)
+  if (file.exists(file)) {
+    opDisc <- dget(file)
+  } else {
+    opDisc <- list()
+  }
 
   if (!quiet) {
     message("DISC options")
     print(opDisc)
   }
 
-  # store them as global R options to avoid passing them arround in functions
+  # store them as global R options to avoid passing them around in functions
   op <- options()
   toset <- !(names(opDisc) %in% names(op))
   if(any(toset)) options(opDisc[toset])
