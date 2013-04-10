@@ -16,15 +16,15 @@ disc_status <- function(dir="deployments") {
   d <- adply(deploys, 1, function(i) {
     
   	# test the existence of video
-    video <- file.exists(join.path(dir, i, "video_hifi.mov"))
+    video <- file.exists(make_path(dir, i, "video_hifi.mov"))
 
   	# count images
-    pics <- list.files(join.path(dir, i, "pics"), pattern=glob2rx("*.jpg"))
+    pics <- list.files(make_path(dir, i, "pics"), pattern=glob2rx("*.jpg"))
     nbPics <- length(pics)
 
   	# test the existence of data files
-    autoCompass <- file.exists(join.path(dir, i, "compass_log.csv"))
-    manuCompass <- file.exists(join.path(dir, i, "compass_track.txt")) & file.exists(join.path(dir, i, "coord_compass.txt"))
+    autoCompass <- file.exists(make_path(dir, i, "compass_log.csv"))
+    manuCompass <- file.exists(make_path(dir, i, "compass_track.txt")) & file.exists(make_path(dir, i, "coord_compass.txt"))
     if (autoCompass) {
       compass <- "auto"
     } else if (manuCompass) {
@@ -32,14 +32,14 @@ disc_status <- function(dir="deployments") {
     } else {
       compass <- FALSE
     }
-    ctd <- file.exists(join.path(dir, i, "ctd_log.csv"))
-    gps <- file.exists(join.path(dir, i, "gps_log.csv"))
+    ctd <- file.exists(make_path(dir, i, "ctd_log.csv"))
+    gps <- file.exists(make_path(dir, i, "gps_log.csv"))
 
   	# test the existence of data files
-    calib <- file.exists(join.path(dir, i, "coord_aquarium.csv"))
-    rawTracks <- file.exists(join.path(dir, i, "larvae_tracks.txt"))
-    correctedTracks <- file.exists(join.path(dir, i, "tracks.csv"))
-    stats <- file.exists(join.path(dir, i, "stats.csv"))
+    calib <- file.exists(make_path(dir, i, "coord_aquarium.csv"))
+    rawTracks <- file.exists(make_path(dir, i, "larvae_tracks.txt"))
+    correctedTracks <- file.exists(make_path(dir, i, "tracks.csv"))
+    stats <- file.exists(make_path(dir, i, "stats.csv"))
     if (stats) {
       status <- TRUE
     } else if (correctedTracks) {
