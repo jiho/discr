@@ -28,3 +28,19 @@ make_path <- function(...) {
 
   return(path)
 }
+
+check_status <- function(status, message="discus error", ...) {
+  #
+  # Check the exit status of a command (typically run through system())
+  #
+  # status  status code, usually an integer
+  # message error message
+  # ...     passed to stop
+  #
+
+  if ( status !=0 ) {
+    stop(message)
+  }
+
+  return(invisible(status))
+}
