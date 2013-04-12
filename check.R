@@ -15,7 +15,7 @@ disc_check_option <- function(opts, token, default) {
   # token   character string giving the option name, will be prefixed by "disc"
   # default default value to set if the options does not currently exist
   #
-  
+
   # prefix the option name with "disc."
   suppressPackageStartupMessages(require("stringr", quietly=TRUE))
   token <- str_c("disc.", token)
@@ -30,10 +30,10 @@ disc_check_option <- function(opts, token, default) {
 
 disc_check <- function() {
   #
-  # Check that all required options have a value (and set a defult if they don't)
+  # Check that all required options have a value (and set a default if they don't)
   # In the meantime, check that the necessary software is installed
   #
-  
+
   suppressPackageStartupMessages(require("stringr", quietly=TRUE))
   # read the current state of the options
   disc.opts <- disc_read_options()
