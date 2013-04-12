@@ -47,11 +47,13 @@ disc_check <- function() {
   disc.opts <- disc_check_option(disc.opts, "java_memory", 1000)
 
   # check java
-  disc.opts <- disc_check_option(disc.opts, "java", as.character(Sys.which("java")))
-  if (disc.opts$disc.java == "") {
-    stop("Java not found. Please install a Java JRE")
-  }
-  
+  disc.opts <- disc_check_option(disc.opts, "java",
+                 check_software("java",
+                   url="http://www.oracle.com/technetwork/java/javase/downloads/",
+                   notes="You need a java JRE"
+                 )
+               )
+
   # check ImageJ
   disc.opts <- disc_check_option(disc.opts, "ij_path", make_path("./imagej/"))
   disc.opts <- disc_check_option(disc.opts, "ij_jar", make_path(disc.opts$disc.ij_path, "ij.jar"))
@@ -59,10 +61,14 @@ disc_check <- function() {
     warning("ImageJ not found, trying to download it")
     status <- download.file(url="http://rsb.info.nih.gov/ij/upgrade/ij.jar", destfile=disc.opts$disc.ij_jar, method="internal")
   }
-  
-  # check packages
+
   # check rsync
+  disc.opts <- disc_check_option(disc.opts, "rsync", check_software("rsync"))
+
   # check exiftool
+  disc.opts <- disc_check_option(disc.opts, "exif", check_software("exif"))
+
+  # check R packages
 
   # write the (potentially modified) options file
   disc_write_options(disc.opts)
