@@ -1,1 +1,6 @@
+# configuration file (should not be committed)
 disc.conf
+
+# binary java stuff
+*.jar
+*.class
