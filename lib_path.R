@@ -126,3 +126,38 @@ check_software <- function(exec, url="", package=exec, notes="", ...) {
   # return the full path to the executable
   return(exePath)
 }
+
+image_time <- function(img, tz="GMT") {
+  #
+  #	Extract the time from the EXIF data of an image
+  # img   full path to the image(s)
+  # tz    time zone
+  #
+  # get date and times
+  dateTime <- system(paste("exif -t=DateTimeOriginal -m ", paste(img, collapse=" ")), intern=TRUE)
+  # convert them to R representations
+	dateTime <- as.POSIXct(strptime(dateTime, format="%Y:%m:%d %H:%M:%S", tz=tz))
+	return(dateTime)
+}
+
+image_interval <- function(img) {
+  #
+  #	Compute the average interval in full seconds between provided images
+  #
+  #	img   vector of full images paths
+  #
+
+	if ( sum(file.exists(img)) >= 2 ) {
+		# detect image times
+		times <- image_time(img)
+		# compute intervals in seconds
+		intervals <- diff(times)
+		units(intervals) <- "secs"
+		# compute mean interval
+		interval <- as.integer( round( mean(intervals) ) )
+	} else {
+		warning("Some images were not found.\nAt least two images are needed to compute an interval.\nMissing images:\n  ", paste(img, collapse="\n  "))
+    interval <- NULL
+	}
+	return(interval)
+}
