@@ -60,7 +60,7 @@ disc_calibrate <- function(id, ...) {
 
   # save aquarium center and perimenter
   if (file.exists(aquariumCoordFile)) {
-    file.copy(aquariumCoordFile, make_path(dir, "coord_aquarium.txt"))
+    file.copy(aquariumCoordFile, make_path(dir, .files$aquarium.coord))
     file.remove(aquariumCoordFile)
   } else {
     stop("Abort calibration")
