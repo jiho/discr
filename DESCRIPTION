@@ -8,3 +8,8 @@ Depends:
 License: GPL-3
 LazyData: true
 Roxygen: list(wrap = TRUE)
+Imports:
+    plyr,
+    stringr,
+    ggplot2,
+    lubridate
