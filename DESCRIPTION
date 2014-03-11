@@ -1,0 +1,10 @@
+Package: discuss
+Title: Drifting In Situ Chamber User Software in S
+Description: Well in R actually, but S works better for the acronym ;)
+Version: 0.1
+Authors@R: "Jean-Olivier Irisson <irisson@normalesup.org>[aut,cre]"
+Depends:
+    R (>= 3.0.2)
+License: GPL-3
+LazyData: true
+Roxygen: list(wrap = TRUE)
