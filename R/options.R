@@ -1,59 +1,114 @@
-#
-#      Handle disc-specific options
-#
-#  (c) Copyright 2013 Jean-Olivier Irisson
-#      GNU General Public License v3
-#
-#--------------------------------------------------------------------------
+#' Project-level settings
+#'
+#' Read and write project-level settings
+#'
+#' @details
+#' Settings are read, in order, from the defaults, then the project-level configuration file and finally from the arguments provided in \code{...}. Then those settings are set with the function \code{\link{options}} to be accessible from any other function in discuss. Finally, the non-default settings are stored in \code{file} in the project directory.
+#'
+#' @param ... named arguments with settings to set
+#' @param file name of the configuration file, in the project directory
+#' @param verbose when TRUE, options are shown after being read
+#' @export
+#' @importFrom plyr laply
+disc_conf <- function(..., file="disc.conf", verbose=FALSE) {
 
-disc_read_options <- function(file="disc.conf", verbose=FALSE) {
-  #
-  # Read disc-specific options from the config file
-  #
-  # file    config file, must contain the definition of an R list with options
-  # verbose if TRUE, show options on the console
+  # set defaults
+  defaults <- list(
+    aquarium = "0,0,20,20",
+    camera_angle = 90,
+    diameter = 40,
+    java_memory = 1024,
+    storage_directory = ""
+  )
+  class(defaults) <- c("disc.settings", "list")
 
-  # read disc specific options
+  # get settings from the project configuration file
+  wd <- getOption("disc.wd")
+  file <- make_path(wd, file)
   if (file.exists(file)) {
-    opts.disc <- dget(file)
+    inFile <- dget(file)
   } else {
-    opts.disc <- list()
+    # if it does not exist, just use the defaults
+    inFile <- defaults
   }
 
-  # print them if requested
+  # get provided arguments
+  inArgs <- list(...)
+  # allow expansion
+  # NB: that also checks that option names are valid (i.e. in defaults)
+  names(inArgs) <- laply(names(inArgs), match.arg, choices=names(defaults))
+
+  # create the new settings
+  # start with the defaults, add the settings currently set in the conf file, and finally add the settings provided on the command line
+  settings <- defaults
+  settings[match(names(inFile), names(settings))] <- inFile
+  # TODO here something wrong can happen if a setting exists in the conf file but not in the defaults
+  settings[match(names(inArgs), names(settings))] <- inArgs
+
+  # set those options in R
+  rSettings <- settings
+  names(rSettings) <- paste("disc.", names(settings), sep="")
+  options(rSettings)
+
+  # display them if requested
   if (verbose) {
-    message("DISC options")
-    print(opts.disc)
+    message("Current settings")
+    print(settings)
   }
 
-  # store them as global R options to avoid passing them around in functions or using a global variable
-  op <- options()
-  toset <- !(names(opts.disc) %in% names(op))
-  if(any(toset)) options(opts.disc[toset])
+  # extract the non default settings
+  settingsNames <- names(settings)
+  different <- laply(settingsNames, function(x) {
+    settings[[x]] != defaults[[x]]
+  })
+  newSettings <- settings[different]
+  if (length(newSettings) != 0) {
+    # write them to the config file
+    dput(newSettings, file=file)
+  }
 
-  return(opts.disc)
+  return(settings)
 }
 
-disc_write_options <- function(opts, file="disc.conf") {
-  #
-  # Write disc-specific options in a configuration file
-  #
-  # opts  disc options
-  # file  config file
+#' @rdname disc_conf
+#' @export
+dconf <- disc_conf
 
-  # # transform options list into a character string representation
-  # opStr <- deparse(opts, control=NULL, width.cutoff=500)
-  #
-  # # reformat it to be human readable
-  # suppressPackageStartupMessages(require("stringr", quietly=TRUE))
-  # opStr <- str_c(opStr, collapse="")
-  # opStr <- str_replace(opStr, ")$", "\n)\n")
-  # opStr <- str_replace_all(opStr, "disc", "\n\tdisc")
-  #
-  # # write it in the options file
-  # cat(opStr, file=file)
-
-  dput(opts, file=file)
-
-  return(invisible(file))
+#' @keywords internal
+print.disc.settings <- function(x) {
+  n <- names(x)
+  for (i in 1:length(x)) {
+    cat("  ", n[i], " : ", x[[i]], "\n", sep="")
+  }
+  return(invisible(x))
 }
+
+#' Set discuss working directory
+#'
+#' The working directory is the directory where deployments are stored. Data will be read from and written to this directory.
+#' Project level settings will also be stored there.
+#'
+#' @param dir character string giving the name of the directory to set as the working directory
+#' @param persistent boolean; wether to store that working directory as default (storing \code{options(disc.wd=...)} in \code{.Rprofile})
+#'
+#' @return Returns the working directory but invisibly. Sets the working directory for the current session and for all future sessions if \code{persistent=TRUE}.
+#' @export
+disc_setwd <- function(dir, persistent=FALSE) {
+
+  options(disc.wd=dir)
+
+  if (persistent) {
+    userProfile <- "~/.Rprofile"
+   if (!file.exists(userProfile)) {
+     file.create(userProfile)
+   }
+   cat("options(disc.wd=", dir, ")", file=userProfile, append=TRUE)
+   # TODO make it detect if the setting is already in .Rprofile and update it
+  }
+
+  return(invisible(dir))
+}
+
+#' @rdname disc_setwd
+#' @export
+dsetwd <- disc_setwd

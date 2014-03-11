@@ -24,7 +24,7 @@ future sessions if \code{persistent=TRUE}.
 \description{
 The working directory is the directory where deployments
 are stored. Data will be read from and written to this
-directory. Project level configuration will also be stored
+directory. Project level settings will also be stored
 there.
 }
 
