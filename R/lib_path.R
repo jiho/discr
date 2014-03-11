@@ -6,45 +6,6 @@
 #
 #--------------------------------------------------------------------------
 
-make_path <- function(...) {
-  #
-  # Create a valid path from one or several path elements
-  #
-
-  # get all arguments
-  args <- list(...)
-
-  # paste them together
-  nArgs <- length(args)
-  path <- args[[1]]
-  if (nArgs > 1) {
-    for (i in 2:nArgs) {
-      path <- paste(path, args[[i]], sep="/")
-    }
-  }
-
-  # make sure the path is valid and clean (perform path extension, remove repeated path separators, etc.)
-  path <- normalizePath(path, winslash="/", mustWork=FALSE)
-
-  return(path)
-}
-
-check_status <- function(status, message="discus error", ...) {
-  #
-  # Check the exit status of a command (typically run through system())
-  #
-  # status  status code, usually an integer
-  # message error message
-  # ...     passed to stop
-  #
-
-  if ( status !=0 ) {
-    stop(message)
-  }
-
-  return(invisible(status))
-}
-
 find_os <- function() {
   #
   # Try to detect various common OSes

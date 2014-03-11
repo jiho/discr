@@ -1,29 +1,46 @@
-disc_calibrate <- function(deployment, ...) {
+#' Calibrate aquarium position
+#'
+#' @param id deployment identifier, i.e. the name of the directory where data is stored
+#'
+#' @export
+#' @importFrom stringr str_c
+disc_calibrate <- function(id, ...) {
 
-  suppressPackageStartupMessages(require("stringr", quietly=TRUE))
+  # read settings
+  wd <- getOption("disc.wd")
+  conf <- disc_conf()
 
-  # checks
-  disc.opts <- disc_read_options()
-  
-  deploy <- make_path(disc.opts$disc.working_directory, deployment)
-  
-  pics <- make_path(deploy, "pics", "*.jpg")
-  if (length(Sys.glob(pics)) == 0) {
-    stop("Pictures not found in ", pics)
+  # find pictures
+  dir <- make_path(wd, id)
+  if (! file.exists(dir)) {
+    stop("Cannot find directory ", dir)
   }
-  
-  aquariumCoordFile <- make_path(deploy, "coord_aquarium.txt")
+  # TODO This should be done at a higher level and disc_calibrate should only be provided with the directory to run in
+
+  picsDir <- make_path(dir, .files$pictures)
+  if (! file.exists(picsDir)) {
+    stop("Cannot find directory ", picsDir)
+  }
+
+  pics <- list.files(picsDir, pattern=glob2rx("*.jpg"))
+  if (length(pics) == 0) {
+    stop("Cannot find pictures in ", picsDir)
+  }
+
+  # prepare storage
+  aquariumCoordFile <- tempfile()
   aquariumBoundingBoxFile <- tempfile()
 
-	message("\nCALIBRATION\n")
-	message("Open first image for calibration")
+	message("CALIBRATION")
+	message("Opening first image for calibration")
 
   # prepare java command
   command <- str_c(
-    disc.opts$disc.java, " -Xmx200m -jar ", disc.opts$disc.ij_jar,
-    " -ijpath ", disc.opts$disc.ij_path, " -eval \"",
-    " run('Image Sequence...', 'open=", pics, " number=1 starting=1 increment=1 scale=100 file=[] or=[] sort');",
-    " makeOval(", disc.opts$disc.aquarium, ");",
+    "java -Xmx", conf$java_memory, "m -jar ", system.file("inst/ij/ij.jar", package="discuss"),
+    " -ijpath ", system.file("inst/ij/", package="discuss"), " -eval \"",
+    " run('Image Sequence...', 'open=", picsDir, " number=1 starting=1 increment=1 scale=100 file=[] or=[] sort');",
+    " makeOval(", conf$aquarium, ");",
+    " setTool('oval');",
     " waitForUser('Aquarium selection',",
     " 'If necessary, alter the selection to fit the aquarium better.\\n",
     " Press OK when you are done');",
@@ -39,16 +56,33 @@ disc_calibrate <- function(deployment, ...) {
 
   # run the command and check for success
   status <- system(command)
-  check_status(status, message="Could not calibrate aquarium size")
+  check_status(status, message="Abort calibration")
 
-  # save bouding box of aquarium in options
-  bounds <- read.delim(aquariumBoundingBoxFile, row.names=1)
-  disc.opts$disc.aquarium <- str_c(as.character(bounds[1,]), collapse=",")
-  # remove tempory file
-  file.remove(aquariumBoundingBoxFile)
-  
-  # save options
-  disc_write_options(disc.opts)
-  
+  # save aquarium center and perimenter
+  if (file.exists(aquariumCoordFile)) {
+    file.copy(aquariumCoordFile, make_path(dir, "coord_aquarium.txt"))
+    file.remove(aquariumCoordFile)
+  } else {
+    stop("Abort calibration")
+  }
+
+  # save bouding box of aquarium in setting
+  if (file.exists(aquariumBoundingBoxFile)) {
+    bounds <- read.delim(aquariumBoundingBoxFile, row.names=1)
+    bounds <- str_c(as.character(bounds[1,]), collapse=",")
+    disc_conf(aquarium=bounds)
+    file.remove(aquariumBoundingBoxFile)
+  } else {
+    stop("Abort calibration")
+  }
+
   return(invisible(status))
 }
+
+#' @rdname disc_calibrate
+#' @export
+dcalibrate <- disc_calibrate
+
+#' @rdname disc_calibrate
+#' @export
+dcalib <- disc_calibrate

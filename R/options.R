@@ -14,7 +14,7 @@ disc_conf <- function(..., file="disc.conf", verbose=FALSE) {
 
   # set defaults
   defaults <- list(
-    aquarium = "0,0,20,20",
+    aquarium = "0,0,200,200",
     camera_angle = 90,
     diameter = 40,
     java_memory = 1024,
