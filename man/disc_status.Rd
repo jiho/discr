@@ -3,9 +3,9 @@
 \alias{dstatus}
 \title{Status of the working directory}
 \usage{
-disc_status(dir = getOption("disc.wd"))
+disc_status(dir = disc_getwd())
 
-dstatus(dir = getOption("disc.wd"))
+dstatus(dir = disc_getwd())
 }
 \arguments{
   \item{dir}{path to the working directory. Read from the
