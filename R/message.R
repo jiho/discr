@@ -30,4 +30,8 @@ disc_message <- function(...) {
 
 #' @rdname disc_message
 #' @keywords internal
+dmessage <- disc_message
+
+#' @rdname disc_message
+#' @keywords internal
 dmess <- disc_message

@@ -2,9 +2,12 @@
 \name{disc_message}
 \alias{disc_message}
 \alias{dmess}
+\alias{dmessage}
 \title{Write a progress message on the console}
 \usage{
 disc_message(...)
+
+dmessage(...)
 
 dmess(...)
 }
