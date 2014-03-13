@@ -1,21 +1,10 @@
 #' Calibrate aquarium position
 #'
-#' @param id deployment identifier, i.e. the name of the directory where data is stored
+#' @param dir path the to the deployment directory
 #'
 #' @export
 #' @importFrom stringr str_c
-disc_calibrate <- function(id, ...) {
-
-  # read settings
-  wd <- getOption("disc.wd")
-  conf <- disc_conf()
-
-  # find pictures
-  dir <- make_path(wd, id)
-  if (! file.exists(dir)) {
-    stop("Cannot find directory ", dir)
-  }
-  # TODO This should be done at a higher level and disc_calibrate should only be provided with the directory to run in
+disc_calibrate <- function(dir, ...) {
 
   picsDir <- make_path(dir, .files$pictures)
   if (! file.exists(picsDir)) {
@@ -36,10 +25,10 @@ disc_calibrate <- function(id, ...) {
 
   # prepare java command
   command <- str_c(
-    "java -Xmx", conf$java_memory, "m -jar ", system.file("inst/ij/ij.jar", package="discuss"),
+    "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("inst/ij/ij.jar", package="discuss"),
     " -ijpath ", system.file("inst/ij/", package="discuss"), " -eval \"",
     " run('Image Sequence...', 'open=", picsDir, " number=1 starting=1 increment=1 scale=100 file=[] or=[] sort');",
-    " makeOval(", conf$aquarium, ");",
+    " makeOval(", getOption("disc.aquarium"), ");",
     " setTool('oval');",
     " waitForUser('Aquarium selection',",
     " 'If necessary, alter the selection to fit the aquarium better.\\n",

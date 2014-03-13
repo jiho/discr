@@ -1,0 +1,26 @@
+\name{disc}
+\alias{disc}
+\title{Run a disc analysis action}
+\usage{
+disc(ids, actions = c("calibrate", "track", "compass", "stats"),
+  wd = getOption("disc.wd"), ...)
+}
+\arguments{
+  \item{ids}{vector of deployments ids (correspond to
+  folders in the working directory)}
+
+  \item{actions}{vector of actions to perform. Action names
+  can be abbreviated}
+
+  \item{wd}{working directory of the project (where
+  deployments are)}
+
+  \item{...}{passed to the various actions functions}
+}
+\description{
+Run a disc analysis action
+}
+\seealso{
+\code{\link{disc_setwd}} to set the working directory
+}
+
