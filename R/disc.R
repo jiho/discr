@@ -36,6 +36,9 @@ disc <- function(ids, actions=c("calibrate", "track", "compass", "stats"), ...) 
     if ("calibrate" %in% actions) {
       disc_calibrate(dir=dir, ...)
     }
+    if ("track" %in% actions) {
+      disc_track(dir=dir, ...)
+    }
   }
   
   message("Done")

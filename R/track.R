@@ -1,28 +1,30 @@
-disc_track <- function(deployment, sub=NULL, verbose=FALSE, ...) {
-  #
-  # Use the manual tracking plugin to record a track
-  #
-  # deployment  deployment number
-  # sub         subsampling interval, in s
-  # verbose     output messages on the console when TRUE
+#' Manually track a larva
+#'
+#' Use the manual tracking plugin to record a track
+#'
+#' @param dir deployment directory
+#' @param sub subsampling interval, in s
+#' @param verbose output messages on the console when TRUE
+#'
+#' @export
+disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
-  suppressPackageStartupMessages(require("stringr", quietly=TRUE))
-  disc.opts <- disc_read_options()
-
-  # setup workspace and output files
-  deploy <- make_path(disc.opts$disc.working_directory, deployment)
-  trackFile <- make_path(deploy, "larvae_track.txt")
-  pics <- make_path(deploy, "pics", "*.jpg")
-
-  # check that we have images
-  allPics <- Sys.glob(pics)
-  if (length(allPics) == 0) {
-    stop("Pictures not found in ", pics)
+  picsDir <- make_path(dir, .files$pictures)
+  if (! file.exists(picsDir)) {
+    stop("Cannot find directory ", picsDir)
   }
+
+  pics <- list.files(picsDir, pattern=glob2rx("*.jpg"), full=TRUE)
+  if (length(pics) == 0) {
+    stop("Cannot find pictures in ", picsDir)
+  }
+
 
   # Determine sub-sampling rate, if any
   # compute interval between images
-  interval <- as.numeric(mean(diff(image_time(allPics))))
+  interval <- mean(as.numeric(diff(image_time(na.omit(pics[1:30])))))
+  # TODO check how relevant it is to use only 30 images
+  # TODO when have image_interval for this...
   # compute the subsampling rate
   if ( is.null(sub) ) {
     subN <- 1
@@ -30,13 +32,13 @@ disc_track <- function(deployment, sub=NULL, verbose=FALSE, ...) {
     subN <- round(sub / interval)
     # one image every subN will give an interval of sub seconds, approximately
     if (verbose) {
-      message("subsampling at ", round(subN * interval, 2), " seconds, on average")
+      dmessage("subsampling at ", round(subN * interval, 2), " seconds, on average")
     }
   }
 
 	# Determine whether to use a virtual stack or a real one
 	# nb of images opened = total / subsampling rate
-	nbOpened <- length(allPics) / subN
+	nbOpened <- length(pics) / subN
 	# when there are less than 30 frames to open, loading them is fast and not too memory hungry
 	# in that case, use a regular stack, other wise use a virtual stack
 	if ( nbOpened <= 30 ) {
@@ -45,7 +47,7 @@ disc_track <- function(deployment, sub=NULL, verbose=FALSE, ...) {
 	  virtualStack <- "use"
 	}
 
-	if (verbose) message("Open stack")
+	if (verbose) dmessage("Open stack")
 	# Use an ImageJ macro to run everything. The macro proceeds this way
 	# - use Image Sequence to open the stack
 	# - call the Manual Tracking plugin
@@ -53,18 +55,19 @@ disc_track <- function(deployment, sub=NULL, verbose=FALSE, ...) {
 	# - save the tracks to an appropriate file
 	# - quit
   command <- str_c(
-    disc.opts$disc.java, " -Xmx", disc.opts$disc.java_memory, "m -jar ", disc.opts$disc.ij_jar,
-    " -ijpath ", disc.opts$disc.ij_path, " -eval \"",
-    " run('Image Sequence...', 'open=", pics, " number=0 starting=1 increment=", subN, " scale=100 file=[] or=[] sort ", virtualStack,"');",
-    " run('Compile and Run...', 'compile=", disc.opts$disc.ij_path,"/plugins/Manual_Tracking.java');",
+    "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("inst/ij/ij.jar", package="discuss"),
+    " -ijpath ", system.file("inst/ij/", package="discuss"), " -eval \"",
+    " run('Image Sequence...', 'open=", picsDir, " number=0 starting=1 increment=", subN, " scale=100 file=[] or=[] sort ", virtualStack,"');",
+    " run('Compile and Run...', 'compile=", system.file("inst/ij/", package="discuss"),"/plugins/Manual_Tracking.java');",
     # " run('Manual Tracking');",
+    # TODO investigate wether compilating on the fly may be a problem
     " waitForUser('Track finished?',",
     " 'Press OK when done tracking');",
     " selectWindow('Tracks');",
-    " saveAs('Text', '",trackFile,"');",
+    " saveAs('Text', '", make_path(dir, .files$tracks), "');",
     " run('Quit');\""
   )
-  if (verbose) message("Running:", command)
+  if (verbose) dmessage("Running:", command)
 
   status <- system(command)
   check_status(status, message="Could not perform manual tracking")
