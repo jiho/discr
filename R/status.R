@@ -7,7 +7,7 @@
 #' @seealso \code{\link{disc_setwd}} to set the working directory option.
 #' @export
 #' @importFrom plyr ldply
-disc_status <- function(dir=getOption("disc.wd")) {
+disc_status <- function(dir=disc_getwd()) {
 
   if (!file.exists(dir)) {
     stop("Cannot find ", dir)

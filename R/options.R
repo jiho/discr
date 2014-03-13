@@ -23,7 +23,7 @@ disc_conf <- function(..., file="disc.conf", verbose=FALSE) {
   class(defaults) <- c("disc.settings", "list")
 
   # get settings from the project configuration file
-  wd <- getOption("disc.wd")
+  wd <- disc_getwd()
   file <- make_path(wd, file)
   if (file.exists(file)) {
     inFile <- dget(file)
@@ -83,6 +83,7 @@ print.disc.settings <- function(x) {
   return(invisible(x))
 }
 
+
 #' Set discuss working directory
 #'
 #' The working directory is the directory where deployments are stored. Data will be read from and written to this directory.
@@ -112,3 +113,29 @@ disc_setwd <- function(dir, persistent=FALSE) {
 #' @rdname disc_setwd
 #' @export
 dsetwd <- disc_setwd
+
+
+#' Get discuss working directory
+#'
+#' @export
+disc_getwd <- function() {
+  # get it from the options
+  wd <- getOption("disc.wd")
+
+  # check it is usuable
+  if ( is.null(wd) ) {
+    stop("Working directory is not set. Set it with `disc_setwd`")
+  }
+  if ( ! file.exists(wd) ) {
+    stop("Working directory ", wd, " does not exist")
+  }
+  if ( strtoi(file.info(wd)$mode) < 600 ) {
+    stop("Working directory ", wd, " is now writable")
+  }
+
+  return(wd)
+}
+
+#' @rdname disc_getwd
+#' @export
+dgetwd <- disc_getwd
