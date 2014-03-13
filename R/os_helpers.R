@@ -38,10 +38,9 @@ guess_os <- function() {
 #' @param url link to point the user to when the executable is absent
 #' @param package name of the package usually providing this exectuable, used to indicate how to install the software when url is not provided
 #' @param notes further notes appended to the error message
-#' @aram ... passed to stop()
+#' @param ... passed to stop()
 #'
 #' @keywords internal
-#' @importFrom stringr str_c
 #' @importFrom stringr str_c
 check_exec <- function(exec, url="", package=exec, notes="", ...) {
 

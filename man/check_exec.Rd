@@ -16,6 +16,8 @@ check_exec(exec, url = "", package = exec, notes = "", ...)
   when url is not provided}
 
   \item{notes}{further notes appended to the error message}
+
+  \item{...}{passed to stop()}
 }
 \description{
 Check that a given executable can be found in the path and
