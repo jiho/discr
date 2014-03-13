@@ -125,7 +125,7 @@ disc_getwd <- function(warn=FALSE) {
   if ( is.null(wd) ) {
     # or default to the current directory
     wd <- make_path(".")
-    if ( warn ) { warning("Working directory is not set. Set it with `disc_setwd`. Using current directory.") }
+    if ( warn ) { warning("Working directory is not set. You may set it with `disc_setwd`.\n         Using current directory for now.", call.=FALSE, immediate.=TRUE) }
   }
 
   # check it is usable
