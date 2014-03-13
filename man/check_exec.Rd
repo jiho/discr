@@ -1,0 +1,25 @@
+\name{check_exec}
+\alias{check_exec}
+\title{Check the existence of an executable}
+\usage{
+check_exec(exec, url = "", package = exec, notes = "", ...)
+}
+\arguments{
+  \item{exec}{name of the exectuable}
+
+  \item{url}{link to point the user to when the executable
+  is absent}
+
+  \item{package}{name of the package usually providing this
+  exectuable, used to indicate how to install the software
+  when url is not provided}
+
+  \item{notes}{further notes appended to the error message}
+}
+\description{
+Check that a given executable can be found in the path and
+return its full path. If it cannot be found, provide some
+installation instructions
+}
+\keyword{internal}
+
