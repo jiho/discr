@@ -2,5 +2,5 @@
 disc.conf
 
 # binary java stuff
-*.jar
+# *.jar
 *.class
