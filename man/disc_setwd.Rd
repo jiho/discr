@@ -3,9 +3,9 @@
 \alias{dsetwd}
 \title{Set discuss working directory}
 \usage{
-disc_setwd(dir, persistent = FALSE)
+disc_setwd(dir = ".", persistent = FALSE)
 
-dsetwd(dir, persistent = FALSE)
+dsetwd(dir = ".", persistent = FALSE)
 }
 \arguments{
   \item{dir}{character string giving the name of the

@@ -94,7 +94,7 @@ print.disc.settings <- function(x) {
 #'
 #' @return Returns the working directory but invisibly. Sets the working directory for the current session and for all future sessions if \code{persistent=TRUE}.
 #' @export
-disc_setwd <- function(dir, persistent=FALSE) {
+disc_setwd <- function(dir=".", persistent=FALSE) {
 
   options(disc.wd=dir)
 
@@ -118,14 +118,17 @@ dsetwd <- disc_setwd
 #' Get discuss working directory
 #'
 #' @export
-disc_getwd <- function() {
+disc_getwd <- function(warn=FALSE) {
+
   # get it from the options
   wd <- getOption("disc.wd")
-
-  # check it is usuable
   if ( is.null(wd) ) {
-    stop("Working directory is not set. Set it with `disc_setwd`")
+    # or default to the current directory
+    wd <- make_path(".")
+    if ( warn ) { warning("Working directory is not set. Set it with `disc_setwd`. Using current directory.") }
   }
+
+  # check it is usable
   if ( ! file.exists(wd) ) {
     stop("Working directory ", wd, " does not exist")
   }

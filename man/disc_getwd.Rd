@@ -3,9 +3,9 @@
 \alias{disc_getwd}
 \title{Get discuss working directory}
 \usage{
-disc_getwd()
+disc_getwd(warn = FALSE)
 
-dgetwd()
+dgetwd(warn = FALSE)
 }
 \description{
 Get discuss working directory
