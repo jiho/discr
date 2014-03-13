@@ -102,7 +102,7 @@ disc_setwd <- function(dir, persistent=FALSE) {
    if (!file.exists(userProfile)) {
      file.create(userProfile)
    }
-   cat("options(disc.wd=", dir, ")", file=userProfile, append=TRUE)
+   cat("options(disc.wd=\"", dir, "\")", file=userProfile, append=TRUE)
    # TODO make it detect if the setting is already in .Rprofile and update it
   }
 
