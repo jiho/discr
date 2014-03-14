@@ -3,6 +3,8 @@
 # @param d      data.frame
 # @param first  names of columns to be put first
 # @param drop   when TRUE, keep only the columns in \code{first}. Otherwise put additional columns afterwards
+#
+#' @keywords internal
 reorder_columns <- function(d, first, drop=FALSE) {
 
   # allow partial matching of names

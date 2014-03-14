@@ -1,7 +1,7 @@
-#' Extract time from EXIF data
-#'
-#' @param img full path to one or several image files
-#' @param tz force a time zone (most time computations are relative so getting the time zone right probably does not matter)
+# Extract time from EXIF data
+#
+# @param img full path to one or several image files
+# @param tz force a time zone (most time computations are relative so getting the time zone right probably does not matter)
 #' @keywords internal
 image_time <- function(img, tz="GMT") {
   # get date and times
@@ -14,9 +14,9 @@ image_time <- function(img, tz="GMT") {
 }
 
 
-#' Compute the average interval in full seconds between provided images
-#'
-#' @param img vector of full paths to images
+# Compute the average interval in full seconds between provided images
+#
+# @param img vector of full paths to images
 #' @keywords internal
 image_interval <- function(img) {
 

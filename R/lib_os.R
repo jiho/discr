@@ -1,5 +1,5 @@
-#' Guess the operating system
-#'
+# Guess the operating system
+#
 #' @keywords internal
 #' @importFrom stringr str_detect
 guess_os <- function() {
@@ -30,16 +30,16 @@ guess_os <- function() {
 }
 
 
-#' Check the existence of an executable
-#'
-#' Check that a given executable can be found in the path and return its full path. If it cannot be found, provide some installation instructions
-#'
-#' @param exec name of the exectuable
-#' @param url link to point the user to when the executable is absent
-#' @param package name of the package usually providing this exectuable, used to indicate how to install the software when url is not provided
-#' @param notes further notes appended to the error message
-#' @param ... passed to stop()
-#'
+# Check the existence of an executable
+#
+# Check that a given executable can be found in the path and return its full path. If it cannot be found, provide some installation instructions
+#
+# @param exec name of the exectuable
+# @param url link to point the user to when the executable is absent
+# @param package name of the package usually providing this exectuable, used to indicate how to install the software when url is not provided
+# @param notes further notes appended to the error message
+# @param ... passed to stop()
+#
 #' @keywords internal
 #' @importFrom stringr str_c
 check_exec <- function(exec, url="", package=exec, notes="", ...) {
@@ -80,11 +80,11 @@ check_exec <- function(exec, url="", package=exec, notes="", ...) {
 }
 
 
-#' Check the exit status of a command (typically run through \code{system})
-#'
-#' @param status status code, usually an integer
-#' @param message a character string with the message to print
-#' @param ... passed to \code{stop}
+# Check the exit status of a command (typically run through \code{system})
+#
+# @param status status code, usually an integer
+# @param message a character string with the message to print
+# @param ... passed to \code{stop}
 #' @keywords internal
 check_status <- function(status, message="discuss error or unexpected termination", ...) {
   if ( status != 0 ) {
@@ -95,9 +95,9 @@ check_status <- function(status, message="discuss error or unexpected terminatio
 }
 
 
-#' Create a valid path from one or several path elements
-#'
-#' @param ... elements to be coerced as character strings and pasted together to make a path
+# Create a valid path from one or several path elements
+#
+# @param ... elements to be coerced as character strings and pasted together to make a path
 #' @keywords internal
 make_path <- function(...) {
 

@@ -1,13 +1,14 @@
-#' Write a progress message on the console
-#'
-#' This is similar to \code{message} except it will add nice indentation and won't be bold
-#'
-#' @param ... message components passed to \code{cat}
+# Write a progress message on the console
+#
+# This is similar to \code{message} except it will add nice indentation and won't be bold
+#
+# @param ... message components passed to \code{cat}
+#
+#' @keywords internal
 #' @importFrom stringr str_c
 #' @importFrom stringr str_trim
 #' @importFrom stringr str_sub
 #' @importFrom stringr str_length
-#' @keywords internal
 disc_message <- function(...) {
   # concatenate the message bits
   message <- str_c(..., sep=" ")
@@ -28,10 +29,10 @@ disc_message <- function(...) {
   return(invisible(NULL))
 }
 
-#' @rdname disc_message
+# @rdname disc_message
 #' @keywords internal
 dmessage <- disc_message
 
-#' @rdname disc_message
+# @rdname disc_message
 #' @keywords internal
 dmess <- disc_message
