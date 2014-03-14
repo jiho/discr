@@ -29,6 +29,6 @@ columns that depend on the compass model
 }
 \description{
 Read data from various digital compass models and output a
-somewhat uniformised gps log
+somewhat uniformised log
 }
 

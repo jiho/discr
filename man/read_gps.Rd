@@ -26,6 +26,6 @@ columns that depend on the GPS model
 }
 \description{
 Read data from various GPS model and output a somewhat
-uniformised gps log
+uniformised log
 }
 

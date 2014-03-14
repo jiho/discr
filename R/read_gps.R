@@ -1,6 +1,6 @@
 #' GPS reading
 #'
-#' Read data from various GPS model and output a somewhat uniformised gps log
+#' Read data from various GPS model and output a somewhat uniformised log
 #'
 #' @param file path to the file to read
 #' @param ... passed to \code{\link{read.table}} which does the actual reading
@@ -10,7 +10,7 @@
 #' @importFrom plyr rename
 #' @importFrom plyr arrange
 #' @importFrom stringr str_c
-#' @importFrom lubridate ymd_hms
+#' @importFrom lubridate parse_date_time
 read_gps <- function(file, ...) {
   UseMethod("read_gps")
 }
@@ -26,7 +26,7 @@ read_gps.gt31 <- function(file, ...) {
   d <- rename(d, c("Lat"="lat", "Long"="lon"))
 
   d$dateTime <- str_c(d$Year, "-", d$Month, "-", d$Day, " ", d$Hour, ":", d$Min, ":", d$Sec)
-  d$dateTime <- ymd_hms(d$dateTime, quiet=TRUE)
+  d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
   d <- subset(d, select=-c(Year, Month, Day, Hour, Min, Sec))
 
   d <- reorder_columns(d, c("dateTime", "lon", "lat"))
@@ -48,7 +48,7 @@ read_gps.igotu <- function(file, ...) {
   d <- rename(d, c("Latitude"="lat", "Longitude"="lon"))
 
   d$dateTime <- str_c(d$Date, " ", d$Time)
-  d$dateTime <- ymd_hms(d$dateTime, quiet=TRUE)
+  d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
   d <- subset(d, select=-c(Date, Time))
 
   d <- reorder_columns(d, c("dateTime", "lon", "lat"))
