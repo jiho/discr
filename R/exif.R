@@ -3,12 +3,14 @@
 # @param img full path to one or several image files
 # @param tz force a time zone (most time computations are relative so getting the time zone right probably does not matter)
 #' @keywords internal
-image_time <- function(img, tz="GMT") {
+#' @importFrom stringr str_c
+#' @importFrom lubridate parse_date_time
+image_time <- function(img, tz="UTC") {
   # get date and times
-  dateTime <- system(paste("exif -t=DateTimeOriginal -m ", paste(img, collapse=" ")), intern=TRUE)
+  dateTime <- system(str_c("exif -t=DateTimeOriginal -m ", str_c(img, collapse=" ")), intern=TRUE)
 
   # convert them to R representations
-	dateTime <- as.POSIXct(strptime(dateTime, format="%Y:%m:%d %H:%M:%S", tz=tz))
+	dateTime <- parse_date_time(dateTime, format="ymd hms", tz=tz)
 
 	return(dateTime)
 }
