@@ -211,13 +211,13 @@ for (l in 1:nbTracks) {
 }
 
 
-## Compute tracks characteristics
+## Compute tracks characteristics   - BELOW HERE NEEDS WORK **** - MF
 #------------------------------------------------------------
 
 # Take omitted frames into account in larvae tracks
 # fetch the names of all images
 imagePath = paste("ls -1 ",dir,"/pics/*.jpg | cut -d '/' -f 3 | cut -d '.' -f 1", sep="")
-images = sort(as.numeric(system(imagePath, intern=T)))
+images = sort(as.numeric(system(imagePath, intern=T))) 
 # images = sort(as.numeric(system("ls -1 ../pics/*.jpg | cut -d '/' -f 3 | cut -d '.' -f 1", intern=T)))
 # there are two levels of nesting of lists, hence the double llply construct
 tracks = llply(tracks, .fun=function(tr, ...){
@@ -277,3 +277,8 @@ tracks = do.call("rbind", do.call("rbind", tracks))
 write.table(tracks, file=str_c(dir,"tracks.csv",sep="/"), sep=",", row.names=F)
 
 }
+
+
+#' @rdname disc_correct
+#' @export
+dcorrect <- disc_correct
