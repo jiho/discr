@@ -12,4 +12,8 @@ Imports:
     plyr,
     stringr,
     ggplot2,
-    lubridate
+    lubridate,
+    boot,
+    circular,
+    reshape2,
+    proto
