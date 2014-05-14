@@ -17,9 +17,9 @@ image_time <- function(img, tz="UTC") {
   }
 
   # convert them to R representations
-	dateTime <- parse_date_time(dateTime, format="ymd hms", tz=tz)
+  dateTime <- parse_date_time(dateTime, orders="ymd hms", tz=tz)
 
-	return(dateTime)
+  return(dateTime)
 }
 
 
@@ -29,21 +29,21 @@ image_time <- function(img, tz="UTC") {
 #' @keywords internal
 image_interval <- function(img) {
 
-	if ( sum(file.exists(img)) >= 2 ) {
-		# detect image times
-		times <- image_time(img)
+  if ( sum(file.exists(img)) >= 2 ) {
+    # detect image times
+    times <- image_time(img)
 
-		# compute intervals in seconds
-		intervals <- diff(times)
-		units(intervals) <- "secs"
+    # compute intervals in seconds
+    intervals <- diff(times)
+    units(intervals) <- "secs"
 
     # compute mean interval in whole seconds
-		interval <- as.integer( round( mean(intervals) ) )
+    interval <- as.integer( round( mean(intervals) ) )
 
-	} else {
-		warning("At least two images are needed to compute a time interval")
+  } else {
+    warning("At least two images are needed to compute a time interval")
     interval <- NULL
-	}
+  }
 
-	return(interval)
+  return(interval)
 }
