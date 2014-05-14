@@ -26,6 +26,9 @@ disc_check <- function() {
   # check_exec("rsync")
   # message("rsync executable found")
 
+  check_exec("convert", package="imagemagick")
+  message("imagemagick executables found")
+
   check_exec("exif")
   message("exif executable found")
 

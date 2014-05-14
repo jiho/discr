@@ -104,7 +104,10 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), acclimation.time=5, o
           # for pictures, copy the images
           picsDir <- str_c(deployDir, "/pics")
           dir.create(picsDir, showWarnings=FALSE)
-          file.copy(dc$fileName, picsDir)
+          for (i in 1:nrow(dc)) {
+            system(str_c("convert -resize 1920x1280 \"", dc$fileName[i], "\" \"", picsDir, "/", i, ".jpg\""))
+          }
+          # file.copy(dc$fileName, picsDir)
         } else {
           # for data, write it as csv
           write.csv(dc, file=str_c(deployDir, "/", role, ".csv"), row.names=FALSE)
