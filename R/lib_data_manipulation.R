@@ -20,3 +20,31 @@ reorder_columns <- function(d, first, drop=FALSE) {
 
   return(d)
 }
+
+# Select columns of a data.frame
+#
+# @param d      data.frame
+# @param names  names of columns to keep, can be abbreviated
+#
+#' @keywords internal
+select_columns <- function(d, names) {
+  # allow partial matching of names
+  n <- names(d)
+  names <- match.arg(names, n, several.ok=TRUE)
+
+  return(d[,names])
+}
+
+# Select columns of a data.frame
+#
+# @param d      data.frame
+# @param names  names of columns to remove, can be abbreviated
+#
+#' @keywords internal
+remove_columns <- function(d, names) {
+  # allow partial matching of names
+  n <- names(d)
+  names <- match.arg(names, n, several.ok=TRUE)
+
+  return(d[, ! n %in% names])
+}
