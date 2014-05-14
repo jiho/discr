@@ -34,7 +34,7 @@ By default `discuss` works in the current directory. Set its working directory t
 
     disc_setwd("/path/to/your/deployments")
 
-Set this project's setting with
+Set this project's settings with
 
     disc_conf()
     ?disc_conf
