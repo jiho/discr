@@ -5,9 +5,16 @@
 #' @keywords internal
 #' @importFrom stringr str_c
 #' @importFrom lubridate parse_date_time
+#' @importFrom plyr round_any
 image_time <- function(img, tz="UTC") {
   # get date and times
-  dateTime <- system(str_c("exif -t=DateTimeOriginal -m ", str_c(img, collapse=" ")), intern=TRUE)
+  chunkSize <- 2000
+  dateTime <- c()
+  for (i in seq(1, length(img), by=chunkSize)) {
+    # message(i, " ", i+chunkSize-1)
+    command <- str_c("exif -t=DateTimeOriginal -m \"", str_c(na.omit(img[i:(i+chunkSize-1)]), collapse="\" \""), "\"")
+    dateTime <- c(dateTime, system(command, intern=TRUE))
+  }
 
   # convert them to R representations
 	dateTime <- parse_date_time(dateTime, format="ymd hms", tz=tz)
