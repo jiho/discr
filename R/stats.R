@@ -14,7 +14,7 @@
 #' @import ggplot2
 #' @import boot
 #' @import proto
-#' @import reshape
+#' @import reshape2
 #' @import circular
 #' 
 
