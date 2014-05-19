@@ -21,6 +21,7 @@ disc_conf <- function(..., file="disc.conf", verbose=FALSE) {
     storage_directory = ""
   )
   class(defaults) <- c("disc.settings", "list")
+  # TODO add looking up
 
   # get settings from the project configuration file
   wd <- disc_getwd()
@@ -133,7 +134,7 @@ disc_getwd <- function(warn=FALSE) {
     stop("Working directory ", wd, " does not exist")
   }
   if ( strtoi(file.info(wd)$mode) < 600 ) {
-    stop("Working directory ", wd, " is now writable")
+    stop("Working directory ", wd, " is not writable")
   }
 
   return(wd)
