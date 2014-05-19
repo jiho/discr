@@ -25,8 +25,8 @@ disc_calibrate <- function(dir, ...) {
 
   # prepare java command
   command <- str_c(
-    "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("inst/ij/ij.jar", package="discuss"),
-    " -ijpath ", system.file("inst/ij/", package="discuss"), " -eval \"",
+    "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discuss"),
+    " -ijpath ", system.file("ij/", package="discuss"), " -eval \"",
     " run('Image Sequence...', 'open=", picsDir, " number=1 starting=1 increment=1 scale=100 file=[] or=[] sort');",
     " makeOval(", getOption("disc.aquarium"), ");",
     " setTool('oval');",
