@@ -7,7 +7,7 @@
 #'
 #' Read data from various sensors output somewhat uniformised records
 #'
-#' @param file path to the file to read
+#' @param dir path to the directory in which the files to read are
 #' @param ... passed to \code{\link{read.table}} which does the actual reading
 #'
 #' @return
@@ -16,7 +16,7 @@
 #' @importFrom plyr arrange
 #' @importFrom stringr str_c
 #' @importFrom lubridate parse_date_time
-disc_read <- function(file, ...) {
+disc_read <- function(dir, ...) {
   UseMethod("disc_read")
 }
 
@@ -26,14 +26,18 @@ disc_read <- function(file, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.gt31 <- function(file, ...) {
-  # file <- "inst/tests/gps_gt31_sample.plt"
+disc_read.gt31 <- function(dir, ...) {
+  # read .plt files = some sort of text log from the GT31
+  files <- list.files(dir, pattern=glob2rx("*.plt"), full.names=TRUE)
 
-  d <- read.table(file, skip=6, stringsAsFactors=FALSE, sep=",", strip.white=TRUE, col.names=c("lat", "lon", "?", "?", "?", "date", "time"), ...)
+  # there should be only one per directory, but just in case, loop automatically over all files
+  d <- ldply(files, read.table, skip=6, stringsAsFactors=FALSE, sep=",", strip.white=TRUE, col.names=c("lat", "lon", "?", "?", "?", "date", "time"), ...)
 
+  # compute date+time for R
   d$dateTime <- str_c(d$date, " ", d$time)
   d$dateTime <- parse_date_time(d$dateTime, orders="dmy hms", quiet=TRUE)
 
+  # keep only relevant data
   d <- select_columns(d, c("dateTime", "lon", "lat"))
 
   return(d)
@@ -41,7 +45,7 @@ disc_read.gt31 <- function(file, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.igotu <- function(file, ...) {
+disc_read.igotu <- function(dir, ...) {
   # file <- "inst/tests/gps_igotu_sample.csv"
 
   d <- read.csv(file, stringsAsFactors=FALSE, ...)
@@ -63,7 +67,7 @@ disc_read.igotu <- function(file, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.trackstick <- function(file, ...) {
+disc_read.trackstick <- function(dir, ...) {
   # file <- "inst/tests/gps_trackstick_sample.csv"
 
   d <- read.csv(file, stringsAsFactors=FALSE, ...)
@@ -88,7 +92,7 @@ disc_read.trackstick <- function(file, ...) {
 #' @rdname disc_read
 #' @export
 #' @importFrom stringr str_detect
-disc_read.dst <- function(file, ...) {
+disc_read.dst <- function(dir, ...) {
   # file <- "inst/tests/ctd_dst_sample.dat"
 
   content <- scan(file, what="character", sep="\n", quiet=TRUE)
@@ -112,7 +116,7 @@ disc_read.dst <- function(file, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.opentag <- function(file, ...) {
+disc_read.opentag <- function(dir, ...) {
   # file <- "inst/tests/ctd_opentag_sample.csv"
 
   d <- read.csv(file, stringsAsFactors=FALSE)
@@ -139,7 +143,7 @@ disc_read.opentag <- function(file, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.ez <- function(file, ...) {
+disc_read.ez <- function(dir, ...) {
   # file <- "inst/tests/compass_ez_sample.csv"
 
   d <- read.csv(file, stringsAsFactors=FALSE, ...)
@@ -160,7 +164,7 @@ disc_read.ez <- function(file, ...) {
 #' @rdname disc_read
 #' @export
 #' @importFrom lubridate parse_date_time
-disc_read.remora <- function(file, ...) {
+disc_read.remora <- function(dir, ...) {
   # file <- "inst/tests/compass_remora_sample.csv"
 
   d <- read.csv(file, stringsAsFactors=FALSE, ...)
@@ -181,7 +185,7 @@ disc_read.remora <- function(file, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.opentag <- function(file, ...) {
+disc_read.opentag <- function(dir, ...) {
   # file <- "inst/tests/compass_opentag_sample.csv"
 
   # read and subsample the data (because we don't need one reading every millisecond)
@@ -210,13 +214,18 @@ disc_read.opentag <- function(file, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.cc <- function(file, ...) {
-  # file <- "inst/tests/compass_cc_sample.TXT"
+disc_read.cc <- function(dir, ...) {
+  # read DATALOG.TXT files
+  files <- list.files(dir, pattern=glob2rx("DATALOG.TXT"), full.names=TRUE)
 
-  d <- read.csv(file, stringsAsFactors=FALSE, col.names=c("dateTime", "pitch", "roll", "heading", "junk"), ...)
-  d <- remove_columns(d, "junk")
+  # there should be only one per directory, but just in case, loop automatically over all files
+  d <- ldply(files, read.csv, stringsAsFactors=FALSE, col.names=c("dateTime", "pitch", "roll", "heading", "junk"), ...)
 
+  # compute date+time for R
   d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
+
+  # keep only relevant data
+  d <- remove_columns(d, "junk")
 
   return(d)
 }
@@ -224,16 +233,38 @@ disc_read.cc <- function(file, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.hobo <- function(file, ...) {
-  # file <- "inst/tests/hobo_sample.csv"
+disc_read.hobo <- function(dir, ...) {
+  # read csv files files
+  files <- list.files(dir, pattern=glob2rx("*.csv"), full.names=TRUE)
 
-  d <- read.csv(file, stringsAsFactors=FALSE, skip=1, ...)
-  
+  # there should be only one per directory, but just in case, loop automatically over all files
+  d <- ldply(files, read.csv, stringsAsFactors=FALSE, skip=1, ...)
+
+  # keep only appropriate columns and label them
   d <- d[,2:4]
   names(d) <- c("dateTime", "temp", "light")
 
-  d$dateTime <- parse_date_time(d$dateTime, orders="dmy Ims p", quiet=TRUE)
+  # compute date+time for R
+  d$dateTime <- parse_date_time(d$dateTime, orders="mdy Ims p", quiet=TRUE)
 
   return(d)
-  
+
+}
+
+
+#' @rdname disc_read
+#' @export
+disc_read.gopro <- function(dir, ...) {
+  # get all JPG files
+  files <- list.files(dir, pattern=glob2rx("G00*.JPG"), full.names=TRUE, recursive=TRUE)
+
+  # get timestamps for theses files
+  timestamps <- image_time(files)
+
+  # store that in a data.frame
+  d <- data.frame(origFile=files, dateTime=timestamps, stringsAsFactors=FALSE)
+  # make sure it is ordered by time (listing files can be done in non chronological order)
+  d <- d[order(d$dateTime),]
+
+  return(d)
 }

@@ -4,6 +4,7 @@
 \alias{disc_read.cc}
 \alias{disc_read.dst}
 \alias{disc_read.ez}
+\alias{disc_read.gopro}
 \alias{disc_read.gt31}
 \alias{disc_read.hobo}
 \alias{disc_read.igotu}
@@ -12,30 +13,33 @@
 \alias{disc_read.trackstick}
 \title{Raw data read}
 \usage{
-disc_read(file, ...)
+disc_read(dir, ...)
 
-\method{disc_read}{gt31}(file, ...)
+\method{disc_read}{gt31}(dir, ...)
 
-\method{disc_read}{igotu}(file, ...)
+\method{disc_read}{igotu}(dir, ...)
 
-\method{disc_read}{trackstick}(file, ...)
+\method{disc_read}{trackstick}(dir, ...)
 
-\method{disc_read}{dst}(file, ...)
+\method{disc_read}{dst}(dir, ...)
 
-\method{disc_read}{opentag}(file, ...)
+\method{disc_read}{opentag}(dir, ...)
 
-\method{disc_read}{ez}(file, ...)
+\method{disc_read}{ez}(dir, ...)
 
-\method{disc_read}{remora}(file, ...)
+\method{disc_read}{remora}(dir, ...)
 
-\method{disc_read}{opentag}(file, ...)
+\method{disc_read}{opentag}(dir, ...)
 
-\method{disc_read}{cc}(file, ...)
+\method{disc_read}{cc}(dir, ...)
 
-\method{disc_read}{hobo}(file, ...)
+\method{disc_read}{hobo}(dir, ...)
+
+\method{disc_read}{gopro}(dir, ...)
 }
 \arguments{
-  \item{file}{path to the file to read}
+  \item{dir}{path to the directory in which the files to
+  read are}
 
   \item{...}{passed to \code{\link{read.table}} which does
   the actual reading}
