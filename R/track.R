@@ -58,7 +58,7 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
     "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discuss"),
     " -ijpath ", system.file("ij/", package="discuss"), " -eval \"",
     " run('Image Sequence...', 'open=", picsDir, " number=0 starting=1 increment=", subN, " scale=100 file=[] or=[] sort ", virtualStack,"');",
-    " run('Compile and Run...', 'compile=", system.file("ij/", package="discuss"),"/plugins/Manual_Tracking.java');",
+    " run('Compile and Run...', 'compile=", system.file("ij/", package="discuss"),"/plugins/Manual_Tracking.class');",
     # " run('Manual Tracking');",
     # TODO investigate wether compilating on the fly may be a problem
     " waitForUser('Track finished?',",
