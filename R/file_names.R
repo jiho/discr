@@ -14,6 +14,7 @@
   light = "hobo_log.csv",
 
   aquarium.coord = "coord_aquarium.csv",
+  compass.camera.angle = "angle_compass_camera.csv",
   
   tracks = "larvae_tracks.txt",
   corrected.tracks = "tracks.csv",
