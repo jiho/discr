@@ -7,13 +7,13 @@ disc(ids, actions = c("calibrate", "track", "compass", "stats"), ...)
 }
 \arguments{
   \item{ids}{vector of deployments ids (correspond to
-  folders in the working directory)}
+  folders in the working directory). Usually deployment ids
+  are integers, which makes it easy to give ranges of
+  deployments such as 1:10. But deployment ids can be
+  anything.}
 
   \item{actions}{vector of actions to perform. Action names
   can be abbreviated}
-
-  \item{wd}{working directory of the project (where
-  deployments are)}
 
   \item{...}{passed to the various actions functions}
 }
