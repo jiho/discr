@@ -9,15 +9,17 @@
 #' @export
 disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
-  picsDir <- make_path(dir, .files$pictures)
-  if (! file.exists(picsDir)) {
-    stop("Cannot find directory ", picsDir)
-  }
+  disc_message("Track")
 
-  pics <- list.files(picsDir, pattern=glob2rx("*.jpg"), full=TRUE)
-  if (length(pics) == 0) {
-    stop("Cannot find pictures in ", picsDir)
-  }
+  # checks
+  picsDir <- make_path(dir, .files$pictures)
+  assert_that(file.exists(picsDir))
+
+  picsFile <- make_path(dir, str_c(.files$pictures, ".csv"))
+  assert_that(file.exists(picsFile))
+
+  pics <- list.files(picsDir, pattern=glob2rx("*.jpg"))
+  assert_that(not_empty(pics))
 
 
   # Determine sub-sampling rate, if any
@@ -32,7 +34,7 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
     subN <- round(sub / interval)
     # one image every subN will give an interval of sub seconds, approximately
     if (verbose) {
-      dmessage("subsampling at ", round(subN * interval, 2), " seconds, on average")
+      disc_message("subsample at ", round(subN * interval, 2), " seconds, on average")
     }
   }
 
@@ -47,7 +49,7 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
 	  virtualStack <- "use"
 	}
 
-	if (verbose) dmessage("Open stack")
+	if (verbose) disc_message("open stack for tracking")
 	# Use an ImageJ macro to run everything. The macro proceeds this way
 	# - use Image Sequence to open the stack
 	# - call the Manual Tracking plugin

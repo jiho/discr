@@ -11,13 +11,13 @@
 #' @importFrom stringr str_length
 disc_message <- function(...) {
   # concatenate the message bits
-  message <- str_c(..., sep=" ")
-  
+  message <- str_c(..., sep="")
+
   # compute how many lines it will take
-  nCharaters <- str_length(message)
+  nCharacters <- str_length(message)
   indentLength <- 2
   lineLength <- 71 - indentLength
-  nLines <- nCharaters %/% lineLength
+  nLines <- nCharacters %/% lineLength + 1
   
   # write every line
   for (i in 1:nLines) {
@@ -36,3 +36,4 @@ dmessage <- disc_message
 # @rdname disc_message
 #' @keywords internal
 dmess <- disc_message
+
