@@ -143,7 +143,8 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
         if ( sensorFolderName == "pics" ) {
           picsDir <- str_c(deployDir, "/", sensorFolderName)
           dir.create(picsDir, showWarnings=FALSE)
-          dc$file <- str_c(picsDir, "/", 1:nrow(dc), ".jpg")
+          dc$imgNb <- 1:nrow(dc)
+          dc$file <- str_c(picsDir, "/", dc$imgNb, ".jpg")
           registerDoParallel(detectCores()-1)
           a_ply(dc, 1, function(x) {
             system(str_c("convert -resize 1920x1280 \"", x$origFile, "\" \"", x$file, "\""))
