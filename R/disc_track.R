@@ -24,9 +24,9 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
   # Determine sub-sampling rate, if any
   # compute interval between images
-  interval <- mean(as.numeric(diff(image_time(na.omit(pics[1:30])))))
-  # TODO check how relevant it is to use only 30 images
-  # TODO when have image_interval for this...
+  picsData <- read.csv(picsFile)
+  interval <- mean(as.numeric(diff(picsData$dateTime)))
+
   # compute the subsampling rate
   if ( is.null(sub) ) {
     subN <- 1
