@@ -50,6 +50,9 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
 	}
 
 	if (verbose) disc_message("open stack for tracking")
+  # prepare temporary storage
+  larvaTracksFile <- tempfile(fileext="txt")
+
 	# Use an ImageJ macro to run everything. The macro proceeds this way
 	# - use Image Sequence to open the stack
 	# - call the Manual Tracking plugin
@@ -60,19 +63,24 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
     "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discuss"),
     " -ijpath ", system.file("ij/", package="discuss"), " -eval \"",
     " run('Image Sequence...', 'open=", picsDir, " number=0 starting=1 increment=", subN, " scale=100 file=[] or=[] sort ", virtualStack,"');",
-    " run('Compile and Run...', 'compile=", system.file("ij/", package="discuss"),"/plugins/Manual_Tracking.class');",
-    # " run('Manual Tracking');",
-    # TODO investigate wether compilating on the fly may be a problem
+    # " run('Manual Tracking', '');",
+    " run('Compile and Run...', 'compile=", system.file("ij/", package="discuss"),"/plugins/Manual_Tracking.java');",
     " waitForUser('Track finished?',",
     " 'Press OK when done tracking');",
     " selectWindow('Tracks');",
-    " saveAs('Text', '", make_path(dir, .files$tracks), "');",
+    " saveAs('Text', '", larvaTracksFile, "');",
     " run('Quit');\""
   )
-  if (verbose) dmessage("Running:", command)
-
   status <- system(command)
-  check_status(status, message="Could not perform manual tracking")
+  check_status(status, message=str_c("Error running command\n:", command, "\nAbort"))
+
+  # save larva track
+  assert_that(file.exists(larvaTracksFile))
+  destFile <- make_path(dir, .files$tracks)
+  if ( verbose ) disc_message("write track to ", destFile)
+  d <- read.delim(larvaTracksFile, row.names=1)
+  write.csv(d, file=destFile, row.names=FALSE)
+  file.remove(larvaTracksFile)
 
   return(invisible(status))
 }

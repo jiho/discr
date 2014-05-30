@@ -16,7 +16,7 @@
   aquarium.coord = "coord_aquarium.csv",
   camera.compass.angle = "angle_camera_compass.txt",
   
-  tracks = "larvae_tracks.txt",
+  tracks = "larvae_tracks.csv",
   corrected.tracks = "tracks.csv",
 
   stats = "stats.csv"
