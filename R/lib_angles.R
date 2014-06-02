@@ -1,4 +1,4 @@
-as.heading <- function(x) {
+as.bearing <- function(x) {
   if ( ! is.circular(x) ) {
     # cast to circular type when not circular, assuming the angles are indeed following the proper conventions
     x <- circular(x, units="degrees", template="geographics", modulo="2pi")
@@ -30,6 +30,31 @@ as.angle <- function(x) {
   }
   return(x)
 }
+
+from.below <- function(x) {
+  # TODO generalise this to reverse the rotation of any angle
+
+	# Switch the direction of rotation when we look at things from below
+	# Indeed, in that case the East appears to be on the left
+	# This computes the symmetry and puts E and W where they belong
+
+  if ( ! is.circular(x) ) {
+    stop("x needs to be of class 'circular'")
+  }
+
+	# _set_ the direction of measure to counter clockwise
+	# (does not alter the numbers, just the attributes)
+  x <- as.bearing(x)
+	a <- circularp(x)
+	a$rotation <- "counter"
+	circularp(x) <- a
+
+	# _convert_ back to clockwise (this actually changes the numbers and compute the symmetry)
+	x <- as.bearing(conversion.circular(x, units="degrees", rotation="clock"))
+
+  return(x)
+}
+
 
 # Convert object x of class circular (or in trigonometric reference) to bearings
 #
