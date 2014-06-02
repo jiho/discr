@@ -8,7 +8,7 @@
 #' @importFrom plyr round_any
 image_time <- function(img, tz="UTC") {
   # get date and times
-  chunkSize <- 2000
+  chunkSize <- 1000
   dateTime <- c()
   for (i in seq(1, length(img), by=chunkSize)) {
     # message(i, " ", i+chunkSize-1)
