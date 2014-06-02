@@ -7,7 +7,7 @@
 #' @seealso \code{\link{disc_setwd}} to set the working directory
 #' @export
 #' @importFrom stringr str_c
-disc <- function(ids, actions=c("calibrate", "track", "compass", "stats"), ...) {
+disc <- function(ids, actions=c("calibrate", "track", "correct", "stats"), ...) {
 
   # get working directory
   wd <- disc_getwd()
@@ -17,7 +17,7 @@ disc <- function(ids, actions=c("calibrate", "track", "compass", "stats"), ...) 
   disc_conf()
 
   # get actions
-  actions <- match.arg(actions, several.ok=TRUE)
+  actions <- match.arg(actions, choices=c("camera compass angle", "calibrate", "track", "correct", "compass", "stats"), several.ok=TRUE)
 
   # check ids
   existingDeployments <- list.dirs(wd, full.names=FALSE, recursive=FALSE)
@@ -34,6 +34,9 @@ disc <- function(ids, actions=c("calibrate", "track", "compass", "stats"), ...) 
     for(dir in deploymentDirectories) {
       message(dir)
 
+      if ("camera compass angle" %in% actions) {
+        disc_camera_compass_angle(dir=dir, ...)
+      }
       if ("calibrate" %in% actions) {
         disc_calibrate(dir=dir, ...)
       }
