@@ -3,7 +3,7 @@
 \alias{disc_calibrate}
 \title{Calibrate aquarium position}
 \usage{
-disc_calibrate(dir, ...)
+disc_calibrate(dir, verbose = FALSE, ...)
 }
 \arguments{
   \item{dir}{path to the deployment directory}

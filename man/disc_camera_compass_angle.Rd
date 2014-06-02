@@ -3,7 +3,7 @@
 \alias{disc_camera_compass_angle}
 \title{Measure angle between camera and compass}
 \usage{
-disc_camera_compass_angle(dir, ...)
+disc_camera_compass_angle(dir, verbose = FALSE, ...)
 }
 \arguments{
   \item{dir}{deployment directory}
