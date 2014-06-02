@@ -71,7 +71,7 @@ disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
   # restrict to those on which the heading was measured
   imgsNumbers <- imgsNumbers[cameraHeadings$Slice]
   # get the corresponding times
-  imgs <- read.csv(make_path(dir, str_c(.files$pictures, ".csv")), stringsAsFactors=FALSE)
+  imgs <- read.csv(make_path(dir, str_c(.files$pictures, "_log.csv")), stringsAsFactors=FALSE)
   imgs <- imgs[imgs$imgNb %in% imgsNumbers,]
   imgsTimes <- as.POSIXct(imgs$dateTime)
 
