@@ -8,25 +8,25 @@
 #'
 #' @importFrom plyr ddply
 #' @importFrom stringr str_c
-disc_camera_compass_angle <- function(dir, ...) {
+#' @importFrom assertthat assert_that
+disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
 
+  disc_message("Camera / compass angle")
+
+  # checks
   picsDir <- make_path(dir, .files$pictures)
-  if (! file.exists(picsDir)) {
-    stop("Cannot find directory ", picsDir)
-  }
+  assert_that(file.exists(picsDir))
 
   pics <- list.files(picsDir, pattern=glob2rx("*.jpg"))
-  if (length(pics) == 0) {
-    stop("Cannot find pictures in ", picsDir)
-  }
+  assert_that(not_empty(pics))
+
 
   # open every n images in the folder and manually measure the compass angle on each
   # save the results to a temporary file
-  n <- 50
+  n <- 100
   compassAngleFile <- tempfile()
 
-	message("COMPASS ANGLE")
-	message("Opening images for compass angle detection")
+	if ( verbose ) disc_message("opening images for compass angle detection")
 
   # prepare java command
   command <- str_c(
@@ -45,47 +45,53 @@ disc_camera_compass_angle <- function(dir, ...) {
   status <- system(command)
   check_status(status, message="Abort compass angle measure")
 
-  # save aquarium center and perimenter
-  if (file.exists(compassAngleFile)) {
+  assert_that(file.exists(compassAngleFile))
+  if ( verbose ) disc_message("reading records in ", compassAngleFile)
 
-    # read the file with compass angle measurements
-    d <- read.delim(compassAngleFile, stringsAsFactors=FALSE)
+  # read the file with compass angle measurements
+  d <- read.delim(compassAngleFile, stringsAsFactors=FALSE)
 
-    # compute a mean heading from the measurements of the compass angles, in each image
-    d$Angle <- as.angle(d$Angle)
-    d$Heading <- as.heading(d$Angle)
-    measuredHeadings <- ddply(d, ~Slice, function(x) {mean(x$Heading)})
+  # compute the heading of the top of the image (direction towards which it points, computed from the North, clockwise, in degrees)
 
-    # get the capture time of the images on which the angle was measured
-    # compute all images that were displayed
-    imgsNumbers <- seq(from=1, to=length(pics), by=n)
-    # restrict to those on which the heading was measured
-    imgsNumbers <- imgsNumbers[measuredHeadings$Slice]
-    # get the corresponding times
-    imgs <- read.csv(make_path(dir, str_c(.files$pictures, ".csv")), stringsAsFactors=FALSE)
-    imgs <- imgs[imgsNumbers,]
-    imgsTimes <- as.POSIXct(imgs$dateTime)
+  # angle of the north of the compass in degrees from the horizontal
+  d$angleOfNorthOfCompass <- as.angle(d$Angle)
+  # convert into a "bearing" = angle clockwise from the top of the image
+  d$bearingOfNorthOfCompassFromCameraTop <- as.bearing(d$angleOfNorthOfCompass)
+  # we actually want to complement to 360 of that = the heading of the top of camera relative to the north of the compass
+  d$headingOfCameraTop <- 360 - d$bearingOfNorthOfCompassFromCameraTop
+  # except that we look at the compass from below so the direction of rotation needs to be inverted
+  d$headingOfCameraTop <- from.below(d$headingOfCameraTop)
 
-    # read the compass records
-    compass <- read.csv(make_path(dir, .files$digital.compass), stringsAsFactors=FALSE)
-    compass$dateTime <- as.POSIXct(compass$dateTime)
-    compass$heading <- as.heading(compass$heading)
+  # compute the mean heading for every frame
+  cameraHeadings <- ddply(d, ~Slice, function(x) {mean(x$headingOfCameraTop)})
 
-    # get the compass readings for the images on which the angle was measured
-    recordedHeadings <- approx.circular(x=compass$dateTime, angles=compass$heading, xout=imgsTimes)$y
+  # get the capture time of the images on which the angle was measured
+  # compute all images that were displayed
+  imgsNumbers <- seq(from=1, to=length(pics), by=n)
+  # restrict to those on which the heading was measured
+  imgsNumbers <- imgsNumbers[cameraHeadings$Slice]
+  # get the corresponding times
+  imgs <- read.csv(make_path(dir, str_c(.files$pictures, ".csv")), stringsAsFactors=FALSE)
+  imgs <- imgs[imgs$imgNb %in% imgsNumbers,]
+  imgsTimes <- as.POSIXct(imgs$dateTime)
 
-    # compute the mean difference angle
-    cameraCompassAngles <- measuredHeadings$V1 - recordedHeadings
-    cameraCompassAngle <- mean(cameraCompassAngles)
+  # read the compass records
+  compass <- read.csv(make_path(dir, .files$digital.compass), stringsAsFactors=FALSE)
+  compass$dateTime <- as.POSIXct(compass$dateTime)
+  compass$heading <- as.bearing(compass$heading)
 
-    # display it and store it in a file
-    message("Camera compass angle is: ", round(cameraCompassAngle, 2) )
-    dput(cameraCompassAngle, file=make_path(dir, .files$camera.compass.angle))
+  # get the compass readings for the images on which the angle was measured
+  compassHeadings <- approx.circular(x=compass$dateTime, angles=compass$heading, xout=imgsTimes)$y
 
-  } else {
-    stop("Abort compass angle measure")
-  }
+  # compute the mean difference angle
+  cameraCompassAngles <- compassHeadings - cameraHeadings$V1
+  cameraCompassAngle  <- mean(cameraCompassAngles)
+  sdCompassAngle      <- angular.deviation(cameraCompassAngles) * 180 / pi
+  # in the following the position of the larva will be recorded relative to the top of the frame of the camera. This cameraCompassAngle will need to be *subtracted* from the angle from the top of the camera to find the true heading of the larva
+
+  # display it and store it in a file
+  message("Camera compass angle is: ", round(cameraCompassAngle, 1), "+/-", round(sdCompassAngle, 1) )
+  dput(cameraCompassAngle, file=make_path(dir, .files$camera.compass.angle))
 
   return(invisible(status))
-
 }
