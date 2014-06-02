@@ -54,7 +54,7 @@ public class Measure_Angle extends PlugInFrame implements ActionListener {
         panel.add(buttonNext);
 
         buttonPrev = new Button("Previous Image <");
-        buttonNext.addActionListener(this);
+        buttonPrev.addActionListener(this);
         panel.add(buttonPrev);
 
         buttonDelete = new Button("Delete last measurement");
@@ -78,10 +78,12 @@ public class Measure_Angle extends PlugInFrame implements ActionListener {
         }
 
         if (e.getSource() == buttonNext) {
+            IJ.showStatus("Next slice");
             IJ.run(imp, "Next Slice [>]", "");
         }
         
-        if (e.getSource() == buttonNext) {
+        if (e.getSource() == buttonPrev) {
+            IJ.showStatus("Previous slice");
             IJ.run(imp, "Previous Slice [<]", "");
         }
 
@@ -95,7 +97,7 @@ public class Measure_Angle extends PlugInFrame implements ActionListener {
             // remove the last tow of the table
             ResultsTable rt = ResultsTable.getResultsTable();
             i = rt.getCounter();
-            IJ.showStatus(Integer.toString(i));
+            // IJ.showStatus(Integer.toString(i));
             rt.deleteRow(i-1);
             rt.show("Results");
 
