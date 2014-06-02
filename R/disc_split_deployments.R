@@ -153,7 +153,7 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
         }
 
         # write the selected portion of the data to the deployment folder
-        write.csv(dc, file=str_c(deployDir, "/", sensorFolderName, ".csv"), row.names=FALSE)
+        write.csv(dc, file=str_c(deployDir, "/", sensorFolderName, "_log.csv"), row.names=FALSE)
       }
     })
   })
