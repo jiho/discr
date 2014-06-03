@@ -6,18 +6,14 @@
   pictures = "pics",
   
   digital.compass = "compass_log.csv",
-  manual.compass = "compass_track.txt",
-  manual.compass.coord = "coord_compass.txt",
+  analog.compass = "compass_track.csv",
+  analog.compass.coord = "coord_compass.csv",
   
-  ctd = "ctd_log.csv",
-  gps = "gps_log.csv",
-  light = "hobo_log.csv",
-
   aquarium.coord = "coord_aquarium.csv",
   camera.compass.angle = "angle_camera_compass.txt",
   
   tracks = "larvae_tracks.csv",
-  corrected.tracks = "tracks.csv",
+  processed.tracks = "larvae_tracks_rotated.csv",
 
   stats = "stats.csv"
 )

@@ -18,10 +18,10 @@ disc_conf <- function(..., file="disc.conf", verbose=FALSE) {
     camera_angle = 90,
     diameter = 40,
     java_memory = 1024,
-    storage_directory = ""
+    storage_directory = "",
+    looking_up = TRUE
   )
   class(defaults) <- c("disc.settings", "list")
-  # TODO add looking up
 
   # get settings from the project configuration file
   wd <- disc_getwd()
