@@ -139,7 +139,7 @@ pol2car <- function (x, orig=c(0,0)) {
 # xout    "coordinates" where the interpolation should take place
 # ...   passed to approx
 #
-#' @import circular
+#' @importFrom circular is.circular conversion.circular
 approx.circular <- function(x, angles, xout, ...) {
   # Get circular characteristics of the angles object if it is of class circular
   # so that we can set them back on the resulting angles
@@ -217,7 +217,7 @@ circ.stats <- function(x) {
 
 # Set the x scale appropriately for the given template
 # template    "geographics" (for bearings) or "none" (for trigonometric angles)
-#' @importFrom ggplot2 scale_x_continuous
+# @importFrom ggplot2 scale_x_continuous
 scale_x_circular <- function(template=c("geographics", "none")) {
   template <- match.arg(template)
 
@@ -244,12 +244,21 @@ scale_x_circular <- function(template=c("geographics", "none")) {
 
 # Set polar coordinates
 # ... passed to scale_x_circular to set the template
-#' @importFrom ggplot2 coord_polar
+# @importFrom ggplot2 coord_polar
 polar <- function(...) {
   list(coord_polar(theta="x"), scale_x_circular(...))
 }
 
 
+#' Circular dotplot
+#'
+#' @param x vector of angles (potentially of class circular). Assumed to be in degrees and within [0,360]
+# TODO relax this assumption
+#' @param bin bin width in degrees
+#'
+#' @export
+#' @importFrom plyr round_any count adply
+#' @import ggplot2
 circular_dotplot <- function(x, bin=5) {
   # bin angles
   xB <- as.numeric(round_any(x, bin))
