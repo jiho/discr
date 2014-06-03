@@ -11,6 +11,8 @@ disc_track(dir, sub = NULL, verbose = FALSE, ...)
   \item{sub}{subsampling interval, in s}
 
   \item{verbose}{output messages on the console when TRUE}
+
+  \item{...}{passthrough argument}
 }
 \description{
 Use the manual tracking plugin to record a track

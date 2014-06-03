@@ -3,6 +3,8 @@
 #' Measure angle of analog compasses on images, use that as a reference, compare it to the digital compass record and deduce the angle between the camera and the digital compass. This is mandatory to use the digital compass to correct the tracks.
 #'
 #' @param dir deployment directory
+#' @param verbose output messages on the console when TRUE
+#' @param ... passthrough argument
 #'
 #' @export
 #'

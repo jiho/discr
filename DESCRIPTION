@@ -13,7 +13,6 @@ Imports:
     stringr,
     ggplot2,
     lubridate,
-    boot,
     circular,
-    reshape2,
-    proto
+    assertthat,
+    doParallel

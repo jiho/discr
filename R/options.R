@@ -118,6 +118,8 @@ dsetwd <- disc_setwd
 
 #' Get discuss working directory
 #'
+#' @param warn when TRUE, emit a warning when the working directory is not set
+#'
 #' @export
 disc_getwd <- function(warn=FALSE) {
 

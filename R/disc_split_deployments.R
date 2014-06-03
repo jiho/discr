@@ -13,7 +13,7 @@
 #'
 #' @export
 #' @importFrom stringr str_detect str_split_fixed str_c
-#' @importFrom plyr ldply join d_ply l_ply adply a_ply
+#' @importFrom plyr ldply join d_ply l_ply adply a_ply llply
 #' @importFrom parallel detectCores
 #' @importFrom doParallel registerDoParallel
 #' @importFrom tools file_ext

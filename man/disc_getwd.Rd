@@ -8,6 +8,10 @@ disc_getwd(warn = FALSE)
 
 dgetwd(warn = FALSE)
 }
+\arguments{
+  \item{warn}{when TRUE, emit a warning when the working
+  directory is not set}
+}
 \description{
 Get discuss working directory
 }

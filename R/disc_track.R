@@ -5,6 +5,7 @@
 #' @param dir deployment directory
 #' @param sub subsampling interval, in s
 #' @param verbose output messages on the console when TRUE
+#' @param ... passthrough argument
 #'
 #' @export
 disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {

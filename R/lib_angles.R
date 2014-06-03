@@ -8,6 +8,8 @@
 #' @seealso \code{\link{circular}} and \code{\link{conversion.circular}} in package \code{circular}
 #'
 #' @name angles
+NULL
+
 #' @rdname angles
 #' @export
 #' @importFrom circular is.circular circular conversion.circular

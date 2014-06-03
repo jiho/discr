@@ -7,6 +7,10 @@ disc_camera_compass_angle(dir, verbose = FALSE, ...)
 }
 \arguments{
   \item{dir}{deployment directory}
+
+  \item{verbose}{output messages on the console when TRUE}
+
+  \item{...}{passthrough argument}
 }
 \description{
 Measure angle of analog compasses on images, use that as a

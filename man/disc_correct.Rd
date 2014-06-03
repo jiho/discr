@@ -9,6 +9,8 @@ disc_correct(dir, verbose = FALSE, ...)
   \item{dir}{path the to the deployment directory}
 
   \item{verbose}{output messages on the console when TRUE}
+
+  \item{...}{passthrough argument}
 }
 \description{
 Correct tracks (camera frame of reference) based on
