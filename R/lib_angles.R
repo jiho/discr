@@ -1,3 +1,16 @@
+#' Set or convert angles between conventions
+#'
+#' @param x vector of angles; either as numbers, in which case they are assumed to follow the appropriate convention; or of class circular, in which case the angles will be converted from their current convention to the convention determined by the function
+#'
+#' @details Bearings are angles from North, always positive, measured clockwise, in degrees. Trigonometric angles are angles from the horizontal, measured counter-clockwise, in radians. "Angles" are trigonometric angles but in degrees.
+# TODO itemize this
+#'
+#' @seealso \code{\link{circular}} and \code{\link{conversion.circular}} in package \code{circular}
+#'
+#' @name angles
+#' @rdname angles
+#' @export
+#' @importFrom circular is.circular circular conversion.circular
 as.bearing <- function(x) {
   if ( ! is.circular(x) ) {
     # cast to circular type when not circular, assuming the angles are indeed following the proper conventions
@@ -9,6 +22,9 @@ as.bearing <- function(x) {
   return(x)
 }
 
+#' @rdname angles
+#' @export
+#' @importFrom circular is.circular circular conversion.circular
 as.trig <- function(x) {
   if ( ! is.circular(x) ) {
     # cast to circular type when not circular, assuming the angles are indeed following the proper conventions
@@ -20,6 +36,9 @@ as.trig <- function(x) {
   return(x)
 }
 
+#' @rdname angles
+#' @export
+#' @importFrom circular is.circular circular conversion.circular
 as.angle <- function(x) {
   if ( ! is.circular(x) ) {
     # cast to circular type when not circular, assuming the angles are indeed following the proper conventions
@@ -30,6 +49,7 @@ as.angle <- function(x) {
   }
   return(x)
 }
+
 
 from.below <- function(x) {
   # TODO generalise this to reverse the rotation of any angle
@@ -89,71 +109,60 @@ geo2trig <- function(x) {
 	return(x)
 }
 
-#
-# Translates from cardinal to polar coordinates
-#	incar		matrix or data frame with columns [x,y]
-#	orig		vector with the x,y coordinates of the origin
-# Result: a matrix or data.frame with columns [theta,rho], with theta in radians and rho in the same unit as the input x and y
-#
-#' @import circular
-car2pol <- function (incar, orig=c(0,0)) {
-	# Makes the coordinates relative to the origin
-	origMat <- incar
-	origMat[,1] <- orig[1]
-	origMat[,2] <- orig[2]
-	incar <- incar - origMat
+#' Convert from cardinal to polar coordinates
+#' 
+#' @param x matrix or data frame with columns [x,y]
+#' @param orig vector with the x,y coordinates of the origin, defaults to (0,0)
+#'
+#' @return a data.frame with columns [theta,rho], with theta following trigonometric conventions and rho in the same unit as the input x and y
+#'
+#' @export
+car2pol <- function (x, orig=c(0,0)) {
+  
+	# make the coordinates relative to the origin
+	x[,1] <- x[,1] - orig[1]
+	x[,2] <- x[,2] - orig[2]
 
-	# Initiate inpol
-	inpol <- incar
-	inpol[,] <- NA
+	# calculate the angles (modulo 2*pi)
+	theta <- atan2(x[,2], x[,1])
+	theta <- ( theta + 2*pi ) %% ( 2*pi )
+	theta <- as.trig(theta)
+  
+	# calculate the norms
+	rho <- sqrt(x[,1]^2 + x[,2]^2)
 
-	# Calculate the angles
-	inpol[,1] <- atan2(incar[,2], incar[,1])
-	inpol[,1] <- ( inpol[,1] + 2*pi ) %% ( 2*pi )
-	# Calculate the norms
-	inpol[,2] <- sqrt(incar[,1]^2 + incar[,2]^2)
-
-	# Change column names
-	names(inpol) <- c("theta","rho")
-
-	# Convert to class circular
-	inpol$theta <- circular(inpol$theta)
+  # create the matrix of polar coordinates
+  inpol <- data.frame(theta, rho)
 
 	return(inpol)
 }
 
-#
-# Translates from polar to cardinal coordinates
-#	inpol		a matrix or data.frame with columns [theta,rho], with theta of class circular or in trigonometric reference
-#	orig		vector with the x,y coordinates of the origin
-# Result: a matrix or data.frame with columns [x,y] in the same unit as rho
-#
-#' @import circular
-pol2car <- function (inpol, orig=c(0,0)) {
-	# Initiate incar
-	incar <- inpol
-	incar[,] <- NA
+#' Convert from polar to cardinal coordinates
+#' 
+#' @param x matrix or data frame with columns [theta,rho], with theta of class circular or in trigonometric reference
+#' @param orig vector with the x,y coordinates of the origin, defaults to (0,0)
+#'
+#' @return a data.frame with columns [x,y] in the same unit as rho
+#'
+#' @export
+pol2car <- function (x, orig=c(0,0)) {
 
-	# Make sure angles are in the right reference
-	inpol[,1] <- as.trig(inpol[,1])
+	# make sure angles are in the trigonometric convention
+	x[,1] <- as.trig(x[,1])
 
-	# Compute cartesian coordinates
-	incar[,1] <- inpol[,2]*cos(inpol[,1])
-	incar[,2] <- inpol[,2]*sin(inpol[,1])
+	# compute cartesian coordinates
+	X <- x[,2] * cos(x[,1])
+	Y <- x[,2] * sin(x[,1])
 
-	# Make the coordinates relative to the origin
-	origMat <- incar
-	origMat[,1] <- orig[1]
-	origMat[,2] <- orig[2]
-	incar <- incar + origMat
+	# make the coordinates relative to the origin
+  X <- X + orig[1]
+  Y <- Y + orig[2]
 
-	# Change column names
-	names(incar) <- c("x","y")
+  incar <- data.frame(x=X, y=Y)
 
 	return(incar)
 }
 
-#
 # "Linearly" interpolates angles along a circle
 #	x			"coordinates" (e.g. time of measurement) of the angles to be interpolated
 #	angles	angles to be interpolated, of class circular or in trigonometric reference
