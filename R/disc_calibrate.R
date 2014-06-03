@@ -1,6 +1,7 @@
 #' Calibrate aquarium position
 #'
 #' @param dir path to the deployment directory
+#' @param verbose output messages on the console when TRUE
 #' @param ... passthrough argument
 #'
 #' @export

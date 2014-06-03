@@ -8,6 +8,8 @@ disc_calibrate(dir, verbose = FALSE, ...)
 \arguments{
   \item{dir}{path to the deployment directory}
 
+  \item{verbose}{output messages on the console when TRUE}
+
   \item{...}{passthrough argument}
 }
 \description{
