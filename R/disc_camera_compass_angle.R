@@ -55,21 +55,17 @@ disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
 
   # angle of the north of the compass in degrees from the horizontal
   d$angleOfNorthOfCompass <- as.angle(d$Angle)
-  # convert into a "bearing" = angle clockwise from the top of the image
-  d$bearingOfNorthOfCompassFromCameraTop <- as.bearing(d$angleOfNorthOfCompass)
-  # we actually want to complement to 360 of that = the heading of the top of camera relative to the north of the compass
-  d$headingOfCameraTop <- 360 - d$bearingOfNorthOfCompassFromCameraTop
-  # except that we look at the compass from below so the direction of rotation needs to be inverted
-  d$headingOfCameraTop <- from.below(d$headingOfCameraTop)
-
+  # convert into a "bearing" = angle clockwise from the top of the image to the north of the compass
+  # numerically, this is equivalent to the bearing of the top of the camera from the North (i.e. the heading of the camera), because we look at the compass from below, hence this heading is measured counter clockwise on the image
+  d$cameraHeading <- as.bearing(d$angleOfNorthOfCompass)
   # compute the mean heading for every frame
-  cameraHeadings <- ddply(d, ~Slice, function(x) {mean(x$headingOfCameraTop)})
+  cameraMeanHeadings <- ddply(d, ~Slice, function(x) {mean(x$cameraHeading)})
 
   # get the capture time of the images on which the angle was measured
   # compute all images that were displayed
   imgsNumbers <- seq(from=1, to=length(pics), by=n)
   # restrict to those on which the heading was measured
-  imgsNumbers <- imgsNumbers[cameraHeadings$Slice]
+  imgsNumbers <- imgsNumbers[cameraMeanHeadings$Slice]
   # get the corresponding times
   imgs <- read.csv(make_path(dir, str_c(.files$pictures, "_log.csv")), stringsAsFactors=FALSE)
   imgs <- imgs[imgs$imgNb %in% imgsNumbers,]
@@ -84,7 +80,7 @@ disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
   compassHeadings <- approx.circular(x=compass$dateTime, angles=compass$heading, xout=imgsTimes)$y
 
   # compute the mean difference angle
-  cameraCompassAngles <- compassHeadings - cameraHeadings$V1
+  cameraCompassAngles <- compassHeadings - cameraMeanHeadings$V1
   cameraCompassAngle  <- mean(cameraCompassAngles)
   sdCompassAngle      <- angular.deviation(cameraCompassAngles) * 180 / pi
   # in the following the position of the larva will be recorded relative to the top of the frame of the camera. This cameraCompassAngle will need to be *subtracted* from the angle from the top of the camera to find the true heading of the larva
