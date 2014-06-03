@@ -100,17 +100,24 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
     labs(title="Trajectory")
   # TODO add a circle around
   plots <- c(plots, list(trajectory=p))
-  
+
+
+  # positions
+  sub <- str_c(round(stats$mean), "º (r=", round(stats$r, 3), ", p=", round(stats$p.value, 3), ")", collapse=" | ")
+  posTitle <- bquote(atop(Positions, scriptstyle(.(sub))))
+
+
+  # position dotplot
   if ( verbose ) disc_message("plot positions dotplot")
   # bin angles
   bin <- max(c(5, bin.angle))
   tBinned <- ddply(t, ~trackNb+rotation, function(x, bin) {
     x$theta <- as.numeric(round_any(x$theta, bin))
     x$theta[x$theta==360] <- 0
-  
+
     # create a data.frame with count
     counts <- count(x, "theta")
-  
+
     # repeat each point the appropriate number of times
     d <- adply(counts, 1, function(x) {
       data.frame(theta=x$theta, count=1:x$freq)
@@ -121,18 +128,22 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
     
     return(d)    
   }, bin=bin)
-  p <- ggplot(tBinned) + polar() + labs(title="Positions") +
+  p <- ggplot(tBinned) + polar() + labs(title=posTitle) +
   	geom_point(aes(x=theta, y=count)) +
     scale_y_continuous(limits=c(0, max(tBinned$count))) +
+    geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
+    scale_linetype_manual(values=c("solid", "dashed")) +
     facet_grid(~rotation)
   plots <- c(plots, list(position_dotplot=p))
   
 
   if ( verbose ) disc_message("plot positions histogram")
   # position histogram
-  p <- ggplot(t) + polar() + labs(title="Positions") +
+  p <- ggplot(t) + polar() + labs(title=posTitle) +
   	geom_histogram(aes(x=theta), binwidth=bin) +
     scale_y_continuous(limits=c(-20, NA)) +
+    geom_segment(aes(x=mean, y=-20, xend=mean, yend=-20+r*20, linetype=signif), data=stats) +
+    scale_linetype_manual(values=c("solid", "dashed")) +
     facet_grid(~rotation)
   plots <- c(plots, list(position_histogram=p))
   

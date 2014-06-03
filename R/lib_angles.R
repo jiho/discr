@@ -199,6 +199,7 @@ circ.stats <- function(x) {
   rayleigh <- rayleigh.test(x)
   r <- rayleigh$statistic
   p.value <- rayleigh$p.value
+  signif <- p.value < 0.05
 
   # angular variance ~ variance
   #  = (1-r)
@@ -210,7 +211,7 @@ circ.stats <- function(x) {
   # # = sqrt( (1-r) )
   # sd = sqrt(variance)
 
-  return(data.frame(n, mean, variance, r, p.value))
+  return(data.frame(n, mean, variance, r, p.value, signif))
 }
 
 
