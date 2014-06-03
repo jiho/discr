@@ -16,7 +16,7 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
   picsDir <- make_path(dir, .files$pictures)
   assert_that(file.exists(picsDir))
 
-  picsFile <- make_path(dir, str_c(.files$pictures, ".csv"))
+  picsFile <- make_path(dir, str_c(.files$pictures, "_log.csv"))
   assert_that(file.exists(picsFile))
 
   pics <- list.files(picsDir, pattern=glob2rx("*.jpg"))
