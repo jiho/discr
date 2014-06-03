@@ -130,8 +130,8 @@ disc_correct <- function(dir, verbose=FALSE, ...) {
     x$theta <- as.bearing(x$theta + x$cameraHeading[1])
 
     # label the rotated data
-    xCor$rotation <- TRUE
-    x$rotation <- FALSE
+    xCor$rotation <- "rotated"
+    x$rotation <- "raw"
     # and combine the two
     x <- rbind(x, xCor)
 

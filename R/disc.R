@@ -43,6 +43,12 @@ disc <- function(ids, actions=c("calibrate", "track", "correct", "stats"), ...) 
       if ("track" %in% actions) {
         disc_track(dir=dir, ...)
       }
+      if ("correct" %in% actions) {
+        disc_correct(dir=dir, ...)
+      }
+      if ("stats" %in% actions) {
+        disc_stats(dir=dir, ...)
+      }
     }
   }
 
