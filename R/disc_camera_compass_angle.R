@@ -34,6 +34,7 @@ disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
     " -ijpath ", system.file("ij/", package="discuss"), " -eval \"",
     " run('Image Sequence...', 'open=", picsDir, " number=-1 starting=1 increment=", n, " scale=100 file=[] or=[] sort');",
     # " run('Measure Angle', '');",
+    # TODO commit the class and use this (otherwise the compilation fails when the user does not have write access to the installation directory of the package)
     " run('Compile and Run...', 'compile=", system.file("ij/", package="discuss"),"/plugins/Measure_Angle.java');",
     " waitForUser('Compass detect',",
     " 'Draw a line from the South to the North of a compass.\\nClick Get Angle. Repeat for every compass.\\nMove to the next image until the end of the stack.\\nPress OK when you are done');",

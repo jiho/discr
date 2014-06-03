@@ -19,6 +19,8 @@
 #' @importFrom tools file_ext
 disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation.time=5, observation.time=15) {
 
+  # TODO Use .file for file names
+
   message("Reading field logs")
   # convert to csv first using
   # soffice --headless --convert-to csv test.ods
