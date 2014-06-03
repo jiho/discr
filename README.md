@@ -7,8 +7,9 @@ Well, in R actually, but `discuss` looks better than `discusr` ;)
 1. Install R from <http://cran.rstudio.com/>
 
 2. Install software `discuss` depends on
-    - A java JRE from <https://www.java.com/en/download/>
-    - The `exif` executable from `libexif` through a package manager (see further down for instructions)
+    - A java JRE to run the image manipulation parts; from <https://www.java.com/en/download/>
+    - The `exif` executable from `libexif` to extract timestamp from images; installation is usually done through a package manager (see further down for instructions)
+    - ImageMagick (the `convert` executable) to resize images to more manageable sizes; from <http://www.imagemagick.org/> or through a package manager
 
 3. Install `discuss`. To do that, start R and
 
@@ -28,16 +29,18 @@ Start R and load `discuss`
 
     library("discuss")
 
-[Split deployments]
-
-By default `discuss` works in the current directory. Set its working directory to the place where your deployments are with
+By default `discuss` works in the current directory. Set its working directory to the place where your deployments will be
 
     disc_setwd("/path/to/your/deployments")
 
-Set this project's settings with
+Set this project's default settings with
 
     disc_conf()
     ?disc_conf
+
+Split the raw data into deployments with
+
+    disc_split_deployments(raw="/path/to/raw/daily/data")
 
 Then run analysis commands with
 
