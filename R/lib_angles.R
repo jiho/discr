@@ -76,39 +76,6 @@ from.below <- function(x) {
 }
 
 
-# Convert object x of class circular (or in trigonometric reference) to bearings
-#
-# Bearings are measured clockwise from the vertical in degrees
-# Trigonometric angles are measured counterclockwise from the horizontal in radians
-#' @import circular
-trig2geo <- function(x) {
-	# Cast to circular type
-	if (!is.circular(x)) {
-		x <- circular(x)
-	}
-	# Proceed to the conversion
-	x <- conversion.circular(x, units="degrees", template="geographics", modulo="2pi")
-	return(x)
-}
-
-#
-#	Convert object x of class circular (or containing bearings) to trigonometric angles
-#
-#	Bearings are measured clockwise from the vertical in degrees
-#	Trigonometric angles are measured counterclockwise from the horizontal in radians
-#
-#' @import circular
-geo2trig <- function(x) {
-
-	# Cast to circular type
-	if (!is.circular(x)) {
-		x <- circular(x, units="degrees", template="geographics", modulo="2pi")
-	}
-	# Proceed to the conversion
-	x <- conversion.circular(x, units="radians", template="none", modulo="2pi", zero=0, rotation="counter")
-	return(x)
-}
-
 #' Convert from cardinal to polar coordinates
 #' 
 #' @param x matrix or data frame with columns [x,y]
@@ -162,6 +129,7 @@ pol2car <- function (x, orig=c(0,0)) {
 
 	return(incar)
 }
+
 
 # "Linearly" interpolates angles along a circle
 #	x			"coordinates" (e.g. time of measurement) of the angles to be interpolated
