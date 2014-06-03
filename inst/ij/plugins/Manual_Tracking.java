@@ -132,7 +132,8 @@ public class Manual_Tracking extends PlugInFrame implements ActionListener, Item
 
         add(panel,BorderLayout.CENTER);
         pack();
-        show();
+        setVisible(true);
+        // cf http://stackoverflow.com/questions/11134028/deprecated-method-what-to-use-instead
 
         IJ.showProgress(2,1);
 
