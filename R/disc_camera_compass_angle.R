@@ -11,6 +11,7 @@
 #' @importFrom plyr ddply
 #' @importFrom stringr str_c
 #' @importFrom assertthat assert_that
+#' @importFrom circular mean.circular angular.deviation
 disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
 
   disc_message("Camera / compass angle")
@@ -83,7 +84,7 @@ disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
 
   # compute the mean difference angle
   cameraCompassAngles <- compassHeadings - cameraMeanHeadings$V1
-  cameraCompassAngle  <- mean(cameraCompassAngles)
+  cameraCompassAngle  <- mean.circular(cameraCompassAngles)
   sdCompassAngle      <- angular.deviation(cameraCompassAngles) * 180 / pi
   # in the following the position of the larva will be recorded relative to the top of the frame of the camera. This cameraCompassAngle will need to be *subtracted* from the angle from the top of the camera to find the true heading of the larva
 
