@@ -1,19 +1,19 @@
 #' Compute statistics (circular and activity-level) on a deployment's trajectory data and create plots
-#' 
+#'
 #' @param dir path the to the deployment directory
 #' @param bin.angle precision at which to bin angles
 #' @param sub subsample positions every sub seconds to make them independent
 #' @param verbose output messages on the console when TRUE
 #' @param ... passthrough argument
-#' 
+#'
 #' @export
-#' 
+#'
 #' @importFrom lubridate ymd_hms
 #' @importFrom plyr round_any ddply count
 #' @importFrom stringr str_replace fixed
 #' @import ggplot2
 disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
-  
+
   disc_message("Compute statistics")
 
   if ( verbose ) disc_message("read and process tracks")
@@ -23,13 +23,13 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
   t$theta <- as.bearing(t$theta)
   t$cameraHeading <- as.bearing(t$cameraHeading)
   t$dateTime <- ymd_hms(t$dateTime)
-  
+
   # bin angles if required
   if ( bin.angle != 0 ) {
   	t$theta <- round_any(t$theta, bin.angle)
   }
 
-  
+
   # compute position statistics
   # i.e. statistics about how concentrated the positions are in the reference of the chamber or in a cardinal reference
   if ( verbose ) disc_message("compute position statistics")
@@ -42,13 +42,13 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
       stop("Not implemented yet")
       # TODO implement this
     }
-    
+
     # compute position statistics
     stats <- circ.stats(x$theta)
 
     return(stats)
   })
-  
+
   # add mention of binning
   stats$bin.angle <- bin.angle
 
@@ -61,7 +61,7 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
 
 
   # prepare plots
-  
+
   # compute elapsed time to make it easier to plot
   t <- ddply(t, ~trackNb+rotation, function(x) {
     # compute elapsed time in seconds
@@ -70,11 +70,11 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
     x$elapsed <- as.numeric(x$elapsed) / 60
     return(x)
   })
-  
+
   # TODO deal with several tracks per deployment
-  
+
   plots <- list()
-  
+
   # compass rotation
   if ( verbose ) disc_message("plot compass rotation")
   # for one track only (it's enough)
@@ -125,8 +125,8 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
 
     # make the scale prettier
     d$count <- 10 + d$count
-    
-    return(d)    
+
+    return(d)
   }, bin=bin)
   p <- ggplot(tBinned) + polar() + labs(title=posTitle) +
   	geom_point(aes(x=theta, y=count)) +
@@ -135,7 +135,7 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
     scale_linetype_manual(values=c("solid", "dashed")) +
     facet_grid(~rotation)
   plots <- c(plots, list(position_dotplot=p))
-  
+
 
   if ( verbose ) disc_message("plot positions histogram")
   # position histogram
@@ -146,12 +146,11 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
     scale_linetype_manual(values=c("solid", "dashed")) +
     facet_grid(~rotation)
   plots <- c(plots, list(position_histogram=p))
-  
-  
+
   # TODO density of position?
-  
+
   # TODO speed statistics
-  
+
   # plot them to a file
   if ( verbose ) disc_message("save plots as PDF")
   destFile <- str_replace(destFile, fixed(".csv"), ".pdf")
@@ -161,6 +160,6 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
 	dummy = l_ply(plots, print, .progress="text")
 	# close PDF file
 	dummy = dev.off()
-  
+
   return(invisible(plots))
 }
