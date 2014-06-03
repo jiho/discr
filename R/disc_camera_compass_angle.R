@@ -87,7 +87,7 @@ disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
 
   # display it and store it in a file
   message("Camera compass angle is: ", round(cameraCompassAngle, 1), "+/-", round(sdCompassAngle, 1) )
-  dput(cameraCompassAngle, file=make_path(dir, .files$camera.compass.angle))
+  dput(as.numeric(cameraCompassAngle), file=make_path(dir, .files$camera.compass.angle))
 
   return(invisible(status))
 }
