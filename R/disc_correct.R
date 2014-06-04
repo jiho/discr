@@ -224,7 +224,7 @@ disc_correct <- function(dir, verbose=FALSE, ...) {
   # Saving tracks for statistical analysis and plotting
   #--------------------------------------------------------------------------
   # Write it to a csv file
-  destFile <- make_path(dir, .files$processed.tracks)
+  destFile <- make_path(dir, .files$rotated.tracks)
   if (verbose) { disc_message("write corrected track to ", destFile) }
   write.csv(t, file=destFile, row.names=F)
 

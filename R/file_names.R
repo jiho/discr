@@ -13,7 +13,7 @@
   camera.compass.angle = "angle_camera_compass.txt",
   
   tracks = "larvae_tracks.csv",
-  processed.tracks = "larvae_tracks_rotated.csv",
+  rotated.tracks = "larvae_tracks_rotated.csv",
 
   stats = "stats.csv"
 )

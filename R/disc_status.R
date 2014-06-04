@@ -28,22 +28,23 @@ disc_status <- function(dir=disc_getwd()) {
 
     # test the existence of data files
     digitalCompass <- file.exists(make_path(dir, i, .files$digital.compass))
-    manualCompass  <- file.exists(make_path(dir, i, .files$manual.compass)) & file.exists(make_path(dir, i, .files$manual.compass.coord))
+    analogCompass  <- file.exists(make_path(dir, i, .files$analog.compass)) & file.exists(make_path(dir, i, .files$analog.compass.coord))
     if (digitalCompass) {
       compass <- "digi"
-    } else if (manualCompass) {
-      compass <- "manu"
+    } else if (analogCompass) {
+      compass <- "ana"
     } else {
       compass <- FALSE
     }
-    ctd <- file.exists(make_path(dir, i, .files$ctd))
-    gps <- file.exists(make_path(dir, i, .files$gps))
-    light <- file.exists(make_path(dir, i, .files$light))
+    # ctd <- file.exists(make_path(dir, i, .files$ctd))
+    # gps <- file.exists(make_path(dir, i, .files$gps))
+    # light <- file.exists(make_path(dir, i, .files$light))
+    # TODO detect all files ending with log to give info on which deployments have what
 
     # test the existence of data files
     calib   <- file.exists(make_path(dir, i, .files$coord.aquarium))
     track   <- file.exists(make_path(dir, i, .files$tracks))
-    correct <- file.exists(make_path(dir, i, .files$corrected.tracks))
+    correct <- file.exists(make_path(dir, i, .files$rotated.tracks))
     stats   <- file.exists(make_path(dir, i, .files$stats))
     # if (stats) {
     #   status <- TRUE
@@ -57,7 +58,7 @@ disc_status <- function(dir=disc_getwd()) {
     #   status <- FALSE
     # }
 
-    d <- data.frame(video, pics=nbPics, compass, ctd, gps, light, calib, track, correct, stats, stringsAsFactors=FALSE)
+    d <- data.frame(video, pics=nbPics, compass, calib, track, correct, stats, stringsAsFactors=FALSE)
   })
   row.names(d) <- deployments
 
