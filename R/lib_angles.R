@@ -52,7 +52,8 @@ as.angle <- function(x) {
   return(x)
 }
 
-
+#' @export
+#' @importFrom circular circularp circularp<-
 from.below <- function(x) {
   # TODO generalise this to reverse the rotation of any angle
 
