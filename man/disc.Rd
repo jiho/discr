@@ -3,7 +3,7 @@
 \alias{disc}
 \title{Run a disc analysis action}
 \usage{
-disc(ids, actions = c("calibrate", "track", "correct", "stats"), ...)
+disc(ids = NULL, actions = c("calibrate", "track", "correct", "stats"), ...)
 }
 \arguments{
   \item{ids}{vector of deployments ids (correspond to
