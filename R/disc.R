@@ -38,19 +38,19 @@ disc <- function(ids=NULL, actions=c("calibrate", "track", "correct", "stats"), 
       message(dir)
 
       if ("camera compass angle" %in% actions) {
-        disc_camera_compass_angle(dir=dir, ...)
+        try(disc_camera_compass_angle(dir=dir, ...))
       }
       if ("calibrate" %in% actions) {
-        disc_calibrate(dir=dir, ...)
+        try(disc_calibrate(dir=dir, ...))
       }
       if ("track" %in% actions) {
-        disc_track(dir=dir, ...)
+        try(disc_track(dir=dir, ...))
       }
       if ("correct" %in% actions) {
-        disc_correct(dir=dir, ...)
+        try(disc_correct(dir=dir, ...))
       }
       if ("stats" %in% actions) {
-        disc_stats(dir=dir, ...)
+        try(disc_stats(dir=dir, ...))
       }
     }
   }
