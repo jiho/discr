@@ -160,7 +160,7 @@ disc_correct <- function(dir, verbose=FALSE, ...) {
     px2cm <- diameter / ( coordAquarium$perim / pi )
     x[,c("x","y","rho")] <- x[,c("x","y","rho")] * px2cm
 
-    return(x)
+    return(invisible(x))
   })
 
 # # TODO Compute swimming directions and speed when available
