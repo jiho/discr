@@ -84,7 +84,7 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
   # for one track only (it's enough)
   p <- ggplot(t[t$rotation == "raw",]) + polar() +
     geom_point(aes(x=cameraHeading, y=elapsed), size=2) +
-    scale_y_continuous(limits=c(min(t$elapsed, na.rm=T) - 20, max(t$elapsed, na.rm=T)), breaks=seq(0, max(t$elapsed, na.rm=T), by=2)) +
+    scale_y_continuous(limits=c(min(t$elapsed, na.rm=T) - 20, max(t$elapsed, na.rm=T)), breaks=seq(0, max(t$elapsed, na.rm=T), by=2)) + 
     # geom_point(aes(x=cameraHeading, y=dateTime), size=2) +
     # scale_y_continuous(limits=c(min(t$dateTime, na.rm=T) - 3600, max(t$dateTime, na.rm=T) + 3600)) +
     # TODO fix this: does not work so I can't shift the min away from the center
@@ -145,8 +145,7 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
   # position histogram
   p <- ggplot(t) + polar() + labs(title=posTitle) +
   	geom_histogram(aes(x=theta), binwidth=bin) +
-    scale_y_continuous(limits=c(-20, NA)) +
-    geom_segment(aes(x=mean, y=-20, xend=mean, yend=-20+r*20, linetype=signif), data=stats) +
+    geom_segment(aes(x=mean, y=-10, xend=mean, yend=-10+r*10, linetype=signif), data=stats) +
     scale_linetype_manual(values=c("solid", "dashed")) +
     facet_grid(~rotation)
   plots <- c(plots, list(position_histogram=p))
