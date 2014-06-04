@@ -7,7 +7,7 @@
 #' @seealso \code{\link{disc_setwd}} to set the working directory
 #' @export
 #' @importFrom stringr str_c
-disc <- function(ids, actions=c("calibrate", "track", "correct", "stats"), ...) {
+disc <- function(ids=NULL, actions=c("calibrate", "track", "correct", "stats"), ...) {
 
   # get working directory
   wd <- disc_getwd()
@@ -21,6 +21,9 @@ disc <- function(ids, actions=c("calibrate", "track", "correct", "stats"), ...) 
 
   # check ids
   existingDeployments <- list.dirs(wd, full.names=FALSE, recursive=FALSE)
+  if ( is.null(ids) ) {
+    ids <- existingDeployments
+  }
   ok <- ids %in% existingDeployments
   if (any(!ok)) {
     warning("Deployments ", str_c(ids[!ok], collapse=", "), " were not found and will be skipped", immediate.=TRUE)
