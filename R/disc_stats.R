@@ -16,10 +16,14 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
 
   disc_message("Compute statistics")
 
+  # checks
+  tracksFile <- make_path(dir, .files$rotated.tracks)
+  assert_that(file.exists(tracksFile))
+
   if ( verbose ) disc_message("read and process tracks")
 
   # read tracks
-  t <- read.csv(make_path(dir, .files$processed.tracks), stringsAsFactors=FALSE)
+  t <- read.csv(tracksFile, stringsAsFactors=FALSE)
   t$theta <- as.bearing(t$theta)
   t$cameraHeading <- as.bearing(t$cameraHeading)
   t$dateTime <- ymd_hms(t$dateTime)

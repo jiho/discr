@@ -13,6 +13,26 @@ disc_correct <- function(dir, verbose=FALSE, ...) {
 
   disc_message("Correct rotation")
 
+  # checks
+  # must have tracks
+  tracksFile <- make_path(dir, .files$tracks)
+  assert_that(file.exists(tracksFile))
+
+  # if digital compass is used, must have camera compass angle
+  digitalCompassFile <- make_path(dir, .files$digital.compass)
+  cameraCompassAngleFile <- make_path(dir, .files$camera.compass.angle)
+  if ( file.exists(digitalCompassFile) ) {
+    assert_that(file.exists(cameraCompassAngleFile))
+  }
+
+  # if analog compass is used, must have analog compass coords
+  analogCompassFile <- make_path(dir, .files$analog.compass)
+  analogCompassCoordFile <- make_path(dir, .files$analog.compass.coord)
+  if ( file.exists(analogCompassFile) ) {
+    assert_that(file.exists(analogCompassCoordFile))
+  }
+
+
   # get options
   # wether the camera is looking up or down on the chamber
   looking_up <- getOption("disc.looking_up")
@@ -23,7 +43,7 @@ disc_correct <- function(dir, verbose=FALSE, ...) {
   #--------------------------------------------------------------------------
   if (verbose) { disc_message("read and process larvae tracks") }
 
-  t <- read.csv(make_path(dir, .files$tracks))
+  t <- read.csv(tracksFile)
 
   # suppress duplicate positions (two positions recorded for the same frame)
   # there should not be any but this can happen with the manual tracking plugin not working properly
@@ -44,17 +64,13 @@ disc_correct <- function(dir, verbose=FALSE, ...) {
   #--------------------------------------------------------------------------
   if (verbose) { disc_message("read and process compass log") }
 
-  digitalCompassFile <- make_path(dir, .files$digital.compass)
-  analogCompassFile <- make_path(dir, .files$analog.compass)
-  analogCompassCoordFile <- make_path(dir, .files$analog.compass.coord)
-
   # read compass record
   # it can either be a record from the numerical compass or from the backup, physical compass
   if ( file.exists(digitalCompassFile) ) {
     if (verbose) { disc_message("using digital compass") }
 
     # read camera compass angle
-    cameraCompassAngle <- as.bearing(dget(make_path(dir, .files$camera.compass.angle)))
+    cameraCompassAngle <- as.bearing(dget(cameraCompassAngleFile))
 
     # read digital compass log
     compassLog <- read.csv(digitalCompassFile)
