@@ -256,11 +256,12 @@ polar <- function(...) {
 #' @param x vector of angles (potentially of class circular). Assumed to be in degrees and within [0,360]
 # TODO relax this assumption
 #' @param bin bin width in degrees
+#' @param ... passed to \code{geom_point}
 #'
 #' @export
 #' @importFrom plyr round_any count adply
 #' @import ggplot2
-circular_dotplot <- function(x, bin=5) {
+circular_dotplot <- function(x, bin=5, ...) {
   # bin angles
   xB <- as.numeric(round_any(x, bin))
   xB[xB==360] <- 0
@@ -277,7 +278,7 @@ circular_dotplot <- function(x, bin=5) {
   d$count <- 10 + d$count
 
   p <- ggplot(d) +
-  	geom_point(aes(x=x, y=count)) +
+  	geom_point(aes(x=x, y=count), ...) +
     scale_y_continuous(limits=c(0, max(d$count))) +
   	polar()
 

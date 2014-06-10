@@ -3,13 +3,15 @@
 \alias{circular_dotplot}
 \title{Circular dotplot}
 \usage{
-circular_dotplot(x, bin = 5)
+circular_dotplot(x, bin = 5, ...)
 }
 \arguments{
   \item{x}{vector of angles (potentially of class
   circular). Assumed to be in degrees and within [0,360]}
 
   \item{bin}{bin width in degrees}
+
+  \item{...}{passed to \code{geom_point}}
 }
 \description{
 Circular dotplot
