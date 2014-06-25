@@ -107,11 +107,11 @@ disc_split_deployments <- function(raw, ids=NULL, acclimation.time=5, observatio
   # split into deployments
   log <- join(deployLog, legLog, by="leg")
   d_ply(log, ~deployId, function(x) {
-    message("Extracting deployment ", x$deployId)
 
     # create the deployment folder
     deployDir <- str_c(dest, "/", x$deployId)
     dir.create(deployDir, showWarnings=FALSE, recursive=TRUE)
+    message("Extracting to ", deployDir)
     # TODO check the existence and warn about overwrite
 
     # get start and stop time
@@ -164,7 +164,6 @@ disc_split_deployments <- function(raw, ids=NULL, acclimation.time=5, observatio
   })
 
   message("\nDone")
-  message("Deployments are in ", dest)
 
   return(invisible(dest))
 }
