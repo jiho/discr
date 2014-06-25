@@ -17,7 +17,7 @@ disc_conf <- function(..., file="disc.conf", verbose=FALSE) {
     aquarium = "0,0,200,200",
     diameter = 20,
     java_memory = 1024,
-    storage_directory = "",
+    # storage_directory = "",
     looking_up = TRUE
   )
   class(defaults) <- c("disc_conf", "list")
