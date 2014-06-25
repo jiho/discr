@@ -46,7 +46,7 @@ disc_status <- function(dir=NULL) {
     # TODO detect all files ending with log to give info on which deployments have what
 
     # test the existence of data files
-    calib   <- file.exists(make_path(dir, i, .files$coord.aquarium))
+    calib   <- file.exists(make_path(dir, i, .files$aquarium.coord))
     track   <- file.exists(make_path(dir, i, .files$tracks))
     correct <- file.exists(make_path(dir, i, .files$rotated.tracks))
     stats   <- file.exists(make_path(dir, i, .files$stats))
