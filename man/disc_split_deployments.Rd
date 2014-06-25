@@ -18,18 +18,13 @@ disc_split_deployments(raw, ids = NULL, acclimation.time = 5,
 
   \item{observation.time}{duration of the observation
   period (after acclimation) in minutes.}
+
+  \item{width}{width to resize the images to, in pixels.
+  When NULL, images are not resized.}
 }
 \description{
 Read the deployment logs, read necessary data in the raw
 data directory, split data into folders per deployment,
 based on date and time
-}
-\details{
-The csv file with the deployment log. Should have, at
-least, columns named 'id', 'start_date', 'start_time',
-'stop_date', 'stop_time'. Date should be formatted as
-YYYY-MM-DD and time as HH:MM:SS. Start date and time are
-when the DISC is beginning to being lowered in the water.
-Stop date and time are when the DISC is back on the boat.
 }
 
