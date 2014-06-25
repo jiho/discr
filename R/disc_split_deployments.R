@@ -6,9 +6,7 @@
 #' @param ids deployment identifiers to extract; if NULL (the default) get all deployments
 #' @param acclimation.time duration of the acclimation time in minutes.
 #' @param observation.time duration of the observation period (after acclimation) in minutes.
-#'
-#' @details The csv file with the deployment log. Should have, at least, columns named 'id', 'start_date', 'start_time', 'stop_date', 'stop_time'. Date should be formatted as YYYY-MM-DD and time as HH:MM:SS. Start date and time are when the DISC is beginning to being lowered in the water. Stop date and time are when the DISC is back on the boat.
-# TODO rewrite documentation and requirements in terms of log sheets
+#' @param width width to resize the images to, in pixels. When NULL, images are not resized.
 #'
 #' @export
 #' @importFrom stringr str_detect str_split_fixed str_c
@@ -151,9 +149,12 @@ disc_split_deployments <- function(raw, ids=NULL, acclimation.time=5, observatio
           dc$file <- str_c(picsDir, "/", dc$imgNb, ".jpg")
           registerDoParallel(detectCores()-1)
           a_ply(dc, 1, function(x) {
-            system(str_c("convert -resize 1920x1280 \"", x$origFile, "\" \"", x$file, "\""))
+            if (is.null(width)) {
+              file.copy(x$origFile, x$file)
+            } else {
+              system(str_c("convert -resize ", width,"x \"", x$origFile, "\" \"", x$file, "\""))
+            }
           }, .parallel=TRUE)
-          # file.copy(dc$fileName, picsDir)
         }
 
         # write the selected portion of the data to the deployment folder
