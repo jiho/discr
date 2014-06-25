@@ -219,6 +219,7 @@ circ.stats <- function(x) {
 # Set the x scale appropriately for the given template
 # template    "geographics" (for bearings) or "none" (for trigonometric angles)
 # @importFrom ggplot2 scale_x_continuous
+# @export
 scale_x_circular <- function(template=c("geographics", "none")) {
   template <- match.arg(template)
 
@@ -246,6 +247,7 @@ scale_x_circular <- function(template=c("geographics", "none")) {
 # Set polar coordinates
 # ... passed to scale_x_circular to set the template
 # @importFrom ggplot2 coord_polar
+# @export
 polar <- function(...) {
   list(coord_polar(theta="x"), scale_x_circular(...))
 }
