@@ -38,11 +38,12 @@ guess_os <- function() {
 # @param url link to point the user to when the executable is absent
 # @param package name of the package usually providing this exectuable, used to indicate how to install the software when url is not provided
 # @param notes further notes appended to the error message
-# @param ... passed to stop()
+# @param error.out \code{check_exec()} emits a warning by default but produces an error when this is true
+# @param ... passed to \code{warning()}
 #
 #' @keywords internal
 #' @importFrom stringr str_c
-check_exec <- function(exec, url="", package=exec, notes="", ...) {
+check_exec <- function(exec, url="", package=exec, notes="", error.out=FALSE, ...) {
 
   # find where the executable is installed
   exePath <- Sys.which(exec)
@@ -71,8 +72,18 @@ check_exec <- function(exec, url="", package=exec, notes="", ...) {
       }
     }
 
-    # in all cases, error-out while giving a (hopefully) informative message
-    stop(exec, " is missing\n", install, "\n", notes, ...)
+    # in all cases, give a (hopefully) informative message
+    # either as an error or as an immediate warning
+    warnOption <- getOption("warn")
+    if ( error.out ) {
+      options("warn"=2)
+    } else {
+      options("warn"=1)
+    }
+    warning(exec, " is missing\n", install, "\n", notes, ...)
+    options("warn"=warnOption)  # reset it to what it was
+  } else {
+    message(str_c(exec, " executable found"))
   }
 
   # return the full path to the executable
