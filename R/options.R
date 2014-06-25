@@ -20,7 +20,7 @@ disc_conf <- function(..., file="disc.conf", verbose=FALSE) {
     storage_directory = "",
     looking_up = TRUE
   )
-  class(defaults) <- c("disc.settings", "list")
+  class(defaults) <- c("disc_conf", "list")
 
   # get settings from the project configuration file
   wd <- disc_getwd()
@@ -74,8 +74,9 @@ disc_conf <- function(..., file="disc.conf", verbose=FALSE) {
 #' @export
 dconf <- disc_conf
 
-#' @keywords internal
-print.disc.settings <- function(x) {
+#' @rdname disc_conf
+#' @export
+print.disc_conf <- function(x) {
   n <- names(x)
   for (i in 1:length(x)) {
     cat("  ", n[i], " : ", x[[i]], "\n", sep="")
