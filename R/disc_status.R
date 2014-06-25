@@ -1,15 +1,19 @@
 #' Status of the working directory
 #'
-#' Give information about deployments in the working directory (number of pictures, metadata files, data files, etc.)
+#' Give information about deployments (number of pictures, metadata files, data files, etc.)
 #'
-#' @param dir path to the working directory. Read from the option \code{disc.wd} by default.
+#' @param dir path to the deployments directory. Assumed to be in the working directory by default.
 #'
 #' @seealso \code{\link{disc_setwd}} to set the working directory option.
 #' @export
 #' @importFrom plyr ldply
-disc_status <- function(dir=disc_getwd()) {
+disc_status <- function(dir=NULL) {
 
-  if (!file.exists(dir)) {
+  if ( is.null(dir) ) {
+    dir <- make_path(disc_getwd(), "deployments")
+  }
+
+  if ( ! file.exists(dir) ) {
     stop("Cannot find ", dir)
   }
   message(dir)
