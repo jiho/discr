@@ -3,17 +3,12 @@
 \alias{disc_split_deployments}
 \title{Get data for deployments}
 \usage{
-disc_split_deployments(raw, dest = disc_getwd(), ids = NULL,
-  acclimation.time = 5, observation.time = 15)
+disc_split_deployments(raw, ids = NULL, acclimation.time = 5,
+  observation.time = 15, width = 1600)
 }
 \arguments{
   \item{raw}{path to the directory where the raw data and
   the deployment and daily logs are.}
-
-  \item{dest}{path to destination directory, where
-  deployment folders will be stored. Will be created if it
-  does not exist. Is set to discuss working directory by
-  default.}
 
   \item{ids}{deployment identifiers to extract; if NULL
   (the default) get all deployments}

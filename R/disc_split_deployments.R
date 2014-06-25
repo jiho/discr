@@ -3,7 +3,6 @@
 #' Read the deployment logs, read necessary data in the raw data directory, split data into folders per deployment, based on date and time
 #'
 #' @param raw path to the directory where the raw data and the deployment and daily logs are.
-#' @param dest path to destination directory, where deployment folders will be stored. Will be created if it does not exist. Is set to discuss working directory by default.
 #' @param ids deployment identifiers to extract; if NULL (the default) get all deployments
 #' @param acclimation.time duration of the acclimation time in minutes.
 #' @param observation.time duration of the observation period (after acclimation) in minutes.
@@ -17,7 +16,7 @@
 #' @importFrom parallel detectCores
 #' @importFrom doParallel registerDoParallel
 #' @importFrom tools file_ext
-disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation.time=5, observation.time=15) {
+disc_split_deployments <- function(raw, ids=NULL, acclimation.time=5, observation.time=15, width=1600) {
 
   # TODO Use .file for file names
 
@@ -57,6 +56,9 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
     legLog[,col][is.na(legLog[,col])] <- 0
   }
 
+
+  # set destination directory
+  dest <- make_path(disc_getwd(), "deployments")
 
   # if no deployment id is specified, keep them all
   if ( is.null(ids) ) {

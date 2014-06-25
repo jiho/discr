@@ -9,7 +9,7 @@
 assemble <- function(pattern, ids=NULL, verbose=FALSE) {
 
   # get working directory
-  wd <- disc_getwd()
+  wd <- make_path(disc_getwd(), "deployments")
   # TODO also make it possible to set it in the arguments (but requires to check for existence etc in that case)
 
   # get/set disc options
