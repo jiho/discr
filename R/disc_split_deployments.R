@@ -26,7 +26,7 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
   # soffice --headless --convert-to csv test.ods
 
   # read the logs
-  dailyLog <- read.csv(str_c(raw, "/daily_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
+  legLog <- read.csv(str_c(raw, "/leg_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
   deployLog <- read.csv(str_c(raw, "/deployment_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
   if ( any(duplicated(deployLog$deployId)) ) {
     stop("Deployment ids need to be unique. Check you deployment log")
@@ -35,8 +35,8 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
 
 
   # detect sensors
-  # sensors are specified in the dailyLog in the form "sensor name"_"info category"
-  colNames <- names(dailyLog)
+  # sensors are specified in the legLog in the form "sensor name"_"info category"
+  colNames <- names(legLog)
   sensorColumns <- colNames[str_detect(colNames, "_")]
   sensorInfo <- str_split_fixed(sensorColumns, "_", 2)
   sensors <- unique(sensorInfo[,1])
@@ -45,16 +45,16 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
   # fill the missing infos with defaults
   # make sure all columns are present (and fill the missing ones with NA)
   allSensorColumns <- str_c(rep(sensors, each=length(infos)), infos, sep="_")
-  dailyLog[,setdiff(allSensorColumns, names(dailyLog))] <- NA
+  legLog[,setdiff(allSensorColumns, names(legLog))] <- NA
   # if the folder is not provided, use the name of the sensor
   for (sensor in sensors) {
-    col <- str_c(sensor, "_folder")
-    dailyLog[,col][is.na(dailyLog[,col])] <- sensor
+    col <- str_c(sensor, "_dir")
+    legLog[,col][is.na(legLog[,col])] <- sensor
   }
   # if the offset is not provided, set it to 0
   for (sensor in sensors) {
     col <- str_c(sensor, "_offset")
-    dailyLog[,col][is.na(dailyLog[,col])] <- 0
+    legLog[,col][is.na(legLog[,col])] <- 0
   }
 
 
@@ -65,7 +65,7 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
 
   # select appropriate deployment ids and corresponding logs
   deployLog <- deployLog[deployLog$deployId %in% ids,]
-  dailyLog <- dailyLog[dailyLog$leg %in% deployLog$leg,]
+  legLog <- legLog[legLog$leg %in% deployLog$leg,]
 
 
   # for all sensors, read the data for the appropriate legs and correct the time stamps
@@ -74,17 +74,17 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
     message("\n  ", format(sensor, width=10), appendLF=FALSE)
 
     # read the data per leg because there is a time shift to be done per leg
-    D <- ddply(dailyLog, ~leg, function(dl) {
+    D <- ddply(legLog, ~leg, function(dl) {
       cat(".")
       # get the folder in which the data is
-      sensorFolderName <- dl[,str_c(sensor,"_folder")]
-      dataFolder <- str_c(raw, "/", dl$leg, "/", sensorFolderName)
+      sensorDirName <- dl[,str_c(sensor,"_dir")]
+      dataDir <- str_c(raw, "/", dl$leg, "/", sensorDirName)
 
-      if ( file.exists(dataFolder) ) {
+      if ( file.exists(dataDir) ) {
         # read the data in the folder using the appropriate method
         # the method needs to be defined for each sensor, by the user
-        class(dataFolder) <- sensor
-        d <- disc_read(dataFolder)
+        class(dataDir) <- sensor
+        d <- disc_read(dataDir)
 
         # shift the time by the offset for this sensor
         # if the offset is not provided, do not shift anything
@@ -105,7 +105,7 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
   names(D) <- sensors
 
   # split into deployments
-  log <- join(deployLog, dailyLog, by="leg")
+  log <- join(deployLog, legLog, by="leg")
   d_ply(log, ~deployId, function(x) {
     message("Extracting deployment ", x$deployId)
 
@@ -139,11 +139,11 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
       if (n > 1) {
         # get the folder name in which the data was
         # by convention, pictures are in "pics", compass data is in "compass"
-        sensorFolderName <- x[,str_c(sensor, "_folder")]
+        sensorDirName <- x[,str_c(sensor, "_dir")]
 
         # for pictures, resize the images and number them sequentially
-        if ( sensorFolderName == "pics" ) {
-          picsDir <- str_c(deployDir, "/", sensorFolderName)
+        if ( sensorDirName == "pics" ) {
+          picsDir <- str_c(deployDir, "/", sensorDirName)
           dir.create(picsDir, showWarnings=FALSE)
           dc$imgNb <- 1:nrow(dc)
           dc$file <- str_c(picsDir, "/", dc$imgNb, ".jpg")
@@ -155,7 +155,7 @@ disc_split_deployments <- function(raw, dest=disc_getwd(), ids=NULL, acclimation
         }
 
         # write the selected portion of the data to the deployment folder
-        write.csv(dc, file=str_c(deployDir, "/", sensorFolderName, "_log.csv"), row.names=FALSE)
+        write.csv(dc, file=str_c(deployDir, "/", sensorDirName, "_log.csv"), row.names=FALSE)
       }
     })
   })
