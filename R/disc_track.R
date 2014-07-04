@@ -52,7 +52,7 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
 	if (verbose) disc_message("open stack for tracking")
   # prepare temporary storage
-  larvaTracksFile <- tempfile(fileext="txt")
+  larvaTracksFile <- tempfile(fileext=".txt")
 
 	# Use an ImageJ macro to run everything. The macro proceeds this way
 	# - use Image Sequence to open the stack
