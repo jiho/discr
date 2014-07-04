@@ -4,7 +4,7 @@
 \title{Get data for deployments}
 \usage{
 disc_split_deployments(raw, ids = NULL, acclimation.time = 5,
-  observation.time = 15, width = 1600)
+  observation.time = 15, width = 1600, split.pics = TRUE)
 }
 \arguments{
   \item{raw}{path to the directory where the raw data and
@@ -21,6 +21,12 @@ disc_split_deployments(raw, ids = NULL, acclimation.time = 5,
 
   \item{width}{width to resize the images to, in pixels.
   When NULL, images are not resized.}
+
+  \item{split.pics}{wether to create pictures in the
+  deployments directory. TRUE by default but it can be
+  useful to set it to false to quickly recreate the rest of
+  the metadata (since the pictures are the longest to
+  process)}
 }
 \description{
 Read the deployment logs, read necessary data in the raw
