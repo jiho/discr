@@ -131,6 +131,7 @@ disc_status <- function(dir=NULL) {
 #' @export
 dstatus <- disc_status
 
+#' @export
 print.disc_status <- function(x) {
   x[x==FALSE] <- "x"
   # x[x==TRUE] <- "✔"
