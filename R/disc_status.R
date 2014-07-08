@@ -21,6 +21,12 @@ disc_status <- function(dir=NULL) {
   # list all deployments
   deployments <- list.dirs(dir, full.names=FALSE, recursive=FALSE)
 
+  # sort deployments with numbers first
+  dAsNum <- suppressWarnings(as.numeric(deployments))
+  dAlpha <- deployments[is.na(dAsNum)]
+  dNum <- na.omit(dAsNum)
+  deployments <- c(sort(dNum), sort(dAlpha))
+
   d <- ldply(deployments, function(i) {
 
     # test the existence of video
