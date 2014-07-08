@@ -121,7 +121,7 @@ disc_split_deployments <- function(raw, ids=NULL, acclimation.time=5, observatio
     stopTheoretical <- start + observation.time * 60
     stopRecorded <- parse_date_time(str_c(x$date_stop, " ", x$time_stop), orders="ymd hms")
     if ( stopTheoretical > stopRecorded ) {
-      warning("Deployment ", x$deployId, " was stopped early.")
+      warning("Deployment ", x$deployId, " was stopped early.", call.=FALSE)
       stop <- stopRecorded
     } else {
       stop <- stopTheoretical
