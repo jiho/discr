@@ -3,10 +3,15 @@
 \alias{disc_correct}
 \title{Correct tracks (camera frame of reference) based on rotation of DISC to get polar-relevant coordinates}
 \usage{
-disc_correct(dir, verbose = FALSE, ...)
+disc_correct(dir, camera.compass.angle = NULL, verbose = FALSE, ...)
 }
 \arguments{
   \item{dir}{path the to the deployment directory}
+
+  \item{camera.compass.angle}{angle between the top of the
+  camera and the N of the digital compass. If NULL, should
+  be read from a file named "angle_camera_compass.txt" in
+  the deployment directory}
 
   \item{verbose}{output messages on the console when TRUE}
 

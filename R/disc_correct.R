@@ -1,6 +1,7 @@
 #' Correct tracks (camera frame of reference) based on rotation of DISC to get polar-relevant coordinates
 #'
 #' @param dir path the to the deployment directory
+#' @param camera.compass.angle angle between the top of the camera and the N of the digital compass. If NULL, should be read from a file named "angle_camera_compass.txt" in the deployment directory
 #' @param verbose output messages on the console when TRUE
 #' @param ... passthrough argument
 #'
@@ -9,7 +10,7 @@
 #' @importFrom stringr str_c
 #' @importFrom lubridate ymd_hms
 #' @importFrom plyr join
-disc_correct <- function(dir, verbose=FALSE, ...) {
+disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
 
   disc_message("Correct rotation")
 
@@ -19,9 +20,10 @@ disc_correct <- function(dir, verbose=FALSE, ...) {
   assert_that(file.exists(tracksFile))
 
   # if digital compass is used, must have camera compass angle
+  # either it is given on the command line or it is read from a file
   digitalCompassFile <- make_path(dir, .files$digital.compass)
   cameraCompassAngleFile <- make_path(dir, .files$camera.compass.angle)
-  if ( file.exists(digitalCompassFile) ) {
+  if ( file.exists(digitalCompassFile) & is.null(camera.compass.angle) ) {
     assert_that(file.exists(cameraCompassAngleFile))
   }
 
@@ -70,7 +72,11 @@ disc_correct <- function(dir, verbose=FALSE, ...) {
     if (verbose) { disc_message("using digital compass") }
 
     # read camera compass angle
-    cameraCompassAngle <- as.bearing(dget(cameraCompassAngleFile))
+    if ( is.null(camera.compass.angle) ) {
+      cameraCompassAngle <- as.bearing(dget(cameraCompassAngleFile))      
+    } else {
+      cameraCompassAngle <- camera.compass.angle
+    }
 
     # read digital compass log
     compassLog <- read.csv(digitalCompassFile)
