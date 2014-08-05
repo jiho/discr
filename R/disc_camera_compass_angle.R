@@ -3,6 +3,7 @@
 #' Measure angle of analog compasses on images, use that as a reference, compare it to the digital compass record and deduce the angle between the camera and the digital compass. This is mandatory to use the digital compass to correct the tracks.
 #'
 #' @param dir deployment directory
+#' @param sub subsampling interval, in s
 #' @param verbose output messages on the console when TRUE
 #' @param ... passthrough argument
 #'
@@ -12,7 +13,7 @@
 #' @importFrom stringr str_c
 #' @importFrom assertthat assert_that
 #' @importFrom circular mean.circular angular.deviation
-disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
+disc_camera_compass_angle <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
   disc_message("Camera / compass angle")
 
@@ -20,13 +21,30 @@ disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
   picsDir <- make_path(dir, .files$pictures)
   assert_that(file.exists(picsDir))
 
+  picsFile <- make_path(dir, str_c(.files$pictures, "_log.csv"))
+  assert_that(file.exists(picsFile))
+
   pics <- list.files(picsDir, pattern=glob2rx("*.jpg"))
   assert_that(not_empty(pics))
 
+  # Determine sub-sampling rate, if any
+  # compute interval between images
+  picsData <- read.csv(picsFile)
+  interval <- mean(as.numeric(diff(picsData$dateTime)))
 
-  # open every n images in the folder and manually measure the compass angle on each
+  # compute the subsampling rate
+  if ( is.null(sub) ) {
+    subN <- 1
+  } else {
+    subN <- round(sub / interval)
+    # one image every subN will give an interval of sub seconds, approximately
+    if (verbose) {
+      disc_message("subsample at ", round(subN * interval, 2), " seconds, on average")
+    }
+  }
+
+  # open every subN images in the folder and manually measure the compass angle on each
   # save the results to a temporary file
-  n <- 100
   compassAngleFile <- tempfile()
 
 	if ( verbose ) disc_message("opening images for compass angle detection")
@@ -35,7 +53,7 @@ disc_camera_compass_angle <- function(dir, verbose=FALSE, ...) {
   command <- str_c(
     "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discuss"),
     " -ijpath ", system.file("ij/", package="discuss"), " -eval \"",
-    " run('Image Sequence...', 'open=", picsDir, " number=-1 starting=1 increment=", n, " scale=100 file=[] or=[] sort');",
+    " run('Image Sequence...', 'open=", picsDir, " number=-1 starting=1 increment=", subN, " scale=100 file=[] or=[] sort');",
     " run('Measure Angle', '');",
     # " run('Compile and Run...', 'compile=", system.file("ij/", package="discuss"),"/plugins/Measure_Angle.java');",
     " waitForUser('Compass detect',",

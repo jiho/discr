@@ -3,10 +3,12 @@
 \alias{disc_camera_compass_angle}
 \title{Measure angle between camera and compass}
 \usage{
-disc_camera_compass_angle(dir, verbose = FALSE, ...)
+disc_camera_compass_angle(dir, sub = NULL, verbose = FALSE, ...)
 }
 \arguments{
   \item{dir}{deployment directory}
+
+  \item{sub}{subsampling interval, in s}
 
   \item{verbose}{output messages on the console when TRUE}
 
