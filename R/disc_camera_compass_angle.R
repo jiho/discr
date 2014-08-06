@@ -84,7 +84,7 @@ disc_camera_compass_angle <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
   # get the capture time of the images on which the angle was measured
   # compute all images that were displayed
-  imgsNumbers <- seq(from=1, to=length(pics), by=n)
+  imgsNumbers <- seq(from=1, to=length(pics), by=subN)
   # restrict to those on which the heading was measured
   imgsNumbers <- imgsNumbers[cameraMeanHeadings$Slice]
   # get the corresponding times
