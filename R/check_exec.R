@@ -1,34 +1,3 @@
-# Guess the operating system
-#
-#' @importFrom stringr str_detect
-guess_os <- function() {
-
-  if ( .Platform$OS.type == "unix" ) {
-    # find more info about the OS from the command line
-    os <- tolower(system("uname -a", intern=TRUE, ignore.stderr=TRUE))
-
-    if ( str_detect(os, "darwin") ) {
-      os <- "mac"
-
-    # try to discriminate through a variety of linux OSes
-    } else if ( any(str_detect(os, c("ubuntu", "debian"))) ) {
-      os <- "debian-like"
-    } else if ( any(str_detect(os, c("red", "rhel", "fedora"))) ) {
-      os <- "redhat-like"
-    } else if ( any(str_detect(os, c("suse", "slse"))) )
-      os <- "suse-like"
-    else {
-      os <- "other unix"
-    }
-
-  } else {
-    os <- "windows"
-  }
-
-  return(os)
-}
-
-
 # Check the existence of an executable
 #
 # Check that a given executable can be found in the path and return its full path. If it cannot be found, provide some installation instructions
@@ -86,42 +55,4 @@ check_exec <- function(exec, url="", package=exec, notes="", error.out=FALSE, ..
 
   # return the full path to the executable
   return(invisible(exePath))
-}
-
-
-# Check the exit status of a command (typically run through \code{system})
-#
-# @param status status code, usually an integer
-# @param message a character string with the message to print
-# @param ... passed to \code{stop()}
-check_status <- function(status, message="discuss error or unexpected termination", ...) {
-  if ( status != 0 ) {
-    stop(message, call.=FALSE)
-  }
-
-  return(invisible(status))
-}
-
-
-# Create a valid path from one or several path elements
-#
-# @param ... elements to be coerced as character strings and pasted together to make a path
-make_path <- function(...) {
-
-  # get all arguments
-  args <- list(...)
-
-  # paste them together
-  nArgs <- length(args)
-  path <- args[[1]]
-  if (nArgs > 1) {
-    for (i in 2:nArgs) {
-      path <- paste(path, args[[i]], sep="/")
-    }
-  }
-
-  # make sure the path is valid and clean (perform path expansion, remove repeated path separators, etc.)
-  path <- normalizePath(path, winslash="/", mustWork=FALSE)
-
-  return(path)
 }
