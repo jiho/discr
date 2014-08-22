@@ -3,7 +3,7 @@
 \alias{assemble}
 \title{Assemble data of a given kind from several deployments}
 \usage{
-assemble(pattern, ids = NULL, verbose = FALSE)
+assemble(pattern, ids = NULL)
 }
 \arguments{
   \item{pattern}{pattern to look for in the file name;

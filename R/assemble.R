@@ -6,7 +6,7 @@
 #' @export
 #' @importFrom plyr adply laply
 #' @importFrom stringr str_c str_split
-assemble <- function(pattern, ids=NULL, verbose=FALSE) {
+assemble <- function(pattern, ids=NULL) {
 
   # get working directory
   wd <- make_path(disc_getwd(), "deployments")
@@ -32,7 +32,7 @@ assemble <- function(pattern, ids=NULL, verbose=FALSE) {
   # TODO check all are CSV
 
   # get data from these files
-  d <- adply(files, 1, read.csv, stringsAsFactors=FALSE, .inform=verbose)
+  d <- adply(files, 1, read.csv, stringsAsFactors=FALSE, .inform=TRUE)
 
   # identify each deployment
   # by ID (extract it from the file name, as the "before-the-last" element)
