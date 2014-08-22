@@ -96,7 +96,10 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
 
     if (verbose) { disc_message("using analog compass") }
 
-    stop("Not implemented yet")
+    # read analog compass log
+    compassLog <- read.csv(analogCompassFile)
+    compassLog$dateTime <- ymd_hms(compassLog$dateTime)
+    # NB: the upside-down orientation of the DISC is already taken into account here, and the cameraHeading column is already computed.
 
   } else {
 

@@ -17,7 +17,7 @@ disc <- function(ids=NULL, actions=c("calibrate", "track", "correct", "stats"), 
   disc_conf()
 
   # get actions
-  actions <- match.arg(actions, choices=c("camera compass angle", "calibrate", "track", "correct",  "stats"), several.ok=TRUE)
+  actions <- match.arg(actions, choices=c("camera compass angle", "calibrate", "track", "compass", "track compass", "correct",  "stats"), several.ok=TRUE)
 
   # check ids
   existingDeployments <- list.dirs(wd, full.names=FALSE, recursive=FALSE)
@@ -42,6 +42,9 @@ disc <- function(ids=NULL, actions=c("calibrate", "track", "correct", "stats"), 
       }
       if ("calibrate" %in% actions) {
         try(disc_calibrate(dir=dir, ...))
+      }
+      if (any(c("compass", "track compass") %in% actions)) {
+        try(disc_track_compass(dir=dir, ...))
       }
       if ("track" %in% actions) {
         try(disc_track(dir=dir, ...))
