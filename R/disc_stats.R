@@ -107,7 +107,7 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
 
 
   # positions
-  sub <- str_c(round(stats$mean), "º (r=", round(stats$r, 3), ", p=", round(stats$p.value, 3), ")", collapse=" | ")
+  sub <- str_c(round(stats$mean), "\u00B0 (r=", round(stats$r, 3), ", p=", round(stats$p.value, 3), ")", collapse=" | ")
   posTitle <- bquote(atop(Positions, scriptstyle(.(sub))))
 
 
