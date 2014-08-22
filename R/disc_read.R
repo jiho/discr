@@ -13,7 +13,8 @@
 #' @return
 #' A data.frame with a columns \code{dateTime} and other columns that depend on the sensor
 #' @importFrom plyr rename
-#' @importFrom plyr arrange
+#' @importFrom dplyr arrange
+#' @importFrom dplyr select
 #' @importFrom stringr str_c
 #' @importFrom lubridate parse_date_time
 disc_read <- function(dir, ...) {
@@ -38,7 +39,7 @@ disc_read.gt31 <- function(dir, ...) {
   d$dateTime <- parse_date_time(d$dateTime, orders="dmy hms", quiet=TRUE)
 
   # keep only relevant data
-  d <- select_columns(d, c("dateTime", "lon", "lat"))
+  d <- select(d, dateTime, lon, lat)
 
   return(d)
 }
@@ -55,9 +56,9 @@ disc_read.igotu <- function(dir, ...) {
 
   d$dateTime <- str_c(d$Date, " ", d$Time)
   d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
-  d <- remove_columns(d, c("Date", "Time"))
+  d <- select(d, -Date, -Time)
 
-  d <- reorder_columns(d, c("dateTime", "lon", "lat"))
+  d <- select(d, dateTime, lon, lat)
 
   # sort by time
   d <- arrange(d, dateTime)
@@ -76,9 +77,9 @@ disc_read.trackstick <- function(dir, ...) {
   d <- rename(d, c("Latitude"="lat", "Longitude"="lon"))
 
   d$dateTime <- parse_date_time(d$Date, orders="m/d/Y H:M", quiet=TRUE)
-  d <- remove_columns(d, "Date")
+  d <- select(d, -Date)
 
-  d <- reorder_columns(d, c("dateTime", "lon", "lat"))
+  d <- select(d, dateTime, lon, lat)
 
   # sort by time
   d <- arrange(d, dateTime)
@@ -104,9 +105,9 @@ disc_read.dst <- function(dir, ...) {
 
   d$dateTime <- str_c(d$date, " ", d$time)
   d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms")
-  d <- remove_columns(d, c("date", "time"))
+  d <- select(d, -date, -time)
 
-  d <- reorder_columns(d, c("dateTime", "depth", "temperature"))
+  d <- select(d, dateTime, depth, temperature)
 
   # sort by time
   d <- arrange(d, dateTime)
@@ -116,7 +117,7 @@ disc_read.dst <- function(dir, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.opentag <- function(dir, ...) {
+disc_read.ctd_opentag <- function(dir, ...) {
   # file <- "inst/tests/ctd_opentag_sample.csv"
 
   d <- read.csv(file, stringsAsFactors=FALSE)
@@ -127,10 +128,9 @@ disc_read.opentag <- function(dir, ...) {
   d$dateTime <- str_c(d$FileDate, d$FileTime, sep=" ")
   d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms", quiet=TRUE)
   d$dateTime <- d$dateTime + d$Time.from.Start..s.
-  d <- remove_columns(d, c("FileDate", "FileTime", "Time.from.Start..s.", "X"))
-  # NB: the X column is empty and useless
+  d <- select(d, -FileDate, -FileTime, -Time.from.Start..s.)
 
-  d <- reorder_columns(d, c("dateTime", "depth", "temperature"))
+  d <- select(d, dateTime, depth, temperature)
 
   # sort by time
   d <- arrange(d, dateTime)
@@ -153,7 +153,7 @@ disc_read.ez <- function(dir, ...) {
 
   d$dateTime <- NA
 
-  d <- reorder_columns(d, c("dateTime", "heading"))
+  d <- select(d, dateTime, heading)
 
   # sort by time
   d <- arrange(d, dateTime)
@@ -175,7 +175,7 @@ disc_read.remora <- function(dir, ...) {
   d$dateTime <- parse_date_time(d$dateTime, orders="d-b-Y H:M:S", locale="en_US.UTF-8", quiet=TRUE)
   # NB: force english locale to make sure the month name is properly recognized
 
-  # d <- reorder_columns(d, c("dateTime", "heading"))
+  d <- select(d, dateTime, heading)
 
   # sort by time
   d <- arrange(d, dateTime)
@@ -185,7 +185,7 @@ disc_read.remora <- function(dir, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.opentag <- function(dir, ...) {
+disc_read.compass_opentag <- function(dir, ...) {
   # file <- "inst/tests/compass_opentag_sample.csv"
 
   # read and subsample the data (because we don't need one reading every millisecond)
@@ -200,11 +200,10 @@ disc_read.opentag <- function(dir, ...) {
   d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms", quiet=TRUE)
   options(digits.secs=3)
   d$dateTime <- d$dateTime + d$Time.from.Start..s.
-  d <- remove_columns(d, c("FileDate", "FileTime", "Time.from.Start..s.", "X"))
-  # NB: the X column is empty and useless
+  d <- select(d, -FileDate, -FileTime, -Time.from.Start..s.)
   # TODO compute the heading from the magnetic recordings etc.
 
-  d <- reorder_columns(d, c("dateTime"))
+  d <- select(d, dateTime, heading)
 
   # sort by time
   d <- arrange(d, dateTime)
@@ -225,7 +224,7 @@ disc_read.cc <- function(dir, ...) {
   d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
 
   # keep only relevant data
-  d <- remove_columns(d, "junk")
+  d <- select(d, -junk)
 
   return(d)
 }

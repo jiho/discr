@@ -2,13 +2,14 @@
 \name{disc_read}
 \alias{disc_read}
 \alias{disc_read.cc}
+\alias{disc_read.compass_opentag}
+\alias{disc_read.ctd_opentag}
 \alias{disc_read.dst}
 \alias{disc_read.ez}
 \alias{disc_read.gopro}
 \alias{disc_read.gt31}
 \alias{disc_read.hobo}
 \alias{disc_read.igotu}
-\alias{disc_read.opentag}
 \alias{disc_read.remora}
 \alias{disc_read.trackstick}
 \title{Raw data read}
@@ -23,13 +24,13 @@ disc_read(dir, ...)
 
 \method{disc_read}{dst}(dir, ...)
 
-\method{disc_read}{opentag}(dir, ...)
+\method{disc_read}{ctd_opentag}(dir, ...)
 
 \method{disc_read}{ez}(dir, ...)
 
 \method{disc_read}{remora}(dir, ...)
 
-\method{disc_read}{opentag}(dir, ...)
+\method{disc_read}{compass_opentag}(dir, ...)
 
 \method{disc_read}{cc}(dir, ...)
 
