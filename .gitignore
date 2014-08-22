@@ -1,6 +1,4 @@
 # binary java stuff
 # *.jar
-# R stuff
-.Rproj.user
-.Rhistory
-.RData
+# work in progress
+scratch/*
