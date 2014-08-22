@@ -24,7 +24,7 @@ disc_check <- function() {
 
   # check_exec("rsync")
 
-  check_exec("exifo")
+  check_exec("exif")
 
   check_exec("convert", package="imagemagick")
 
