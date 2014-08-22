@@ -52,6 +52,7 @@ as.angle <- function(x) {
   return(x)
 }
 
+#' @rdname angles
 #' @export
 #' @importFrom circular circularp circularp<-
 from.below <- function(x) {

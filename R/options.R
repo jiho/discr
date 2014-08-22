@@ -76,7 +76,8 @@ dconf <- disc_conf
 
 #' @rdname disc_conf
 #' @export
-print.disc_conf <- function(x) {
+#' @keywords internal
+print.disc_conf <- function(x, ...) {
   n <- names(x)
   for (i in 1:length(x)) {
     cat("  ", n[i], " : ", x[[i]], "\n", sep="")

@@ -138,7 +138,8 @@ disc_status <- function(dir=NULL) {
 dstatus <- disc_status
 
 #' @export
-print.disc_status <- function(x) {
+#' @keywords internal
+print.disc_status <- function(x, ...) {
   x[x==FALSE] <- "x"
   # x[x==TRUE] <- "✔"
   x[x==TRUE] <- "."

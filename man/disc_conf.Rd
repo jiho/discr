@@ -9,7 +9,7 @@ disc_conf(..., file = "disc.conf", verbose = FALSE)
 
 dconf(..., file = "disc.conf", verbose = FALSE)
 
-\method{print}{disc_conf}(x)
+\method{print}{disc_conf}(x, ...)
 }
 \arguments{
   \item{...}{named arguments with settings to set}
@@ -32,4 +32,5 @@ accessible from any other function in discuss. Finally, the
 non-default settings are stored in \code{file} in the
 project directory.
 }
+\keyword{internal}
 

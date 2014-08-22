@@ -4,6 +4,7 @@
 \alias{as.angle}
 \alias{as.bearing}
 \alias{as.trig}
+\alias{from.below}
 \title{Set or convert angles between conventions}
 \usage{
 as.bearing(x)
@@ -11,6 +12,8 @@ as.bearing(x)
 as.trig(x)
 
 as.angle(x)
+
+from.below(x)
 }
 \arguments{
   \item{x}{vector of angles; either as numbers, in which
