@@ -17,6 +17,7 @@
 #' y <- c(0, pi/2)
 #' approx_circular(x=x, angles=y, xout=c(0, .5, 1))
 #'
+#' library("circular")
 #' y <- circular(c(0, 90), template="geographics", units="degrees")
 #' approx_circular(x=x, angles=y, xout=c(0, .5, 1))
 #'

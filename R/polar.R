@@ -11,6 +11,7 @@
 #' @seealso \code{\link[circular]{circular}} and \code{\link[ggplot2]{scale_x_continuous}}
 #'
 #' @examples
+#' library("ggplot2")
 #' d <- data.frame(x=runif(10, 0, 360), y=runif(10))
 #' ggplot(d) + geom_point(aes(x=x, y=y)) 
 #' ggplot(d) + geom_point(aes(x=x, y=y)) + polar() 
