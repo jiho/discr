@@ -184,6 +184,7 @@ approx.circular <- function(x, angles, xout, ...) {
 #' @export
 #'
 #' @importFrom circular is.circular mean.circular rayleigh.test
+# TODO rename to summary.circular if not already taken
 circ.stats <- function(x) {
 
   # check the class of angles
