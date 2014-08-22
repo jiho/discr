@@ -87,7 +87,7 @@ check_exec <- function(exec, url="", package=exec, notes="", error.out=FALSE, ..
   }
 
   # return the full path to the executable
-  return(exePath)
+  return(invisible(exePath))
 }
 
 
