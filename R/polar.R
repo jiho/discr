@@ -5,7 +5,7 @@
 #' @param template "geographics" for bearings, "none" or "trigonometrics" for trigonometric angles; can be abbreviated
 #' @param ... passed to \code{\link[ggplot2]{scale_x_continuous}}
 #'
-#' @importFrom ggplot2 coord_polar
+#' @import ggplot2
 #' @export
 #'
 #' @seealso \code{\link[circular]{circular}} and \code{\link[ggplot2]{scale_x_continuous}}
@@ -21,7 +21,7 @@ polar <- function(template="geographics", ...) {
   list(coord_polar(theta="x"), scale_x_circular(template=template, ...))
 }
 
-#' @importFrom ggplot2 scale_x_continuous
+#' @import ggplot2
 #' @export
 #' @rdname polar
 scale_x_circular <- function(template="geographics", ...) {
