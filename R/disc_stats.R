@@ -48,7 +48,7 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
     }
 
     # compute position statistics
-    stats <- circ.stats(x$theta)
+    stats <- summary.circular(x$theta)
 
     return(stats)
   })
