@@ -21,29 +21,3 @@ image_time <- function(img, tz="UTC") {
 
   return(dateTime)
 }
-
-
-# Compute the average interval in full seconds between provided images
-#
-# @param img vector of full paths to images
-#' @keywords internal
-image_interval <- function(img) {
-
-  if ( sum(file.exists(img)) >= 2 ) {
-    # detect image times
-    times <- image_time(img)
-
-    # compute intervals in seconds
-    intervals <- diff(times)
-    units(intervals) <- "secs"
-
-    # compute mean interval in whole seconds
-    interval <- as.integer( round( mean(intervals) ) )
-
-  } else {
-    warning("At least two images are needed to compute a time interval")
-    interval <- NULL
-  }
-
-  return(interval)
-}
