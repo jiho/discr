@@ -4,36 +4,48 @@
 \alias{as.angle}
 \alias{as.bearing}
 \alias{as.trig}
-\alias{from.below}
-\title{Set or convert angles between conventions}
+\title{Set or convert angles conventions}
 \usage{
 as.bearing(x)
 
 as.trig(x)
 
 as.angle(x)
-
-from.below(x)
 }
 \arguments{
-  \item{x}{vector of angles; either as numbers, in which
-  case they are assumed to follow the appropriate
-  convention; or of class circular, in which case the
-  angles will be converted from their current convention to
-  the convention determined by the function}
+  \item{x}{vector of angles; either a numeric vector, in
+  which case numbers are assumed to be angles which follow
+  the convention of the function used (trigonometric
+  angles, bearings, etc.); or a vector of class circular,
+  in which case the angles will be converted from their
+  current convention to the convention of the function
+  used}
 }
 \description{
-Set or convert angles between conventions
+Set or convert angles conventions
 }
 \details{
-Bearings are angles from North, always positive, measured
-clockwise, in degrees. Trigonometric angles are angles from
-the horizontal, measured counter-clockwise, in radians.
-"Angles" are trigonometric angles but in degrees.
+\describe{ \item{as.bearing}{Bearings are angles from
+North, always positive, measured clockwise, in degrees}
+\item{as.trig}{Trigonometric angles are angles from the
+horizontal, measured counter-clockwise, in radians}
+\item{as.angle}{"Angles" are trigonometric angles but in
+degrees} }
+}
+\examples{
+as.trig(pi/2)
+as.bearing(90)
+as.angle(90)
+
+as.angle(as.trig(pi/2))
+as.bearing(as.trig(pi/2))
+as.bearing(as.trig(0))
+as.trig(as.bearing(0))
+as.trig(as.bearing(90))
 }
 \seealso{
-\code{\link{circular}} and
-\code{\link{conversion.circular}} in package
+\code{\link[circular]{circular}} and
+\code{\link[circular]{conversion.circular}} in package
 \code{circular}
 }
 

@@ -1,13 +1,27 @@
-#' Set or convert angles between conventions
+#' Set or convert angles conventions
 #'
-#' @param x vector of angles; either as numbers, in which case they are assumed to follow the appropriate convention; or of class circular, in which case the angles will be converted from their current convention to the convention determined by the function
+#' @param x vector of angles; either a numeric vector, in which case numbers are assumed to be angles which follow the convention of the function used (trigonometric angles, bearings, etc.); or a vector of class circular, in which case the angles will be converted from their current convention to the convention of the function used
 #'
-#' @details Bearings are angles from North, always positive, measured clockwise, in degrees. Trigonometric angles are angles from the horizontal, measured counter-clockwise, in radians. "Angles" are trigonometric angles but in degrees.
-# TODO itemize this
+#' @details \describe{
+#' \item{as.bearing}{Bearings are angles from North, always positive, measured clockwise, in degrees}
+#' \item{as.trig}{Trigonometric angles are angles from the horizontal, measured counter-clockwise, in radians}
+#' \item{as.angle}{"Angles" are trigonometric angles but in degrees}
+#' }
 #'
-#' @seealso \code{\link{circular}} and \code{\link{conversion.circular}} in package \code{circular}
+#' @seealso \code{\link[circular]{circular}} and \code{\link[circular]{conversion.circular}} in package \code{circular}
 #'
 #' @name angles
+#'
+#' @examples
+#' as.trig(pi/2)
+#' as.bearing(90)
+#' as.angle(90)
+#'
+#' as.angle(as.trig(pi/2))
+#' as.bearing(as.trig(pi/2))
+#' as.bearing(as.trig(0))
+#' as.trig(as.bearing(0))
+#' as.trig(as.bearing(90))
 NULL
 
 #' @rdname angles
@@ -52,8 +66,6 @@ as.angle <- function(x) {
   return(x)
 }
 
-#' @rdname angles
-#' @export
 #' @importFrom circular circularp circularp<-
 from.below <- function(x) {
   # TODO generalise this to reverse the rotation of any angle
@@ -88,6 +100,12 @@ from.below <- function(x) {
 #' @return a data.frame with columns [theta,rho], with theta following trigonometric conventions and rho in the same unit as the input x and y
 #'
 #' @export
+#' @seealso \code{link{pol2car}} for the reverse
+#'
+#' @examples
+#' car2pol(data.frame(x=1, y=1))
+#' car2pol(data.frame(1, 0))
+#' car2pol(data.frame(-1, 0))
 car2pol <- function (x, orig=c(0,0)) {
 
   # make the coordinates relative to the origin
@@ -116,14 +134,25 @@ car2pol <- function (x, orig=c(0,0)) {
 #' @return a data.frame with columns [x,y] in the same unit as rho
 #'
 #' @export
+#'
+#' @seealso \code{link{car2pol}} for the reverse
+#'
+#' @examples
+#' pol2car(data.frame(theta=pi/2, rho=1))
+#' pol2car(data.frame(pi, 1))
+#' pol2car(data.frame(as.bearing(90), 1))
 pol2car <- function (x, orig=c(0,0)) {
 
   # make sure angles are in the trigonometric convention
   x[,1] <- as.trig(x[,1])
 
   # compute cartesian coordinates
-  X <- x[,2] * cos(x[,1])
-  Y <- x[,2] * sin(x[,1])
+  X <- x[,2] * as.numeric(cos(x[,1]))
+  Y <- x[,2] * as.numeric(sin(x[,1]))
+  
+  # zero very small numbers
+  X[which(abs(X) <= .Machine$double.eps)] <- 0
+  Y[which(abs(Y) <= .Machine$double.eps)] <- 0
 
   # make the coordinates relative to the origin
   X <- X + orig[1]

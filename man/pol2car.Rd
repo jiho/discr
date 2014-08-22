@@ -19,4 +19,12 @@ a data.frame with columns [x,y] in the same unit as rho
 \description{
 Convert from polar to cardinal coordinates
 }
+\examples{
+pol2car(data.frame(theta=pi/2, rho=1))
+pol2car(data.frame(pi, 1))
+pol2car(data.frame(as.bearing(90), 1))
+}
+\seealso{
+\code{link{car2pol}} for the reverse
+}
 

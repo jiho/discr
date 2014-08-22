@@ -19,4 +19,12 @@ input x and y
 \description{
 Convert from cardinal to polar coordinates
 }
+\examples{
+car2pol(data.frame(x=1, y=1))
+car2pol(data.frame(1, 0))
+car2pol(data.frame(-1, 0))
+}
+\seealso{
+\code{link{pol2car}} for the reverse
+}
 
