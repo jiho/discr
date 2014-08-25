@@ -1,6 +1,7 @@
 #' Descriptive statistics and Rayleigh test
 #'
 #' @param object vector of angles, of class \code{circular}
+#' @param ... passthrough argument
 #'
 #' @return A data.frame with columns
 #' \itemize{
@@ -14,10 +15,10 @@
 #' @export
 #'
 #' @importFrom circular is.circular mean.circular rayleigh.test
-summary.circular <- function(object) {
+summary.circular <- function(object, ...) {
 
   # check the class of angles
-  if ( ! is.circular(object)) {
+  if ( ! is.circular(object) ) {
     stop("object needs to be of class circular")
   }
 

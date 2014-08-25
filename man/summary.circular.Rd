@@ -3,10 +3,12 @@
 \alias{summary.circular}
 \title{Descriptive statistics and Rayleigh test}
 \usage{
-\method{summary}{circular}(object)
+\method{summary}{circular}(object, ...)
 }
 \arguments{
   \item{object}{vector of angles, of class \code{circular}}
+
+  \item{...}{passthrough argument}
 }
 \value{
 A data.frame with columns \itemize{ \item{n}{sample size}
