@@ -3,7 +3,8 @@
 \alias{disc}
 \title{Run a disc analysis action}
 \usage{
-disc(ids = NULL, actions = c("calibrate", "track", "correct", "stats"), ...)
+disc(ids = NULL, actions = c("calibrate", "track", "correct", "stats"),
+  deploy.dir = NULL, ...)
 }
 \arguments{
   \item{ids}{vector of deployments ids (correspond to
@@ -16,11 +17,12 @@ disc(ids = NULL, actions = c("calibrate", "track", "correct", "stats"), ...)
   can be abbreviated}
 
   \item{...}{passed to the various actions functions}
+
+  \item{deploy.dir}{path to the directory containing
+  deployments (and associated options). By default
+  "deployments" in the current directory.}
 }
 \description{
 Run a disc analysis action
-}
-\seealso{
-\code{\link{disc_setwd}} to set the working directory
 }
 

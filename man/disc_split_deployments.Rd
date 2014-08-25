@@ -3,8 +3,9 @@
 \alias{disc_split_deployments}
 \title{Get data for deployments}
 \usage{
-disc_split_deployments(raw, ids = NULL, acclimation.time = 5,
-  observation.time = 15, width = 1600, split.pics = TRUE)
+disc_split_deployments(raw, ids = NULL, deploy.dir = NULL,
+  acclimation.time = 5, observation.time = 15, width = 1600,
+  split.pics = TRUE)
 }
 \arguments{
   \item{raw}{path to the directory where the raw data and
@@ -27,6 +28,10 @@ disc_split_deployments(raw, ids = NULL, acclimation.time = 5,
   useful to set it to false to quickly recreate the rest of
   the metadata (since the pictures are the longest to
   process)}
+
+  \item{deploy.dir}{path to the directory containing
+  deployments (and associated options). By default
+  "deployments" in the current directory.}
 }
 \description{
 Read the deployment logs, read necessary data in the raw

@@ -5,32 +5,34 @@
 \alias{print.disc_conf}
 \title{Project-level settings}
 \usage{
-disc_conf(..., file = "disc.conf", verbose = FALSE)
+disc_conf(..., deploy.dir = NULL, verbose = FALSE)
 
-dconf(..., file = "disc.conf", verbose = FALSE)
+dconf(..., deploy.dir = NULL, verbose = FALSE)
 
 \method{print}{disc_conf}(x, ...)
 }
 \arguments{
   \item{...}{named arguments with settings to set}
 
-  \item{file}{name of the configuration file, in the
-  project directory}
-
   \item{verbose}{when TRUE, options are shown after being
   read}
+
+  \item{deploy.dir}{path to the directory containing
+  deployments (and associated options). By default
+  "deployments" in the current directory.}
 }
 \description{
 Read and write project-level settings
 }
 \details{
 Settings are read, in order, from the defaults, then the
-project-level configuration file and finally from the
-arguments provided in \code{...}. Then those settings are
-set with the function \code{\link{options}} to be
-accessible from any other function in discuss. Finally, the
-non-default settings are stored in \code{file} in the
-project directory.
+configuration file in the deployments directory and finally
+from the arguments provided in \code{...}. Then those
+settings are set with the function
+\code{\link[base]{options}} to be accessible from any other
+function in \code{discuss}. Finally, the non-default
+settings are stored in the file \code{"disc.conf"} in the
+deployments directory.
 }
 \keyword{internal}
 

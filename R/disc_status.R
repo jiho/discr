@@ -2,20 +2,14 @@
 #'
 #' Give information about deployments (number of pictures, metadata files, data files, etc.)
 #'
-#' @param dir path to the deployments directory. Assumed to be in the working directory by default.
+#' @inheritParams disc_dd
 #'
-#' @seealso \code{\link{disc_setwd}} to set the working directory option.
 #' @export
 #' @importFrom plyr ldply
-disc_status <- function(dir=NULL) {
+disc_status <- function(deploy.dir=NULL) {
 
-  if ( is.null(dir) ) {
-    dir <- make_path(disc_getwd(), "deployments")
-  }
+  dir <- disc_dd(deploy.dir)
 
-  if ( ! file.exists(dir) ) {
-    stop("Cannot find ", dir)
-  }
   message(dir)
 
   # list all deployments

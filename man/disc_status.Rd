@@ -4,20 +4,17 @@
 \alias{dstatus}
 \title{Status of the working directory}
 \usage{
-disc_status(dir = NULL)
+disc_status(deploy.dir = NULL)
 
-dstatus(dir = NULL)
+dstatus(deploy.dir = NULL)
 }
 \arguments{
-  \item{dir}{path to the deployments directory. Assumed to
-  be in the working directory by default.}
+  \item{deploy.dir}{path to the directory containing
+  deployments (and associated options). By default
+  "deployments" in the current directory.}
 }
 \description{
 Give information about deployments (number of pictures,
 metadata files, data files, etc.)
-}
-\seealso{
-\code{\link{disc_setwd}} to set the working directory
-option.
 }
 

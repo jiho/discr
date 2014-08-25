@@ -6,15 +6,15 @@
 disc_check()
 }
 \description{
-Checks wether the working directory is set, what the
-options are, and wether the required executables are
-installed. If some are not available it gives platform
+Checks the deployments directory (including wether a
+non-standard one is set), the options set in this
+deployments directory, and wether all required executables
+are installed. If some are not available it gives platform
 specific tips on how to install them. The function has no
 arguments.
 }
 \seealso{
-\code{\link{disc_getwd}} to check the working directory,
-\code{\link{disc_setwd}} to set the working directory,
-\code{\link{disc_conf}} to read or set the options
+\code{\link{disc_dd}} to get or set the deployments
+directory, \code{\link{disc_conf}} to read or set options
 }
 

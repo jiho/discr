@@ -8,6 +8,7 @@
 #' @param observation.time duration of the observation period (after acclimation) in minutes.
 #' @param width width to resize the images to, in pixels. When NULL, images are not resized.
 #' @param split.pics wether to create pictures in the deployments directory. TRUE by default but it can be useful to set it to false to quickly recreate the rest of the metadata (since the pictures are the longest to process)
+#' @inheritParams disc_dd
 #'
 #' @export
 #' @importFrom stringr str_detect str_split_fixed str_c
@@ -15,7 +16,7 @@
 #' @importFrom parallel detectCores
 #' @importFrom doParallel registerDoParallel
 #' @importFrom tools file_ext
-disc_split_deployments <- function(raw, ids=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE) {
+disc_split_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE) {
 
   # TODO Use .file for file names
 
@@ -57,7 +58,8 @@ disc_split_deployments <- function(raw, ids=NULL, acclimation.time=5, observatio
 
 
   # set destination directory
-  dest <- make_path(disc_getwd(), "deployments")
+  dest <- disc_dd(deploy.dir)
+
 
   # if no deployment id is specified, keep them all
   if ( is.null(ids) ) {

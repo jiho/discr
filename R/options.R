@@ -3,14 +3,14 @@
 #' Read and write project-level settings
 #'
 #' @details
-#' Settings are read, in order, from the defaults, then the project-level configuration file and finally from the arguments provided in \code{...}. Then those settings are set with the function \code{\link{options}} to be accessible from any other function in discuss. Finally, the non-default settings are stored in \code{file} in the project directory.
+#' Settings are read, in order, from the defaults, then the configuration file in the deployments directory and finally from the arguments provided in \code{...}. Then those settings are set with the function \code{\link[base]{options}} to be accessible from any other function in \code{discuss}. Finally, the non-default settings are stored in the file \code{"disc.conf"} in the deployments directory.
 #'
 #' @param ... named arguments with settings to set
-#' @param file name of the configuration file, in the project directory
+#' @inheritParams disc_dd
 #' @param verbose when TRUE, options are shown after being read
 #' @export
 #' @importFrom plyr laply
-disc_conf <- function(..., file="disc.conf", verbose=FALSE) {
+disc_conf <- function(..., deploy.dir=NULL, verbose=FALSE) {
 
   # set defaults
   defaults <- list(
@@ -23,8 +23,8 @@ disc_conf <- function(..., file="disc.conf", verbose=FALSE) {
   class(defaults) <- c("disc_conf", "list")
 
   # get settings from the project configuration file
-  wd <- disc_getwd()
-  file <- make_path(wd, file)
+  wd <- disc_dd(deploy.dir)
+  file <- make_path(wd, "disc.conf")
   if (file.exists(file)) {
     inFile <- dget(file)
   } else {

@@ -2,15 +2,15 @@
 #'
 #' @param pattern pattern to look for in the file name; passed to list.files
 #' @param ids deployment ids to limit the search to; if NULL (the default) get data from all deployments
+#' @inheritParams disc_dd
 #'
 #' @export
 #' @importFrom plyr adply laply
 #' @importFrom stringr str_c str_split
-assemble <- function(pattern, ids=NULL) {
+assemble <- function(pattern, ids=NULL, deploy.dir=NULL) {
 
-  # get working directory
-  wd <- make_path(disc_getwd(), "deployments")
-  # TODO also make it possible to set it in the arguments (but requires to check for existence etc in that case)
+  # get/set deployments directory
+  wd <- disc_dd(deploy.dir)
 
   # get/set disc options
   disc_conf()

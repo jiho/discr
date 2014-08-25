@@ -2,16 +2,15 @@
 #'
 #' @param ids vector of deployments ids (correspond to folders in the working directory). Usually deployment ids are integers, which makes it easy to give ranges of deployments such as 1:10. But deployment ids can be anything.
 #' @param actions vector of actions to perform. Action names can be abbreviated
+#' @inheritParams disc_dd
 #' @param ... passed to the various actions functions
 #'
-#' @seealso \code{\link{disc_setwd}} to set the working directory
 #' @export
 #' @importFrom stringr str_c
-disc <- function(ids=NULL, actions=c("calibrate", "track", "correct", "stats"), ...) {
+disc <- function(ids=NULL, actions=c("calibrate", "track", "correct", "stats"), deploy.dir=NULL, ...) {
 
-  # get working directory
-  wd <- make_path(disc_getwd(), "deployments")
-  # TODO also make it possible to set it in the arguments (but requires to check for existence etc in that case)
+  # get/set deployments directory
+  wd <- disc_dd(deploy.dir)
 
   # get/set disc options
   disc_conf()
