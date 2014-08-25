@@ -7,6 +7,7 @@
 #' @param ... passthrough argument
 #'
 #' @export
+#' @family action functions
 #'
 #' @importFrom lubridate ymd_hms
 #' @importFrom plyr round_any ddply count

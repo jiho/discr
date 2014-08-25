@@ -5,6 +5,8 @@
 #' @param ... passthrough argument
 #'
 #' @export
+#' @family action functions
+#'
 #' @importFrom stringr str_c
 #' @importFrom assertthat assert_that not_empty
 disc_calibrate <- function(dir, verbose=FALSE, ...) {

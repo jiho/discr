@@ -21,4 +21,11 @@ disc_stats(dir, bin.angle = 0, sub = 0, verbose = FALSE, ...)
 Compute statistics (circular and activity-level) on a
 deployment's trajectory data and create plots
 }
+\seealso{
+Other action.functions: \code{\link{disc_calibrate}};
+\code{\link{disc_camera_compass_angle}};
+\code{\link{disc_correct}};
+\code{\link{disc_track_compass}}; \code{\link{disc_track}};
+\code{\link{disc}}
+}
 

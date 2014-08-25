@@ -8,6 +8,7 @@
 #' @param ... passthrough argument
 #'
 #' @export
+#' @family action functions
 #'
 #' @importFrom plyr ddply
 #' @importFrom stringr str_c

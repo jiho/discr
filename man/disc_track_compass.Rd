@@ -17,4 +17,10 @@ disc_track_compass(dir, sub = NULL, verbose = FALSE, ...)
 \description{
 Measure angle of analog compasses on images
 }
+\seealso{
+Other action.functions: \code{\link{disc_calibrate}};
+\code{\link{disc_camera_compass_angle}};
+\code{\link{disc_correct}}; \code{\link{disc_stats}};
+\code{\link{disc_track}}; \code{\link{disc}}
+}
 

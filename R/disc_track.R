@@ -8,6 +8,7 @@
 #' @param ... passthrough argument
 #'
 #' @export
+#' @family action functions
 disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
   disc_message("Track")

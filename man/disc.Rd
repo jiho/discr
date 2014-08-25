@@ -14,9 +14,12 @@ disc(ids = NULL, actions = c("calibrate", "track", "correct", "stats"),
   anything.}
 
   \item{actions}{vector of actions to perform. Action names
-  can be abbreviated}
+  can be abbreviated. See below which actions are
+  available.}
 
-  \item{...}{passed to the various actions functions}
+  \item{...}{passed to the various actions functions. To
+  see which arguments are available, see the help of the
+  various action functions}
 
   \item{deploy.dir}{path to the directory containing
   deployments (and associated options). By default
@@ -24,5 +27,30 @@ disc(ids = NULL, actions = c("calibrate", "track", "correct", "stats"),
 }
 \description{
 Run a disc analysis action
+}
+\details{
+\describe{ \item{"camera compass angle"}{estimate the angle
+between the top of the camera and the physical direction in
+which the digital compass is set up in its housing by
+detecting the angle of the analog compasses on a few frames
+and comparing that with the record of the digital compass.
+Is usually done on short, calibration-type deployments.}
+\item{"calibrate"}{measure the position of the arena on the
+first image of a deployment, to calibrate the trajectory
+and convert distances from pixels on frame to mm. See the
+"\code{disc.diameter}" option set by
+\code{\link{disc_conf}}.} \item{"track"}{manually track the
+larva(e) on each frame} \item{"track compass" or
+"compass"}{manually detect the analog compass bearing when
+the digital compass does not work} \item{"correct"}{correct
+larvae tracks according to compass readings, to put them
+back in cardinal space} \item{"stats"}{compute statistics
+on the positions of larvae in the arena} }
+}
+\seealso{
+Other action.functions: \code{\link{disc_calibrate}};
+\code{\link{disc_camera_compass_angle}};
+\code{\link{disc_correct}}; \code{\link{disc_stats}};
+\code{\link{disc_track_compass}}; \code{\link{disc_track}}
 }
 

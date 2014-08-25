@@ -21,4 +21,10 @@ disc_correct(dir, camera.compass.angle = NULL, verbose = FALSE, ...)
 Correct tracks (camera frame of reference) based on
 rotation of DISC to get polar-relevant coordinates
 }
+\seealso{
+Other action.functions: \code{\link{disc_calibrate}};
+\code{\link{disc_camera_compass_angle}};
+\code{\link{disc_stats}}; \code{\link{disc_track_compass}};
+\code{\link{disc_track}}; \code{\link{disc}}
+}
 

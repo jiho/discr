@@ -17,4 +17,10 @@ disc_track(dir, sub = NULL, verbose = FALSE, ...)
 \description{
 Use the manual tracking plugin to record a track
 }
+\seealso{
+Other action.functions: \code{\link{disc_calibrate}};
+\code{\link{disc_camera_compass_angle}};
+\code{\link{disc_correct}}; \code{\link{disc_stats}};
+\code{\link{disc_track_compass}}; \code{\link{disc}}
+}
 

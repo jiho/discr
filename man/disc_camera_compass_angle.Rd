@@ -21,4 +21,10 @@ deduce the angle between the camera and the digital
 compass. This is mandatory to use the digital compass to
 correct the tracks.
 }
+\seealso{
+Other action.functions: \code{\link{disc_calibrate}};
+\code{\link{disc_correct}}; \code{\link{disc_stats}};
+\code{\link{disc_track_compass}}; \code{\link{disc_track}};
+\code{\link{disc}}
+}
 

@@ -6,6 +6,7 @@
 #' @param ... passthrough argument
 #'
 #' @export
+#' @family action functions
 #'
 #' @importFrom stringr str_c
 #' @importFrom lubridate ymd_hms

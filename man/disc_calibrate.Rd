@@ -15,4 +15,11 @@ disc_calibrate(dir, verbose = FALSE, ...)
 \description{
 Calibrate aquarium position
 }
+\seealso{
+Other action.functions:
+\code{\link{disc_camera_compass_angle}};
+\code{\link{disc_correct}}; \code{\link{disc_stats}};
+\code{\link{disc_track_compass}}; \code{\link{disc_track}};
+\code{\link{disc}}
+}
 
