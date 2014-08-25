@@ -36,4 +36,3 @@ dmessage <- disc_message
 # @rdname disc_message
 #' @keywords internal
 dmess <- disc_message
-

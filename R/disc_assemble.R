@@ -7,7 +7,7 @@
 #' @export
 #' @importFrom plyr adply laply
 #' @importFrom stringr str_c str_split
-assemble <- function(pattern, ids=NULL, deploy.dir=NULL) {
+disc_assemble <- function(pattern, ids=NULL, deploy.dir=NULL) {
 
   # get/set deployments directory
   wd <- disc_dd(deploy.dir)
@@ -50,3 +50,7 @@ assemble <- function(pattern, ids=NULL, deploy.dir=NULL) {
 
   return(d)
 }
+
+#' @rdname disc_assemble
+#' @export
+dassemble <- disc_assemble
