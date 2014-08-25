@@ -1,6 +1,6 @@
 #' Assemble data of a given kind from several deployments
 #'
-#' @param pattern pattern to look for in the file name; passed to list.files
+#' @param pattern pattern to look for in the file name; passed to \code{\link[base]{list.files}}
 #' @param ids deployment ids to limit the search to; if NULL (the default) get data from all deployments
 #' @inheritParams disc_dd
 #'
