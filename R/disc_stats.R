@@ -138,6 +138,7 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
     geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
     scale_linetype_manual(values=c("solid", "dashed")) +
     facet_grid(~rotation)
+  # TODO edit labels in first plot to remove N, S, E, W; that probably involved setting two plots up with grid.arrange.
   plots <- c(plots, list(position_dotplot=p))
 
 

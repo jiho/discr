@@ -9,6 +9,7 @@
 #' @param width width to resize the images to, in pixels. When NULL, images are not resized.
 #' @param split.pics wether to create pictures in the deployments directory. TRUE by default but it can be useful to set it to false to quickly recreate the rest of the metadata (since the pictures are the longest to process)
 #' @inheritParams disc_dd
+# TODO rename to get/extract deployments; not always splitting all of them
 #'
 #' @export
 #' @importFrom stringr str_detect str_split_fixed str_c

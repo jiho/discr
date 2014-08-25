@@ -2,6 +2,7 @@
 #'
 #' @param ids vector of deployments ids (correspond to folders in the working directory). Usually deployment ids are integers, which makes it easy to give ranges of deployments such as 1:10. But deployment ids can be anything.
 #' @param actions vector of actions to perform. Action names can be abbreviated
+# TODO list actions here
 #' @inheritParams disc_dd
 #' @param ... passed to the various actions functions
 #'
