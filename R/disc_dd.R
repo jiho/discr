@@ -13,6 +13,7 @@
 disc_dd <- function(deploy.dir=NULL) {
 
   # first get it from the arguments
+  dir <- deploy.dir
 
   # if not provided, get it from the options if set
   if ( is.null(dir) ) {
