@@ -7,7 +7,7 @@
 # @param package name of the package usually providing this executable, used to indicate how to install the software when url is not provided
 # @param notes further notes appended to the error message
 # @param error.out \code{check_exec()} emits a warning by default but produces an error when this is true
-# @param ... passed to \code{warning()}
+# @param ... passed to \code{link[base]{warning}}
 #
 #' @importFrom stringr str_c
 check_exec <- function(exec, url="", package=exec, notes="", error.out=FALSE, ...) {
