@@ -1,6 +1,4 @@
 .files <- list(
-  # raw data file names
-  
   # processed file names
   video = "video_hifi.mov",
   pictures = "pics",
