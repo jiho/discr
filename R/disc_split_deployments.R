@@ -18,8 +18,6 @@
 #' @importFrom tools file_ext
 disc_split_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE) {
 
-  # TODO Use .file for file names
-
   message("Reading field logs")
   # convert to csv first using
   # soffice --headless --convert-to csv test.ods
@@ -141,11 +139,11 @@ disc_split_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.t
 
       if (n > 1) {
         # get the folder name in which the data was
-        # by convention, pictures are in "pics", compass data is in "compass"
+        # by convention, pictures are in .files$pictures, compass data is in "compass"
         sensorDirName <- x[,str_c(sensor, "_dir")]
 
         # for pictures, resize the images and number them sequentially
-        if ( sensorDirName == "pics" & split.pics ) {
+        if ( sensorDirName == .files$pictures & split.pics ) {
           picsDir <- str_c(deployDir, "/", sensorDirName)
           dir.create(picsDir, showWarnings=FALSE)
           dc$imgNb <- 1:nrow(dc)
