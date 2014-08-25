@@ -142,9 +142,6 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
     xCor <- x
     xCor$theta <- as.bearing(x$theta + x$cameraHeading)
 
-    # for un-rotated track to be comparable to the rotated one, they need to start in the same reference as the rotated track. So we use the *first* camera heading for every frame
-    x$theta <- as.bearing(x$theta + x$cameraHeading[1])
-
     # label the rotated data
     xCor$rotation <- "rotated"
     x$rotation <- "raw"
