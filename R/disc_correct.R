@@ -36,8 +36,6 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
 
 
   # get options
-  # wether the camera is looking up or down on the chamber
-  looking_up <- getOption("disc.looking_up")
   # aquarium diameter in cm
   diameter <- getOption("disc.diameter")
 
@@ -84,13 +82,8 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
     compassLog$heading <- as.bearing(compassLog$heading)
 
     # correct heading of compass to be heading of the top of the frame
-    # the correction depends on the position of the camera
-    if ( looking_up ) {
-      compassLog$cameraHeading <- compassLog$heading - cameraCompassAngle
-      # TODO Not sure, check
-    } else {
-      compassLog$cameraHeading <- compassLog$heading + cameraCompassAngle
-    }
+    # when looking up at the compass, we need to subtract the angle
+    compassLog$cameraHeading <- compassLog$heading - cameraCompassAngle
 
   } else if ( file.exists(analogCompassFile) ) {
 
@@ -142,10 +135,8 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
     # convert the angle to be measured as a bearing from the top of the frame
     x$theta <- as.bearing(x$theta)
 
-    # reverse the direction of angles if we view the chamber from below
-    if ( looking_up ) {
-      x$theta <- from.below(x$theta)
-    }
+    # reverse the direction of angles because we view the chamber from below
+    x$theta <- from.below(x$theta)
 
     # correct for the rotation: add the angle in the chamber relative to the top of the frame to the heading of the top of the frame to find the true heading
     xCor <- x
