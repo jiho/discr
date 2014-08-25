@@ -6,14 +6,26 @@
 circular_dotplot(x, bin = 5, ...)
 }
 \arguments{
-  \item{x}{vector of angles (potentially of class
-  circular). Assumed to be in degrees and within [0,360]}
+  \item{x}{vector of angles, assumed to be bearings (in
+  degrees, from North). A simple numeric vector is
+  supplied, it is assumed to follow the conventions of
+  bearings. When a vector of class "\code{circular}" is
+  supplied, it is converted to bearings}
 
   \item{bin}{bin width in degrees}
 
-  \item{...}{passed to \code{geom_point}}
+  \item{...}{passed to \code{\link[ggplot2]{geom_point}}}
 }
 \description{
 Circular dotplot
+}
+\examples{
+circular_dotplot(rnorm(100, 0, 20))
+library("circular")
+circular_dotplot(rvonmises(100, 0, 10))
+circular_dotplot(rvonmises(100, pi/2, 10))
+}
+\seealso{
+\code{\link{as.bearing}} for the conversion in bearings
 }
 
