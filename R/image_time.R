@@ -2,7 +2,6 @@
 #
 # @param img full path to one or several image files
 # @param tz force a time zone (most time computations are relative so getting the time zone right probably does not matter)
-#' @keywords internal
 #' @importFrom stringr str_c
 #' @importFrom lubridate parse_date_time
 #' @importFrom plyr round_any

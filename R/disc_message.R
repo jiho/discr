@@ -4,7 +4,6 @@
 #
 # @param ... message components passed to \code{cat}
 #
-#' @keywords internal
 #' @importFrom stringr str_c
 #' @importFrom stringr str_trim
 #' @importFrom stringr str_sub
@@ -30,9 +29,7 @@ disc_message <- function(...) {
 }
 
 # @rdname disc_message
-#' @keywords internal
 dmessage <- disc_message
 
 # @rdname disc_message
-#' @keywords internal
 dmess <- disc_message
