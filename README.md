@@ -6,14 +6,12 @@ Well, in R actually, but `discuss` looks better than `discusr` ;)
 
 1. Install R from <http://cran.rstudio.com/>
 
-2. Install RStudio from <http://www.rstudio.com/products/rstudio/download/>. RStudio is a graphical interface for R which will make it easier to work with discuss data.
-
-3. Install `discuss`. `discuss` is an R package but it is not (yet) available in the official R packages repositories. To install it, start RStudio and, in the console, type
+2. Install `discuss`. `discuss` is an R package but it is not (yet) available in the official R packages repositories. To install it, start RStudio and, in the console, type
 
         install_packages("devtools")
         devtools::install_bitbucket("discuss", "jiho")
 
-4. Load `discuss` and check your installation with
+3. Load `discuss` and check your installation with
 
         library("discuss")
         disc_check()
@@ -29,7 +27,7 @@ Well, in R actually, but `discuss` looks better than `discusr` ;)
 
 ### Data collection
 
-Data collected with the DISC is stored in one directory. A subdirectory is created for each deployment leg (usually per day). Within each leg, a subdirectory is made for each sensor on the DISC (camera, compass, light sensor etc.). The information for every leg and every deployment within each leg is written down in a log file, in the form of a spreadsheet (saved as a Comma Separated Values, `*.csv`, file), which is stored in the top level DISC directory.
+Data collected with the DISC is stored in one directory. A subdirectory is created for each deployment leg (usually per day). Within each leg, a subdirectory is created for each sensor on the DISC (camera, compass, light sensor etc.). The information for every leg and every deployment within each leg is written down in a log file, in the form of a spreadsheet (saved as a Comma Separated Values, `*.csv`, file), which is stored in the top level DISC directory.
 
 The final hierarchy usually looks like
 
@@ -60,7 +58,7 @@ The format for the `leg_log.csv` file is:
     leg_1,    12:22:25,   17:35:01,      pics,           -6, 12:20:10, ...
     leg_2,         ...,
 
-It has the leg directory name and information for each sensor. The column names are in the form `sensorName_informationLabel`. The underscore (`_`) in the middle is important. The usual information for each sensor is :
+It has the leg directory name and information for each sensor. The column names are in the form `sensorName_informationLabel`. The underscore (`_`) in the middle is important. The usual information labels for each sensor are :
 
 - `start` and `stop` : the start and stop time of the sensor (not used by `discuss` but important to record)
 - `dir` : the name of the directory in which the sensor data is stored. When absent, this is supposed to be the name of the sensor itself. Pictures should always be stored in a directory called `pics`; compass data should always be stored in a directory called `compass`; the rest of the names are free.
@@ -71,15 +69,15 @@ Other columns can be added but should *not* have an underscore in their names. U
 
 The format for the `deployment_log.csv` is:
 
-    deployId,   leg, date_start,  date_stop, time_start, time_stop
-           1, leg_1, 2014-05-22, 2014-05-22,   23:31:23,  23:52:10
-           2, leg_1, 2014-05-22, 2014-05-23,   23:54:34,  00:05:12
-           3, leg_1, 2014-05-23, 2014-05-23,   00:08:15,  00:29:12
-         ...
+    deploy_id,   leg, date_start,  date_stop, time_start, time_stop
+            1, leg_1, 2014-05-22, 2014-05-22,   23:31:23,  23:52:10
+            2, leg_1, 2014-05-22, 2014-05-23,   23:54:34,  00:05:12
+            3, leg_1, 2014-05-23, 2014-05-23,   00:08:15,  00:29:12
+          ...
 
 It has
 
-- `deployId` : a *unique* deployment identifier. It can be anything but is usually an integer number, which makes it easy to specify ranges of deployments.
+- `deploy_id` : a *unique* deployment identifier. It can be anything but is usually an integer number(as here), which makes it easy to specify ranges of deployments.
 - `leg` : the corresponding leg directory name
 - `date_start`, `date_stop` : date in format YYYY-MM-DD.
 - `time_start`, `time_stop` : time in format HH:MM:SS; the combination of date and time allows deployments to cross midnight
@@ -89,52 +87,45 @@ The deployment log usually has other columns such as fish species, meteorologica
 
 ### Extract deployments
 
-The directory described above holds the raw data. To be analysed, it needs to be split into deployments. The deployments are smaller than the raw data and are usually stored elsewhere.
+The directory described above holds the whole raw data record. To be analysed, it needs to be split into deployments. The deployments are smaller than the raw data and are usually stored elsewhere. The usual (and simplest way of working) is to create a new directory which will be your R working directory for the project (where you will stode your custom analysis code etc.) and to store deployments in a sub-directory of it called "deployments".
 
-Start RStudio a create a new project (`File > New Project...`). Use a new directory and create an empty project. This directory will be your working directory. `discuss` will store the deployments in a sub-directory called "deployments" there.
+NB: if you use RStudio <http://www.rstudio.com/products/rstudio/download/>, this translates into creating a new project (`File > New Project...`, use a new directory, create an empty project) and creating a "deployments" directory inside it.
 
-In the console, load `discuss`
+In an R console, in your working directory:
 
+    # load 'discuss'
     library("discuss")
-
-and split the data with
-
-    disc_split_deployments(raw="/path/to/raw/data")
+    # create the deployments directory
+    dir.create("deployments")
+    # extract deployments
+    disc_extract_deployments(raw="/path/to/raw/data")
 
 If you want to extract only a few deployments, use
 
-    disc_split_deployments(raw="/path/to/raw/data", ids=10:20)
+    disc_extract_deployments(raw="/path/to/raw/data", ids=10:20)
 
 for deployments 10 to 20 or
 
-    disc_split_deployments(raw="/path/to/raw/data", ids=c("1a", "2a", "2b", "6"))
+    disc_extract_deployments(raw="/path/to/raw/data", ids=c("1a", "2a", "2b", "6"))
 
 for deployments 1a, 2a, 3b and 6, for example. (NB: This highlights why having integer deployment identifiers is easier.)
 
-See `?disc_split_deployments` for more information.
+See `?disc_extract_deployments` for more information.
 
 
 ### Process deployments
 
-Open the RStudio project created above. This sets your working directory correctly.
-
-In the console load `discuss`
+Open R in your working directory (or open the RStudio project created above). In the console load `discuss`
 
     library(`discuss`)
 
 The process deployments with a command such as
 
-    disc(1:20, actions=c("calib", "track"))
+    disc(1:10, actions=c("calib", "track"))
 
-to calibrate the arena dimensions and track the larva on deployments 1 to 20. Actions can be:
+to calibrate the arena dimensions and track the larva on deployments 1 to 10.
 
-- "camera compass angle" : measure the angle between the camera and the compass
-- "calibrate" : measure the arena on an image, to 
-- "track" : track one (or several) larva(e) manually
-- "correct" : correct larvae tracks in cardinal reference
-- "stats" : compute statistics on larvae positions
-
-Default actions are "calibrate", "track", "correct", and "stats".
+See `?disc` for a description of all actions and more examples. Default actions are "calibrate", "track", "correct", and "stats".
 
 Check your progress with
 
@@ -148,7 +139,7 @@ and now `disc()` again. Good luck!
 
 ### Analyse data
 
-Open the RStudio project create above, to set the working directory. Load `discuss` with
+Again, open R in your working directory (or open the RStudio project) and load `discuss`
 
     library("discuss")
 
@@ -158,34 +149,34 @@ Check available data with
 
 Collect statistics for all larvae in a `data.frame` with
 
-    assemble("stats")
+    disc_assemble("stats")
 
 Alternatively, you can select a few deployments only with
 
-    assemble("stats", ids=1:10)
+    disc_assemble("stats", ids=1:10)
 
 You can also collect all tracks, or gps data, or hobo data, etc. with
 
-    assemble("tracks_rotated")
-    assemble("gps_log")
-    assemble("hobo_log")
+    disc_assemble("rotated_larvae_tracks")
+    disc_assemble("gps_log")
+    disc_assemble("hobo_log")
 
-What `assemble()` does is look for files with the given pattern in their name, read them all and concatenate the result.
+What `disc_assemble()` does is look for files with the given pattern in their name, read them all and concatenate the result.
 
-Now you are ready to do you analyses in R. Discuss provides a few helpful functions
+Now you are ready to do you analyses in R. `discuss` provides a few helpful functions to work with angles
 
-    ?circ.stats
-    ?scale_x_circular
+    ?summary.circular
     ?polar
     ?circular_dotplot
+    ?angles
 
-
+check out the `circular` package for other.
 
 ## Advanced usage
 
-disc_setwd()
+If storing your deployments in a subdirectory of your working directory is not appropriate (not enough space on hard drive, etc.), you can store them elsewhere and still get to them from your working directory, either by providing the path through the `deploy.dir` argument of each function, or, more efficiently, by setting it at the start of the session with `disc_dd`. See `?disc_dd` for more information.
 
-New sensors
+New sensors can easily be added and handled by `discuss`; see `?disc_read` for more information.
 
 ## Credit
 
