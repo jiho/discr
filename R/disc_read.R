@@ -3,15 +3,16 @@
 # Each function should return a data.frame with at least a "dateTime" column
 #
 
-#' Raw data read
+#' Raw data reading
 #'
-#' Read data from various sensors output somewhat uniformised records
+#' Read data from various sensors output somewhat uniformed records
 #'
 #' @param dir path to the directory in which the files to read are
-#' @param ... passed to \code{\link{read.table}} which does the actual reading
+#' @param ... passed to \code{\link[utils]{read.table}} which does the actual reading
 #'
-#' @return
-#' A data.frame with a columns \code{dateTime} and other columns that depend on the sensor
+#' @details
+#' \code{\link{disc_extract_deployments}} reads data from all sensors defined in the leg log file. To do so it looks for an appropriate method for the generic function \code{disc_read}, i.e. a function named \code{disc_read.nameofsensor}. Do read data from a new sensor, one just need to define such as function, which takes the path to a directory (where the data is stored) as input and gives a data.frame as output, with at least a column called "\code{dateTime}" holding the date and time in the default format for \code{link[base]{as.POSIXct}} (i.e. "YYYY-MM-DD HH:MM:SS"). The rest of the columns depend on the sensors. The only constraint is for compass-type data to have a column named "\code{heading}"
+#'
 #' @importFrom plyr rename
 #' @importFrom dplyr arrange
 #' @importFrom dplyr select
