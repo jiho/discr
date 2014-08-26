@@ -17,6 +17,25 @@ disc_track_compass(dir, sub = NULL, verbose = FALSE, ...)
 \description{
 Measure angle of analog compasses on images
 }
+\examples{
+# get example deployments included with the package
+deploys <- system.file("extdata", "deployments", package = "discuss")
+# copy them to a writable, temporary directory
+temp <- tempdir()
+file.copy(deploys, temp, recursive=TRUE)
+dd <- paste0(temp, "/deployments/")
+deploy2 <- paste0(dd, "2")
+
+# deployment 2 does not have a digital compass record
+list.files(deploy2)
+
+# run the action
+disc_conf(deploy.dir=dd)
+\donttest{disc_track_compass(dir=deploy2, verbose=TRUE)}
+# inspect results
+list.files(deploy2)
+head(read.csv(paste0(deploy2, "/compass_analog_log.csv")))
+}
 \seealso{
 Other action.functions: \code{\link{disc_calibrate}};
 \code{\link{disc_camera_compass_angle}};

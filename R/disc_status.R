@@ -1,4 +1,4 @@
-#' Status of the working directory
+#' Status of the deployments directory
 #'
 #' Give information about deployments (number of pictures, metadata files, data files, etc.)
 #'
@@ -6,6 +6,12 @@
 #'
 #' @export
 #' @importFrom plyr ldply
+#'
+#' @examples
+#' # get example deployments included with the package
+#' deploys <- system.file("extdata", "deployments", package = "discuss")
+#'
+#' disc_status(deploy.dir=deploys)
 disc_status <- function(deploy.dir=NULL) {
 
   dir <- disc_dd(deploy.dir)

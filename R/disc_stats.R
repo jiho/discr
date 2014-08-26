@@ -13,6 +13,22 @@
 #' @importFrom plyr round_any ddply count
 #' @importFrom stringr str_replace fixed
 #' @import ggplot2
+#'
+#' @examples
+#' # get example deployments included with the package
+#' deploys <- system.file("extdata", "deployments", package = "discuss")
+#' # copy them to a writable, temporary directory
+#' temp <- tempdir()
+#' file.copy(deploys, temp, recursive=TRUE)
+#' dd <- paste0(temp, "/deployments/")
+#' deploy1 <- paste0(dd, "1")
+#'
+#' # run the action
+#' disc_conf(deploy.dir=dd)
+#' disc_stats(dir=deploy1, verbose=TRUE)
+#' # inspect results
+#' list.files(deploy1)
+#' read.csv(paste0(deploy1, "/stats.csv"))
 disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
 
   disc_message("Compute statistics")

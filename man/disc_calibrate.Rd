@@ -15,6 +15,23 @@ disc_calibrate(dir, verbose = FALSE, ...)
 \description{
 Calibrate aquarium position
 }
+\examples{
+# get example deployments included with the package
+deploys <- system.file("extdata", "deployments", package = "discuss")
+# copy them to a writable, temporary directory
+temp <- tempdir()
+file.copy(deploys, temp, recursive=TRUE)
+dd <- paste0(temp, "/deployments/")
+deploy1 <- paste0(dd, "1")  # digital compass
+
+# run the action
+disc_conf(deploy.dir=dd)
+\donttest{disc_calibrate(dir=deploy1, verbose=TRUE)}
+# inspect results
+list.files(deploy1)
+# note that the aquarium coordinates are remembered
+disc_conf(deploy.dir=dd)
+}
 \seealso{
 Other action.functions:
 \code{\link{disc_camera_compass_angle}};

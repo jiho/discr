@@ -47,6 +47,28 @@ larvae tracks according to compass readings, to put them
 back in cardinal space} \item{"stats"}{compute statistics
 on the positions of larvae in the arena} }
 }
+\examples{
+# get example deployments included with the package
+deploys <- system.file("extdata", "deployments", package = "discuss")
+# copy them to a writable, temporary directory
+temp <- tempdir()
+file.copy(deploys, temp, recursive=TRUE)
+dd <- paste0(temp, "/deployments/")
+
+disc_status(dd)
+
+\donttest{# perform some actions on deployment 1
+disc(ids=1, actions=c("calibrate", "track"), sub=10, deploy.dir=dd)
+# action names can be abbreviated
+disc(1, actions=c("cor", "st"), deploy.dir=dd)
+# several deployments can be handled successively
+disc(1:2, actions=c("cor", "st"), deploy.dir=dd)
+# arguments can be passed to action functions
+read.csv(paste0(dd, "/1/stats.csv"))
+disc(1, actions="stats", sub=10, deploy.dir=dd)
+read.csv(paste0(dd, "/1/stats.csv"))
+}
+}
 \seealso{
 Other action.functions: \code{\link{disc_calibrate}};
 \code{\link{disc_camera_compass_angle}};

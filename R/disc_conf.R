@@ -10,6 +10,13 @@
 #' @param verbose when TRUE, options are shown after being read
 #' @export
 #' @importFrom plyr laply
+#'
+#' @examples
+#' disc_conf()
+#' # increase java memory to 2G
+#' disc_conf(java_memory=2048)
+#' # change diameter of arena to 40 cm (large DISC)
+#' disc_conf(diameter=40)
 disc_conf <- function(..., deploy.dir=NULL, verbose=FALSE) {
 
   # set defaults

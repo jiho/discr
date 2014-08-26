@@ -11,6 +11,28 @@
 #' @importFrom stringr str_c
 #' @importFrom lubridate ymd_hms
 #' @importFrom plyr join
+#'
+#' @examples
+#' # get example deployments included with the package
+#' deploys <- system.file("extdata", "deployments", package = "discuss")
+#' # copy them to a writable, temporary directory
+#' temp <- tempdir()
+#' file.copy(deploys, temp, recursive=TRUE)
+#' dd <- paste0(temp, "/deployments/")
+#' deploy1 <- paste0(dd, "1")  # digital compass
+#' deploy2 <- paste0(dd, "2")  # analog compass
+#'
+#' # run the action
+#' disc_conf(deploy.dir=dd)
+#' disc_correct(dir=deploy1, verbose=TRUE)
+#' # inspect results
+#' list.files(deploy1)
+#' head(read.csv(paste0(deploy1, "/larvae_tracks.csv")))
+#' head(read.csv(paste0(deploy1, "/rotated_larvae_tracks.csv")))
+#' tail(read.csv(paste0(deploy1, "/rotated_larvae_tracks.csv")))
+#'
+#' disc_correct(dir=deploy2, verbose=TRUE)
+#' list.files(deploy2)
 disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
 
   disc_message("Correct rotation")

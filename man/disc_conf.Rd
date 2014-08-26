@@ -34,5 +34,12 @@ function in \code{discuss}. Finally, the non-default
 settings are stored in the file \code{"disc.conf"} in the
 deployments directory.
 }
+\examples{
+disc_conf()
+# increase java memory to 2G
+disc_conf(java_memory=2048)
+# change diameter of arena to 40 cm (large DISC)
+disc_conf(diameter=40)
+}
 \keyword{internal}
 

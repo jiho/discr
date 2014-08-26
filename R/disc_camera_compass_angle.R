@@ -14,6 +14,21 @@
 #' @importFrom stringr str_c
 #' @importFrom assertthat assert_that
 #' @importFrom circular mean.circular angular.deviation
+#'
+#' @examples
+#' # get example deployments included with the package
+#' deploys <- system.file("extdata", "deployments", package = "discuss")
+#' # copy them to a writable, temporary directory
+#' temp <- tempdir()
+#' file.copy(deploys, temp, recursive=TRUE)
+#' dd <- paste0(temp, "/deployments/")
+#' deploy1 <- paste0(dd, "1")
+#'
+#' # run the action
+#' disc_conf(deploy.dir=dd)
+#' \donttest{disc_camera_compass_angle(dir=deploy1, sub=10, verbose=TRUE)}
+#' # the angle is also stored in a file "angle_camera_compass.txt"
+#' list.files(deploy1)
 disc_camera_compass_angle <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
   disc_message("Camera / compass angle")

@@ -2,7 +2,7 @@
 \name{disc_status}
 \alias{disc_status}
 \alias{dstatus}
-\title{Status of the working directory}
+\title{Status of the deployments directory}
 \usage{
 disc_status(deploy.dir = NULL)
 
@@ -16,5 +16,11 @@ dstatus(deploy.dir = NULL)
 \description{
 Give information about deployments (number of pictures,
 metadata files, data files, etc.)
+}
+\examples{
+# get example deployments included with the package
+deploys <- system.file("extdata", "deployments", package = "discuss")
+
+disc_status(deploy.dir=deploys)
 }
 

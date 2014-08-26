@@ -7,6 +7,18 @@
 #' @export
 #' @importFrom plyr adply laply
 #' @importFrom stringr str_c str_split
+#'
+#' @examples
+#' # get example deployments included with the package
+#' deploys <- system.file("extdata", "deployments", package = "discuss")
+#' disc_status(deploys)
+#'
+#' # get all larvae tracks
+#' head(disc_assemble("rotated_larvae_tracks", deploy.dir=deploys))
+#'
+#' # get all GPS tracks
+#' head(dassemble("gps", deploy.dir=deploys))
+#' tail(dassemble("gps", deploy.dir=deploys))
 disc_assemble <- function(pattern, ids=NULL, deploy.dir=NULL) {
 
   # get/set deployments directory

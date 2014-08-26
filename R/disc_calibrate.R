@@ -9,6 +9,23 @@
 #'
 #' @importFrom stringr str_c
 #' @importFrom assertthat assert_that not_empty
+#'
+#' @examples
+#' # get example deployments included with the package
+#' deploys <- system.file("extdata", "deployments", package = "discuss")
+#' # copy them to a writable, temporary directory
+#' temp <- tempdir()
+#' file.copy(deploys, temp, recursive=TRUE)
+#' dd <- paste0(temp, "/deployments/")
+#' deploy1 <- paste0(dd, "1")  # digital compass
+#'
+#' # run the action
+#' disc_conf(deploy.dir=dd)
+#' \donttest{disc_calibrate(dir=deploy1, verbose=TRUE)}
+#' # inspect results
+#' list.files(deploy1)
+#' # note that the aquarium coordinates are remembered
+#' disc_conf(deploy.dir=dd)
 disc_calibrate <- function(dir, verbose=FALSE, ...) {
 
   disc_message("Calibrate")

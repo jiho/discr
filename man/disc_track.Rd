@@ -17,6 +17,22 @@ disc_track(dir, sub = NULL, verbose = FALSE, ...)
 \description{
 Use the manual tracking plugin to record a track
 }
+\examples{
+# get example deployments included with the package
+deploys <- system.file("extdata", "deployments", package = "discuss")
+# copy them to a writable, temporary directory
+temp <- tempdir()
+file.copy(deploys, temp, recursive=TRUE)
+dd <- paste0(temp, "/deployments/")
+deploy1 <- paste0(dd, "1")
+
+# run the action
+disc_conf(deploy.dir=dd)
+\donttest{disc_track(dir=deploy1, verbose=TRUE)}
+# inspect results
+list.files(deploy1)
+head(read.csv(paste0(deploy1, "/larvae_tracks.csv")))
+}
 \seealso{
 Other action.functions: \code{\link{disc_calibrate}};
 \code{\link{disc_camera_compass_angle}};
