@@ -18,10 +18,15 @@
 #' @importFrom tools file_ext
 #'
 #' @examples
+#' # get an example dataset included with the package
 #' source <- system.file("extdata", "raw", package = "discuss")
 #' dest   <- tempdir()
 #' disc_extract_deployments(raw=source, deploy.dir=dest, width=NULL,
 #'                          acclimation.time=2, observation.time=2)
+#' # NOTE:
+#' # - the warning about deployment 2 being stopped earlier than the expected 2 mins
+#' # - the notice that the compass (cc) has 0 records in deployment 2
+#'
 #' system(paste0("ls -R ", dest))
 disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE) {
 
