@@ -39,8 +39,8 @@ disc_assemble <- function(pattern, ids=NULL, deploy.dir=NULL) {
   bits <- str_split(files, "/")
   n <- length(bits[[1]])
   # TODO check this n is the same for all, it should
-  deployId <- laply(bits, `[`, n-1)
-  d$deployId <- deployId[d$X1]
+  deploy_id <- laply(bits, `[`, n-1)
+  d$deploy_id <- deploy_id[d$X1]
 
   # from the file name
   d$fileName <- files[d$X1]
