@@ -21,7 +21,7 @@
 #' source <- system.file("extdata", "raw", package = "discuss")
 #' dest   <- tempdir()
 #' disc_extract_deployments(raw=source, deploy.dir=dest, width=NULL,
-#'                          acclimation.time=2, observation.time=5)
+#'                          acclimation.time=2, observation.time=2)
 #' system(paste0("ls -R ", dest))
 disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE) {
 

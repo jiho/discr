@@ -42,7 +42,7 @@ date and time
 source <- system.file("extdata", "raw", package = "discuss")
 dest   <- tempdir()
 disc_extract_deployments(raw=source, deploy.dir=dest, width=NULL,
-                         acclimation.time=2, observation.time=5)
+                         acclimation.time=2, observation.time=2)
 system(paste0("ls -R ", dest))
 }
 
