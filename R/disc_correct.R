@@ -111,7 +111,7 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
   compassLog$cameraHeading <- as.bearing(compassLog$cameraHeading)
 
   # interpolate camera headings at every point in time in the tracks
-  t$cameraHeading <- approx.circular(compassLog$dateTime, compassLog$cameraHeading, t$dateTime)$y
+  t$cameraHeading <- approx_circular(compassLog$dateTime, compassLog$cameraHeading, t$dateTime)$y
 
   # only keep larvae positions where a compass reading is available
   # might remove a few points at the beginning and end of the track, where the angle cannot be interpolated

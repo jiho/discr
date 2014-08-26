@@ -99,7 +99,7 @@ disc_camera_compass_angle <- function(dir, sub=NULL, verbose=FALSE, ...) {
   compass$heading <- as.bearing(compass$heading)
 
   # get the compass readings for the images on which the angle was measured
-  compassHeadings <- approx.circular(x=compass$dateTime, angles=compass$heading, xout=imgsTimes)$y
+  compassHeadings <- approx_circular(x=compass$dateTime, angles=compass$heading, xout=imgsTimes)$y
 
   # compute the mean difference angle
   cameraCompassAngles <- compassHeadings - cameraMeanHeadings$V1
