@@ -10,7 +10,7 @@
 disc_check <- function() {
 
   # get (and check) working directory
-  wd <- discdd()
+  wd <- disc_dd()
   message("deployments directory : ", wd)
 
   # get, set and display options
