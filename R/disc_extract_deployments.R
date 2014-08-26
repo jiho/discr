@@ -1,15 +1,14 @@
-#' Get data for deployments
+#' Extract data for each deployment
 #'
-#' Read the deployment logs, read necessary data in the raw data directory, split data into folders per deployment, based on date and time
+#' Read the deployment logs, read necessary data in the raw data directory, extract data for each deployment based on date and time
 #'
-#' @param raw path to the directory where the raw data and the deployment and daily logs are.
-#' @param ids deployment identifiers to extract; if NULL (the default) get all deployments
+#' @param raw path to the directory where the raw data and the deployment and leg logs are.
+#' @param ids deployment identifiers to extract; if NULL (the default) extract all deployments
 #' @param acclimation.time duration of the acclimation time in minutes.
 #' @param observation.time duration of the observation period (after acclimation) in minutes.
 #' @param width width to resize the images to, in pixels. When NULL, images are not resized.
 #' @param split.pics wether to create pictures in the deployments directory. TRUE by default but it can be useful to set it to false to quickly recreate the rest of the metadata (since the pictures are the longest to process)
 #' @inheritParams disc_dd
-# TODO rename to get/extract deployments; not always splitting all of them
 #'
 #' @export
 #' @importFrom stringr str_detect str_split_fixed str_c
@@ -17,7 +16,14 @@
 #' @importFrom parallel detectCores
 #' @importFrom doParallel registerDoParallel
 #' @importFrom tools file_ext
-disc_split_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE) {
+#'
+#' @examples
+#' source <- system.file("extdata", "raw", package = "discuss")
+#' dest   <- tempdir()
+#' disc_extract_deployments(raw=source, deploy.dir=dest, width=NULL,
+#'                          acclimation.time=2, observation.time=5)
+#' system(paste0("ls -R ", dest))
+disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE) {
 
   message("Reading field logs")
   # convert to csv first using
@@ -26,7 +32,7 @@ disc_split_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.t
   # read the logs
   legLog <- read.csv(str_c(raw, "/leg_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
   deployLog <- read.csv(str_c(raw, "/deployment_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
-  if ( any(duplicated(deployLog$deployId)) ) {
+  if ( any(duplicated(deployLog$deploy_id)) ) {
     stop("Deployment ids need to be unique. Check you deployment log")
   }
   # TODO check that deployment duration is compatible with acclimation.time + observation.time
@@ -62,11 +68,11 @@ disc_split_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.t
 
   # if no deployment id is specified, keep them all
   if ( is.null(ids) ) {
-    ids <- deployLog$deployId
+    ids <- deployLog$deploy_id
   }
 
   # select appropriate deployment ids and corresponding logs
-  deployLog <- deployLog[deployLog$deployId %in% ids,]
+  deployLog <- deployLog[deployLog$deploy_id %in% ids,]
   legLog <- legLog[legLog$leg %in% deployLog$leg,]
 
 
@@ -108,10 +114,10 @@ disc_split_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.t
 
   # split into deployments
   log <- join(deployLog, legLog, by="leg")
-  d_ply(log, ~deployId, function(x) {
+  d_ply(log, ~deploy_id, function(x) {
 
     # create the deployment folder
-    deployDir <- str_c(dest, "/", x$deployId)
+    deployDir <- str_c(dest, "/", x$deploy_id)
     dir.create(deployDir, showWarnings=FALSE, recursive=TRUE)
     message("Extracting to ", deployDir)
     # TODO check the existence and warn about overwrite
@@ -122,7 +128,7 @@ disc_split_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.t
     stopTheoretical <- start + observation.time * 60
     stopRecorded <- parse_date_time(str_c(x$date_stop, " ", x$time_stop), orders="ymd hms")
     if ( stopTheoretical > stopRecorded ) {
-      warning("Deployment ", x$deployId, " was stopped early.", call.=FALSE)
+      warning("Deployment ", x$deploy_id, " was stopped early.", call.=FALSE)
       stop <- stopRecorded
     } else {
       stop <- stopTheoretical
