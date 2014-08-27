@@ -34,7 +34,7 @@
 #' disc_stats(dir=deploy1, sub=10, verbose=TRUE)
 #' read.csv(paste0(deploy1, "/stats.csv"))
 #' # Note the difference in n compared to above
-disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
+disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
 
   disc_message("Compute statistics")
 

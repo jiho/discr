@@ -3,7 +3,7 @@
 \alias{disc_stats}
 \title{Compute statistics (circular and activity-level) on a deployment's trajectory data and create plots}
 \usage{
-disc_stats(dir, bin.angle = 0, sub = 0, verbose = FALSE, ...)
+disc_stats(dir, bin.angle = 0, sub = NULL, verbose = FALSE, ...)
 }
 \arguments{
   \item{dir}{path the to the deployment directory}
