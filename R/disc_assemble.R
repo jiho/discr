@@ -7,6 +7,7 @@
 #' @export
 #' @importFrom plyr adply laply
 #' @importFrom stringr str_c str_split
+#' @importFrom gtools mixedsort
 #'
 #' @examples
 #' # get example deployments included with the package
@@ -28,7 +29,7 @@ disc_assemble <- function(pattern, ids=NULL, deploy.dir=NULL) {
   disc_conf()
 
   # check ids
-  existingDeployments <- list.dirs(wd, full.names=FALSE, recursive=FALSE)
+  existingDeployments <- mixedsort(list.dirs(wd, full.names=FALSE, recursive=FALSE))
   if ( is.null(ids) ) {
     ids <- existingDeployments
   }

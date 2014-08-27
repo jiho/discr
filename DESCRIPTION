@@ -16,4 +16,5 @@ Imports:
     lubridate,
     circular,
     assertthat,
-    doParallel
+    doParallel,
+    gtools

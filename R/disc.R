@@ -17,6 +17,7 @@
 #' @export
 #' @family action functions
 #' @importFrom stringr str_c
+#' @importFrom gtools mixedsort
 #'
 #' @examples
 #' # get example deployments included with the package
@@ -51,7 +52,7 @@ disc <- function(ids=NULL, actions=c("calibrate", "track", "correct", "stats"), 
   actions <- match.arg(actions, choices=c("camera compass angle", "calibrate", "track", "compass", "correct",  "stats"), several.ok=TRUE)
 
   # check ids
-  existingDeployments <- list.dirs(wd, full.names=FALSE, recursive=FALSE)
+  existingDeployments <- mixedsort(list.dirs(wd, full.names=FALSE, recursive=FALSE))
   if ( is.null(ids) ) {
     ids <- existingDeployments
   }

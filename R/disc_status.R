@@ -6,6 +6,7 @@
 #'
 #' @export
 #' @importFrom plyr ldply
+#' @importFrom gtools mixedsort
 #'
 #' @examples
 #' # get example deployments included with the package
@@ -19,13 +20,7 @@ disc_status <- function(deploy.dir=NULL) {
   message(dir)
 
   # list all deployments
-  deployments <- list.dirs(dir, full.names=FALSE, recursive=FALSE)
-
-  # sort deployments with numbers first
-  dAsNum <- suppressWarnings(as.numeric(deployments))
-  dAlpha <- deployments[is.na(dAsNum)]
-  dNum <- na.omit(dAsNum)
-  deployments <- c(sort(dNum), sort(dAlpha))
+  deployments <- mixedsort(list.dirs(dir, full.names=FALSE, recursive=FALSE))
 
   d <- ldply(deployments, function(i) {
 
