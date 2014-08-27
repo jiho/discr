@@ -41,20 +41,8 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
 
   # Determine sub-sampling rate, if any
-  # compute interval between images
   picsData <- read.csv(picsFile)
-  interval <- mean(as.numeric(diff(picsData$dateTime)))
-
-  # compute the subsampling rate
-  if ( is.null(sub) ) {
-    subN <- 1
-  } else {
-    subN <- round(sub / interval)
-    # one image every subN will give an interval of sub seconds, approximately
-    if (verbose) {
-      disc_message("subsample at ", round(subN * interval, 2), " seconds, on average")
-    }
-  }
+  subN <- subsample_n(picsData$dateTime, sub=sub, verbose=verbose)
 
 	# Determine whether to use a virtual stack or a real one
 	# nb of images opened = total / subsampling rate

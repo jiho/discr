@@ -46,20 +46,8 @@ disc_track_compass <- function(dir, sub=NULL, verbose=FALSE, ...) {
   assert_that(not_empty(pics))
 
   # Determine sub-sampling rate, if any
-  # compute interval between images
   picsData <- read.csv(picsFile)
-  interval <- mean(as.numeric(diff(picsData$dateTime)))
-
-  # compute the subsampling rate
-  if ( is.null(sub) ) {
-    subN <- 1
-  } else {
-    subN <- round(sub / interval)
-    # one image every subN will give an interval of sub seconds, approximately
-    if (verbose) {
-      disc_message("subsample at ", round(subN * interval, 2), " seconds, on average")
-    }
-  }
+  subN <- subsample_n(picsData$dateTime, sub=sub, verbose=verbose)
 
   # open every subN images in the folder and manually measure the compass angle on each
   # save the results to a temporary file
