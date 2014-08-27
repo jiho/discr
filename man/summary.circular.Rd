@@ -11,12 +11,17 @@
   \item{...}{passthrough argument}
 }
 \value{
-A data.frame with columns \itemize{ \item{n}{sample size}
-\item{mean}{mean angle} \item{variance}{angular variance}
-\item{r}{Rayleigh r} \item{p.value}{p-value of Rayleigh's
-test} }
+A data.frame with columns \describe{ \item{n: }{sample
+size} \item{mean: }{mean angle} \item{variance: }{angular
+variance} \item{r: }{Rayleigh r} \item{p.value: }{p-value
+of Rayleigh's test} }
 }
 \description{
 Descriptive statistics and Rayleigh test
+}
+\seealso{
+Functions in the \code{circular} package:
+\code{link[circular]{mean.circular}} and
+\code{link[circular]{rayleigh.test}}
 }
 
