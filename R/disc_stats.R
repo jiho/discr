@@ -56,18 +56,21 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   }
 
 
+  # subsample the data if needed
+  if ( verbose ) disc_message("subsample data if needed")
+  tComplete <- t
+  t <- ddply(t, ~trackNb+rotation, function(x) {
+    subN <- subsample_n(x$dateTime, sub=sub, verbose=verbose)
+    x <- x[seq(1, nrow(x), by=subN),]
+    return(x)
+  })
+
+
   # compute position statistics
   # i.e. statistics about how concentrated the positions are in the reference of the chamber or in a cardinal reference
   if ( verbose ) disc_message("compute position statistics")
   stats <- ddply(t, ~trackNb+rotation, function(x) {
-
-    # subsample the data if needed
-    subN <- subsample_n(x$dateTime, sub=sub, verbose=verbose)
-    x <- x[seq(1, nrow(x), by=subN),]
-
-    # compute position statistics
     stats <- summary.circular(x$theta)
-
     return(stats)
   })
 
@@ -85,7 +88,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   # prepare plots
 
   # compute elapsed time to make it easier to plot
-  t <- ddply(t, ~trackNb+rotation, function(x) {
+  tComplete <- ddply(tComplete, ~trackNb+rotation, function(x) {
     # compute elapsed time in seconds
     x$elapsed <- x$dateTime - x$dateTime[1]
     # convert to minutes
@@ -99,11 +102,11 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   # compass rotation
   if ( verbose ) disc_message("plot compass rotation")
   # for one track only (it's enough)
-  p <- ggplot(t[t$rotation == "raw",]) + polar() +
+  p <- ggplot(tComplete[tComplete$rotation == "raw",]) + polar() +
     geom_point(aes(x=cameraHeading, y=elapsed), size=2) +
-    scale_y_continuous(limits=c(min(t$elapsed, na.rm=T) - 20, max(t$elapsed, na.rm=T)), breaks=seq(0, max(t$elapsed, na.rm=T), by=2)) + 
+    scale_y_continuous(limits=c(min(tComplete$elapsed, na.rm=T) - 20, max(tComplete$elapsed, na.rm=T)), breaks=seq(0, max(tComplete$elapsed, na.rm=T), by=2)) + 
     # geom_point(aes(x=cameraHeading, y=dateTime), size=2) +
-    # scale_y_continuous(limits=c(min(t$dateTime, na.rm=T) - 3600, max(t$dateTime, na.rm=T) + 3600)) +
+    # scale_y_continuous(limits=c(min(tComplete$dateTime, na.rm=T) - 3600, max(tComplete$dateTime, na.rm=T) + 3600)) +
     # TODO fix this: does not work so I can't shift the min away from the center
     facet_grid(trackNb~.) +
     labs(title="Compass rotation")
@@ -119,6 +122,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   p <- ggplot(t, aes(x=x, y=y, colour=elapsed)) + facet_wrap(~rotation) +
     coord_equal(xlim=c(-radius, radius), ylim=c(-radius, radius)) +
     geom_path() +
+  p <- ggplot(tComplete, aes(x=x, y=y)) +
     facet_grid(trackNb~rotation) +
     labs(title="Trajectory")
   # TODO add a circle around
