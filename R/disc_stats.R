@@ -93,7 +93,6 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
     return(x)
   })
 
-  # TODO deal with several tracks per deployment
 
   plots <- list()
 
@@ -106,6 +105,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
     # geom_point(aes(x=cameraHeading, y=dateTime), size=2) +
     # scale_y_continuous(limits=c(min(t$dateTime, na.rm=T) - 3600, max(t$dateTime, na.rm=T) + 3600)) +
     # TODO fix this: does not work so I can't shift the min away from the center
+    facet_grid(trackNb~.) +
     labs(title="Compass rotation")
   plots <- c(plots, list(compass_rotation=p))
 
@@ -119,6 +119,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   p <- ggplot(t, aes(x=x, y=y, colour=elapsed)) + facet_wrap(~rotation) +
     coord_equal(xlim=c(-radius, radius), ylim=c(-radius, radius)) +
     geom_path() +
+    facet_grid(trackNb~rotation) +
     labs(title="Trajectory")
   # TODO add a circle around
   plots <- c(plots, list(trajectory=p))
@@ -155,7 +156,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
     scale_y_continuous(limits=c(0, max(tBinned$count))) +
     geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
     scale_linetype_manual(values=c("solid", "dashed")) +
-    facet_grid(~rotation)
+    facet_grid(trackNb~rotation)
   # TODO edit labels in first plot to remove N, S, E, W; that probably involved setting two plots up with grid.arrange.
   plots <- c(plots, list(position_dotplot=p))
 
@@ -166,7 +167,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   	geom_histogram(aes(x=theta), binwidth=bin) +
     geom_segment(aes(x=mean, y=-10, xend=mean, yend=-10+r*10, linetype=signif), data=stats) +
     scale_linetype_manual(values=c("solid", "dashed")) +
-    facet_grid(~rotation)
+    facet_grid(trackNb~rotation)
   plots <- c(plots, list(position_histogram=p))
 
   # TODO density of position?
@@ -176,7 +177,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   # plot them to a file
   if ( verbose ) disc_message("save plots as PDF")
   destFile <- str_replace(destFile, fixed(".csv"), ".pdf")
-	pdf(file=destFile, width=7, height=5, pointsize=10)
+	pdf(file=destFile, width=7, height=1+3*length(unique(t$trackNb)), pointsize=10)
 	# set a theme with smaller fonts and grey background
 	theme_set(theme_gray(10))
 	dummy = l_ply(plots, print, .progress="text")
