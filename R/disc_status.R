@@ -37,6 +37,7 @@ disc_status <- function(deploy.dir=NULL) {
     nbPics <- length(pics)
 
     # test the existence of data files
+    # compass
     digitalCompass <- file.exists(make_path(dir, i, .files$digital.compass))
     analogCompass  <- file.exists(make_path(dir, i, .files$analog.compass)) & file.exists(make_path(dir, i, .files$analog.compass.coord))
     if (digitalCompass) {
@@ -46,31 +47,33 @@ disc_status <- function(deploy.dir=NULL) {
     } else {
       compass <- FALSE
     }
-    # ctd <- file.exists(make_path(dir, i, .files$ctd))
-    # gps <- file.exists(make_path(dir, i, .files$gps))
-    # light <- file.exists(make_path(dir, i, .files$light))
-    # TODO detect all files ending with log to give info on which deployments have what
 
-    # test the existence of data files
+    # rest
     calib   <- file.exists(make_path(dir, i, .files$aquarium.coord))
     track   <- file.exists(make_path(dir, i, .files$tracks))
     correct <- file.exists(make_path(dir, i, .files$rotated.tracks))
     stats   <- file.exists(make_path(dir, i, .files$stats))
-    # if (stats) {
-    #   status <- TRUE
-    # } else if (correctedTracks) {
-    #   status <- "correction done"
-    # } else if (rawTracks) {
-    #   status <- "tracking done"
-    # } else if (calib) {
-    #   status <- "calibration done"
-    # } else {
-    #   status <- FALSE
-    # }
 
-    d <- data.frame(video, pics=nbPics, compass, calib, track, correct, stats, stringsAsFactors=FALSE)
+    # list sensor data
+    logFiles <- list.files(make_path(dir, i), pattern=glob2rx("*_log.csv"))
+    # remove pics and compass logs which we already dealt with above
+    logFiles <- setdiff(logFiles, c("pics_log.csv", .files$digital.compass, .files$analog.compass))
+    # detect sensor names
+    sensorNames <- str_replace(logFiles, fixed("_log.csv"), "")
+    # create the sensors table
+    if (length(sensorNames) > 0) {
+      sensors <- matrix(TRUE, ncol=length(sensorNames))
+      colnames(sensors) <- sensorNames
+    } else {
+      sensors <- NA
+    }
+
+    d <- data.frame(video, pics=nbPics, compass, calib, track, correct, stats, sensors, stringsAsFactors=FALSE)
   })
   row.names(d) <- deployments
+
+  # replace NA by FALSE
+  d[is.na(d[,])] <- FALSE
 
   # remove columns that are entirely empty/FALSE
   # those are usually non-existent sensors
