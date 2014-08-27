@@ -144,7 +144,7 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
       stop <- stopTheoretical
     }
     duration <- difftime(stop, start, units="mins")
-    message("  ", start, " -> ", stop, " = ", duration, " mins")
+    disc_message(start, " -> ", stop, " = ", duration, " mins")
 
     # for all sensors
     l_ply(sensors, function(sensor) {
@@ -152,7 +152,7 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
       d <- D[[sensor]]
       dc <- d[d$dateTime >= start & d$dateTime <= stop,]
       n <- nrow(dc)
-      message("  ", format(sensor, width=10), " ", n, " records", if(n==0) { " !!!" })
+      disc_message(format(sensor, width=10), " ", n, " records", if(n==0) { " !!!" })
 
       if (n > 1) {
         # get the folder name in which the data was
