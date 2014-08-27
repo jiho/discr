@@ -54,8 +54,10 @@ disc_assemble <- function(pattern, ids=NULL, deploy.dir=NULL) {
   # identify each deployment
   # by ID (extract it from the file name, as the "before-the-last" element)
   bits <- str_split(files, "/")
-  n <- length(bits[[1]])
-  # TODO check this n is the same for all, it should
+  n <- unique(laply(bits, length))
+  if ( length(n) != 1 ) {
+    stop("Error trying to find deployment ID")
+  }
   deploy_id <- laply(bits, `[`, n-1)
   d$deploy_id <- deploy_id[d$X1]
 
