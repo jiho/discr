@@ -114,18 +114,24 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
 
   # trajectory
   if ( verbose ) disc_message("plot trajectory")
-  # get chamber radius to limit the plot
+  # get arena radius to limit the plot
   diameter <- getOption("disc.diameter")
   radius <- diameter / 2
-  tolerance <- 2
-  radius <- radius + tolerance
-  p <- ggplot(t, aes(x=x, y=y, colour=elapsed)) + facet_wrap(~rotation) +
-    coord_equal(xlim=c(-radius, radius), ylim=c(-radius, radius)) +
-    geom_path() +
+  radiusT <- radius + 1 # add tolerance for limits
+  # draw the arena
+  circleFun <- function(center = c(0,0), radius = 1, npoints = 100){
+      tt <- seq(0, 2*pi, length.out = npoints)
+      xx <- center[1] + radius * cos(tt)
+      yy <- center[2] + radius * sin(tt)
+      return(data.frame(x = xx, y = yy))
+  }
   p <- ggplot(tComplete, aes(x=x, y=y)) +
+    geom_path(data=circleFun(radius=radius), alpha=0.5) +
+    geom_path(aes(colour=elapsed)) +
     facet_grid(trackNb~rotation) +
+    coord_equal(xlim=c(-radiusT, radiusT), ylim=c(-radiusT, radiusT)) +
+    scale_x_continuous(breaks=NULL) + scale_y_continuous(breaks=NULL) +
     labs(title="Trajectory")
-  # TODO add a circle around
   plots <- c(plots, list(trajectory=p))
 
 
