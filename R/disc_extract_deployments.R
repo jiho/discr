@@ -40,8 +40,6 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
   if ( any(duplicated(deployLog$deploy_id)) ) {
     stop("Deployment ids need to be unique. Check you deployment log")
   }
-  # TODO check that deployment duration is compatible with acclimation.time + observation.time
-
 
   # detect sensors
   # sensors are specified in the legLog in the form "sensor name"_"info category"
