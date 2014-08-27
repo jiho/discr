@@ -25,6 +25,7 @@ disc_conf <- function(..., deploy.dir=NULL, verbose=FALSE) {
     diameter = 20,
     java_memory = 1024
   )
+  # TODO set a default verbosity flag
   class(defaults) <- c("disc_conf", "list")
 
   # get settings from the project configuration file
