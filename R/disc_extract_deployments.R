@@ -123,7 +123,13 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
     deployDir <- str_c(dest, "/", x$deploy_id)
     dir.create(deployDir, showWarnings=FALSE, recursive=TRUE)
     message("Extracting to ", deployDir)
-    # TODO check the existence and warn about overwrite
+    # when the deployment exists, move it around
+    if (file.exists(deployDir)) {
+      oldDeployDir <- str_c(deployDir, "_old")
+      disc_message("Deployment ", basename(deployDir), " exists !!! Moving it to ", basename(oldDeployDir))
+      dir.create(oldDeployDir, showWarnings=FALSE)
+      file.copy(deployDir, oldDeployDir, recursive=TRUE)
+    }
 
     # get start and stop time
     start <- parse_date_time(str_c(x$date_start, " ", x$time_start), orders="ymd hms")
