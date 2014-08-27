@@ -9,7 +9,7 @@
 #' \item{"camera compass angle"}{estimate the angle between the top of the camera and the physical direction in which the digital compass is set up in its housing by detecting the angle of the analog compasses on a few frames and comparing that with the record of the digital compass. Is usually done on short, calibration-type deployments.}
 #' \item{"calibrate"}{measure the position of the arena on the first image of a deployment, to calibrate the trajectory and convert distances from pixels on frame to mm. See the "\code{disc.diameter}" option set by \code{\link{disc_conf}}.}
 #' \item{"track"}{manually track the larva(e) on each frame}
-#' \item{"track compass" or "compass"}{manually detect the analog compass bearing when the digital compass does not work}
+#' \item{"compass"}{manually detect the analog compass bearing when the digital compass does not work}
 #' \item{"correct"}{correct larvae tracks according to compass readings, to put them back in cardinal space}
 #' \item{"stats"}{compute statistics on the positions of larvae in the arena}
 #' }
@@ -48,8 +48,7 @@ disc <- function(ids=NULL, actions=c("calibrate", "track", "correct", "stats"), 
   disc_conf()
 
   # get actions
-  actions <- match.arg(actions, choices=c("camera compass angle", "calibrate", "track", "compass", "track compass", "correct",  "stats"), several.ok=TRUE)
-  # TODO remove track compass which is ambiguous with track
+  actions <- match.arg(actions, choices=c("camera compass angle", "calibrate", "track", "compass", "correct",  "stats"), several.ok=TRUE)
 
   # check ids
   existingDeployments <- list.dirs(wd, full.names=FALSE, recursive=FALSE)

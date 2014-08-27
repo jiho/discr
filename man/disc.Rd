@@ -40,12 +40,12 @@ first image of a deployment, to calibrate the trajectory
 and convert distances from pixels on frame to mm. See the
 "\code{disc.diameter}" option set by
 \code{\link{disc_conf}}.} \item{"track"}{manually track the
-larva(e) on each frame} \item{"track compass" or
-"compass"}{manually detect the analog compass bearing when
-the digital compass does not work} \item{"correct"}{correct
-larvae tracks according to compass readings, to put them
-back in cardinal space} \item{"stats"}{compute statistics
-on the positions of larvae in the arena} }
+larva(e) on each frame} \item{"compass"}{manually detect
+the analog compass bearing when the digital compass does
+not work} \item{"correct"}{correct larvae tracks according
+to compass readings, to put them back in cardinal space}
+\item{"stats"}{compute statistics on the positions of
+larvae in the arena} }
 }
 \examples{
 # get example deployments included with the package
