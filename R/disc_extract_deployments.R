@@ -35,8 +35,8 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
   # soffice --headless --convert-to csv test.ods
 
   # read the logs
-  legLog <- read.csv(str_c(raw, "/leg_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
-  deployLog <- read.csv(str_c(raw, "/deployment_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
+  legLog <- read.csv(make_path(raw, "leg_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
+  deployLog <- read.csv(make_path(raw, "deployment_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
   if ( any(duplicated(deployLog$deploy_id)) ) {
     stop("Deployment ids need to be unique. Check you deployment log")
   }
@@ -89,7 +89,7 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
       cat(".")
       # get the folder in which the data is
       sensorDirName <- dl[,str_c(sensor,"_dir")]
-      dataDir <- str_c(raw, "/", dl$leg, "/", sensorDirName)
+      dataDir <- make_path(raw, dl$leg, sensorDirName)
 
       if ( file.exists(dataDir) ) {
         # read the data in the folder using the appropriate method
@@ -120,7 +120,7 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
   d_ply(log, ~deploy_id, function(x) {
 
     # create the deployment folder
-    deployDir <- str_c(dest, "/", x$deploy_id)
+    deployDir <- make_path(dest, x$deploy_id)
     dir.create(deployDir, showWarnings=FALSE, recursive=TRUE)
     message("Extracting to ", deployDir)
     # when the deployment exists, move it around
@@ -161,10 +161,10 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
 
         # for pictures, resize the images and number them sequentially
         if ( sensorDirName == .files$pictures & split.pics ) {
-          picsDir <- str_c(deployDir, "/", sensorDirName)
+          picsDir <- make_path(deployDir, sensorDirName)
           dir.create(picsDir, showWarnings=FALSE)
           dc$imgNb <- 1:nrow(dc)
-          dc$file <- str_c(picsDir, "/", dc$imgNb, ".jpg")
+          dc$file <- make_path(picsDir, str_c(dc$imgNb, ".jpg"))
           registerDoParallel(detectCores()-1)
           a_ply(dc, 1, function(x) {
             if (is.null(width)) {
@@ -176,7 +176,7 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
         }
 
         # write the selected portion of the data to the deployment folder
-        write.csv(dc, file=str_c(deployDir, "/", sensorDirName, "_log.csv"), row.names=FALSE)
+        write.csv(dc, file=make_path(deployDir, str_c(sensorDirName, "_log.csv")), row.names=FALSE)
       }
     })
   })
