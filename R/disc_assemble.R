@@ -1,6 +1,6 @@
 #' Assemble data of a given kind from several deployments
 #'
-#' @param pattern pattern to look for in the file name; passed to \code{\link[base]{list.files}}
+#' @param pattern pattern to look for in the file name; passed to \code{\link[base]{list.files}}. Only \code{.csv} files are searched for.
 #' @param ids deployment ids to limit the search to; if NULL (the default) get data from all deployments
 #' @inheritParams disc_dd
 #'
@@ -41,7 +41,12 @@ disc_assemble <- function(pattern, ids=NULL, deploy.dir=NULL) {
   # list matching files in the appropriate deployment directories
   files <- list.files(str_c(wd, ids, sep="/"), pattern=pattern, full.names=TRUE)
 
-  # TODO check all are CSV
+  # only keep csv files
+  files <- files[which(str_detect(files, ".*\\.csv$"))]
+
+  if ( length(files) == 0 ) {
+    stop("Cannot find .csv files matching pattern: ", pattern)
+  }
 
   # get data from these files
   d <- adply(files, 1, read.csv, stringsAsFactors=FALSE, .inform=TRUE)
