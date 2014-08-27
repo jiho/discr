@@ -29,6 +29,11 @@
 #' # inspect results
 #' list.files(deploy1)
 #' read.csv(paste0(deploy1, "/stats.csv"))
+#'
+#' # subsample positions
+#' disc_stats(dir=deploy1, sub=10, verbose=TRUE)
+#' read.csv(paste0(deploy1, "/stats.csv"))
+#' # Note the difference in n compared to above
 disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
 
   disc_message("Compute statistics")
@@ -57,12 +62,8 @@ disc_stats <- function(dir, bin.angle=0, sub=0, verbose=FALSE, ...) {
   stats <- ddply(t, ~trackNb+rotation, function(x) {
 
     # subsample the data if needed
-    meanStep <- as.numeric(mean(diff(x$dateTime)))
-    if ( meanStep < sub ) {
-      if ( verbose ) disc_message("subsample records every ", sub, " seconds for position statistics")
-      stop("Not implemented yet")
-      # TODO implement this
-    }
+    subN <- subsample_n(x$dateTime, sub=sub, verbose=verbose)
+    x <- x[seq(1, nrow(x), by=subN),]
 
     # compute position statistics
     stats <- summary.circular(x$theta)

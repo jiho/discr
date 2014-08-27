@@ -36,6 +36,11 @@ disc_stats(dir=deploy1, verbose=TRUE)
 # inspect results
 list.files(deploy1)
 read.csv(paste0(deploy1, "/stats.csv"))
+
+# subsample positions
+disc_stats(dir=deploy1, sub=10, verbose=TRUE)
+read.csv(paste0(deploy1, "/stats.csv"))
+# Note the difference in n compared to above
 }
 \seealso{
 Other action.functions: \code{\link{disc_calibrate}};
