@@ -14,6 +14,7 @@
 #' @importFrom stringr str_c
 #' @importFrom assertthat assert_that
 #' @importFrom circular mean.circular angular.deviation
+#' @importFrom lubridate ymd_hms
 #'
 #' @examples
 #' # get example deployments included with the package
@@ -45,7 +46,7 @@ disc_camera_compass_angle <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
   # Determine sub-sampling rate, if any
   picsData <- read.csv(picsFile)
-  subN <- subsample_n(picsData$dateTime, sub=sub, verbose=verbose)
+  subN <- subsample_n(ymd_hms(picsData$dateTime), sub=sub, verbose=verbose)
 
   # open every subN images in the folder and manually measure the compass angle on each
   # save the results to a temporary file

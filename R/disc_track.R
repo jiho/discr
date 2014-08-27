@@ -9,6 +9,7 @@
 #'
 #' @export
 #' @family action functions
+#' @importFrom lubridate ymd_hms
 #'
 #' @examples
 #' # get example deployments included with the package
@@ -42,7 +43,7 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
   # Determine sub-sampling rate, if any
   picsData <- read.csv(picsFile)
-  subN <- subsample_n(picsData$dateTime, sub=sub, verbose=verbose)
+  subN <- subsample_n(ymd_hms(picsData$dateTime), sub=sub, verbose=verbose)
 
 	# Determine whether to use a virtual stack or a real one
 	# nb of images opened = total / subsampling rate
