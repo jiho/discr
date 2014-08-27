@@ -163,9 +163,10 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   }, bin=bin)
   p <- ggplot(tBinned) + polar() + labs(title=posTitle) +
   	geom_point(aes(x=theta, y=count)) +
-    scale_y_continuous(limits=c(0, max(tBinned$count))) +
     geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
+    # geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
     scale_linetype_manual(values=c("solid", "dashed")) +
+    scale_y_continuous(limits=c(0, max(tBinned$count)), breaks=c(0, 10/2, 10), labels=c(0, 0.5, 1)) +
     facet_grid(trackNb~rotation)
   # TODO edit labels in first plot to remove N, S, E, W; that probably involved setting two plots up with grid.arrange.
   plots <- c(plots, list(position_dotplot=p))
@@ -177,6 +178,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   	geom_histogram(aes(x=theta), binwidth=bin) +
     geom_segment(aes(x=mean, y=-10, xend=mean, yend=-10+r*10, linetype=signif), data=stats) +
     scale_linetype_manual(values=c("solid", "dashed")) +
+    scale_y_continuous(breaks=c(-10, -10/2, 0), labels=c(0, 0.5, 1)) +
     facet_grid(trackNb~rotation)
   plots <- c(plots, list(position_histogram=p))
 
