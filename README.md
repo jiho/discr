@@ -9,7 +9,7 @@ Well, in R actually, but `discuss` looks better than `discusr` ;)
 2. Install `discuss`. `discuss` is an R package but it is not (yet) available in the official R packages repositories. To install it, start RStudio and, in the console, type
 
         install_packages("devtools")
-        devtools::install_bitbucket("discuss", "jiho")
+        devtools::install_bitbucket("jiho/discuss")
 
 3. Load `discuss` and check your installation with
 
