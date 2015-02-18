@@ -30,6 +30,15 @@ summary.circular <- function(object, ...) {
   # mean angle
   mean <- mean.circular(object)
 
+  # estimates parameters from a von.mises distribution
+  # with correction for se.kappa when sample size is small (cf. ?mle.vonmises)
+  est <- mle.vonmises(object, bias=n<16)
+  kappa <- est$kappa
+  se.mean <- est$se.mu
+  se.kappa <- est$se.kappa
+  # NB: `mu` here is the same as `mean` above, as far as I can test
+  #     keep a separate mean for consistency with previous results
+
   # rayleigh test
   rayleigh <- rayleigh.test(object)
   r <- rayleigh$statistic
@@ -46,5 +55,5 @@ summary.circular <- function(object, ...) {
   # # = sqrt( (1-r) )
   # sd = sqrt(variance)
 
-  return(data.frame(n, mean, variance, r, p.value, signif))
+  return(data.frame(n, mean, se.mean, kappa, se.kappa, variance, r, p.value, signif))
 }
