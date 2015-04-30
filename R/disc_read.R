@@ -50,7 +50,10 @@ disc_read.gt31 <- function(dir, ...) {
 disc_read.igotu <- function(dir, ...) {
   # file <- "inst/tests/gps_igotu_sample.csv"
 
-  d <- read.csv(file, stringsAsFactors=FALSE, ...)
+  files <- list.files(dir, pattern=glob2rx("*.csv"), full.names=TRUE)
+
+  # there should be only one per directory, but just in case, loop automatically over all files
+  d <- ldply(files, read.csv, stringsAsFactors=FALSE, ...)
 
   # homogenise output
   d <- rename(d, c("Latitude"="lat", "Longitude"="lon"))
