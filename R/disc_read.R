@@ -48,21 +48,18 @@ disc_read.gt31 <- function(dir, ...) {
 #' @rdname disc_read
 #' @export
 disc_read.igotu <- function(dir, ...) {
-  # file <- "inst/tests/gps_igotu_sample.csv"
+  # dir <- "inst/tests/igotu"
 
   files <- list.files(dir, pattern=glob2rx("*.csv"), full.names=TRUE)
 
   # there should be only one per directory, but just in case, loop automatically over all files
   d <- ldply(files, read.csv, stringsAsFactors=FALSE, ...)
 
-  # homogenise output
-  d <- rename(d, c("Latitude"="lat", "Longitude"="lon"))
-
   d$dateTime <- str_c(d$Date, " ", d$Time)
   d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms", quiet=TRUE)
   d <- select(d, -Date, -Time)
 
-  d <- select(d, dateTime, lon, lat)
+  d <- select(d, dateTime, lon=Latitude, lat=Longitude)
 
   # sort by time
   d <- arrange(d, dateTime)
