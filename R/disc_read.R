@@ -59,7 +59,7 @@ disc_read.igotu <- function(dir, ...) {
   d <- rename(d, c("Latitude"="lat", "Longitude"="lon"))
 
   d$dateTime <- str_c(d$Date, " ", d$Time)
-  d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
+  d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms", quiet=TRUE)
   d <- select(d, -Date, -Time)
 
   d <- select(d, dateTime, lon, lat)
