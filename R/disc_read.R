@@ -56,7 +56,7 @@ disc_read.igotu <- function(dir, ...) {
   d <- ldply(files, read.csv, stringsAsFactors=FALSE, ...)
 
   d$dateTime <- str_c(d$Date, " ", d$Time)
-  d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms", quiet=TRUE)
+  d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
   d <- select(d, -Date, -Time)
 
   d <- select(d, dateTime, lon=Latitude, lat=Longitude)
