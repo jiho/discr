@@ -16,7 +16,7 @@
 #'
 #' @export
 #'
-#' @importFrom circular is.circular mean.circular rayleigh.test
+#' @importFrom circular is.circular mean.circular rayleigh.test mle.vonmises
 summary.circular <- function(object, ...) {
 
   # check the class of angles
