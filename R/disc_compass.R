@@ -50,6 +50,17 @@ disc_track_compass <- function(dir, sub=NULL, verbose=FALSE, ...) {
   picsData <- read.csv(picsFile)
   subN <- subsample_n(ymd_hms(picsData$dateTime), sub=sub, verbose=verbose)
 
+	# Determine whether to use a virtual stack or a real one
+	# nb of images opened = total / subsampling rate
+	nbOpened <- length(pics) / subN
+	# when there are less than 30 frames to open, loading them is fast and not too memory hungry
+	# in that case, use a regular stack, other wise use a virtual stack
+	if ( nbOpened <= 30 ) {
+	  virtualStack <- ""
+	} else {
+	  virtualStack <- "use"
+	}
+
   # open every subN images in the folder and manually measure the compass angle on each
   # save the results to a temporary file
   compassAngleFile <- tempfile()
@@ -60,7 +71,7 @@ disc_track_compass <- function(dir, sub=NULL, verbose=FALSE, ...) {
   command <- str_c(
     "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discusr"),
     " -ijpath ", system.file("ij/", package="discusr"), " -eval \"",
-    " run('Image Sequence...', 'open=", picsDir, " number=-1 starting=1 increment=", subN, " scale=100 file=[] or=[] sort');",
+    " run('Image Sequence...', 'open=", picsDir, " number=-1 starting=1 increment=", subN, " scale=100 file=[] or=[] sort ", virtualStack,"');",
     " run('Measure Angle', '');",
     # " run('Compile and Run...', 'compile=", system.file("ij/", package="discusr"),"/plugins/Measure_Angle.java');",
     " waitForUser('Compass detect',",
