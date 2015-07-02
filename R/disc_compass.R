@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' # get example deployments included with the package
-#' deploys <- system.file("extdata", "deployments", package = "discusr")
+#' deploys <- system.file("extdata", "deployments", package = "discr")
 #' # copy them to a writable, temporary directory
 #' temp <- tempdir()
 #' file.copy(deploys, temp, recursive=TRUE)
@@ -69,11 +69,11 @@ disc_track_compass <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
   # prepare java command
   command <- str_c(
-    "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discusr"),
-    " -ijpath ", system.file("ij/", package="discusr"), " -eval \"",
+    "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discr"),
+    " -ijpath ", system.file("ij/", package="discr"), " -eval \"",
     " run('Image Sequence...', 'open=", picsDir, " number=-1 starting=1 increment=", subN, " scale=100 file=[] or=[] sort ", virtualStack,"');",
     " run('Measure Angle', '');",
-    # " run('Compile and Run...', 'compile=", system.file("ij/", package="discusr"),"/plugins/Measure_Angle.java');",
+    # " run('Compile and Run...', 'compile=", system.file("ij/", package="discr"),"/plugins/Measure_Angle.java');",
     " waitForUser('Compass detect',",
     " 'Draw a line from the South to the North of a compass.\\nClick Get Angle. Repeat for every compass.\\nMove to the next image until the end of the stack.\\nPress OK when you are done');",
     " saveAs('Measurements', '", compassAngleFile, "');",

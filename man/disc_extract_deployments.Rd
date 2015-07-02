@@ -40,7 +40,7 @@ date and time
 }
 \examples{
 # get an example dataset included with the package
-source <- system.file("extdata", "raw", package = "discusr")
+source <- system.file("extdata", "raw", package = "discr")
 dest   <- tempdir()
 disc_extract_deployments(raw=source, deploy.dir=dest, width=NULL,
                          acclimation.time=2, observation.time=2)

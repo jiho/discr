@@ -1,6 +1,6 @@
-#' discusr
+#' discr
 #'
-#' @name discusr
+#' @name discr
 #' @docType package
 NULL
 

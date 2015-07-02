@@ -1,4 +1,4 @@
-Package: discusr
+Package: discr
 Title: Drifting In Situ Chamber User Software in R
 Description: Implements procedures to extract and analysed the data produced by
     the Drifting In Situ Chamber (DISC).

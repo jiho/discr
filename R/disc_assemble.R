@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' # get example deployments included with the package
-#' deploys <- system.file("extdata", "deployments", package = "discusr")
+#' deploys <- system.file("extdata", "deployments", package = "discr")
 #' disc_status(deploys)
 #'
 #' # get all larvae tracks

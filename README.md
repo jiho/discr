@@ -4,17 +4,19 @@
 
 1. Install R from <http://cran.rstudio.com/>
 
-2. Install `discusr`. `discusr` is an R package but it is not (yet) available in the official R packages repositories. To install it, start RStudio and, in the console, type
+2. Optionally install RStudio from <http://www.rstudio.com/products/rstudio/download/>
+
+2. Install `discr`. `discr` is an R package but it is not (yet) available in the official R packages repositories. To install it, start RStudio and, in the console, type
 
         install.packages("devtools")
-        devtools::install_github("jiho/discusr")
+        devtools::install_github("jiho/discr")
 
-3. Load `discusr` and check your installation with
+3. Load `discr` and check your installation with
 
-        library("discusr")
+        library("discr")
         disc_check()
     
-    `disc_check()` will give you platform-specific pointers to install the software `discusr` depends on. `discusr` needs
+    `disc_check()` will give you platform-specific pointers to install the software `discr` depends on. `discr` needs
     
     - A java JRE to run the image manipulation parts; from <https://www.java.com/en/download/>
     - The `exif` executable from `libexif` to extract timestamp from images; installation is usually done through a package manager
@@ -58,7 +60,7 @@ The format for the `leg_log.csv` file is:
 
 It has the leg directory name and information for each sensor. The column names are in the form `sensorName_informationLabel`. The underscore (`_`) in the middle is important. The usual information labels for each sensor are :
 
-- `start` and `stop` : the start and stop time of the sensor (not used by `discusr` but important to record)
+- `start` and `stop` : the start and stop time of the sensor (not used by `discr` but important to record)
 - `dir` : the name of the directory in which the sensor data is stored. When absent, this is supposed to be the name of the sensor itself. Pictures should always be stored in a directory called `pics`; compass data should always be stored in a directory called `compass`; the rest of the names are free.
 - `offset` : the time offset (in seconds) between the sensor time and a reference time (usually the time of a computer). When absent, it is supposed to be 0. The offset is *added* to the timestamp of the data to correct it back to the reference time. So it should be negative when the sensor is early and positive when it is late. For example, if the sensor records 08:55:12 but the actual time is 08:55:10, the sensor is early and the offset is -2.
 
@@ -91,8 +93,8 @@ NB: if you use RStudio <http://www.rstudio.com/products/rstudio/download/>, this
 
 In an R console, in your working directory:
 
-    # load 'discusr'
-    library("discusr")
+    # load 'discr'
+    library("discr")
     # create the deployments directory
     dir.create("deployments")
     # extract deployments
@@ -113,9 +115,9 @@ See `?disc_extract_deployments` for more information.
 
 ### Process deployments
 
-Open R in your working directory (or open the RStudio project created above). In the console load `discusr`
+Open R in your working directory (or open the RStudio project created above). In the console load `discr`
 
-    library("discusr")
+    library("discr")
 
 The process deployments with a command such as
 
@@ -137,9 +139,9 @@ and now `disc()` again. Good luck!
 
 ### Analyse data
 
-Again, open R in your working directory (or open the RStudio project) and load `discusr`
+Again, open R in your working directory (or open the RStudio project) and load `discr`
 
-    library("discusr")
+    library("discr")
 
 Check available data with
 
@@ -161,7 +163,7 @@ You can also collect all tracks, or gps data, or hobo data, etc. with
 
 What `disc_assemble()` does is look for files with the given pattern in their name, read them all and concatenate the result.
 
-Now you are ready to do you analyses in R. `discusr` provides a few helpful functions to work with angles
+Now you are ready to do you analyses in R. `discr` provides a few helpful functions to work with angles
 
     ?summary.circular
     ?polar
@@ -174,11 +176,11 @@ check out the `circular` package for other.
 
 If storing your deployments in a subdirectory of your working directory is not appropriate (not enough space on hard drive, etc.), you can store them elsewhere and still get to them from your working directory, either by providing the path through the `deploy.dir` argument of each function, or, more efficiently, by setting it at the start of the session with `disc_dd`. See `?disc_dd` for more information.
 
-New sensors can easily be added and handled by `discusr`; see `?disc_read` for more information.
+New sensors can easily be added and handled by `discr`; see `?disc_read` for more information.
 
 ## Credit
 
-`discusr` is written by [Jean-Olivier Irisson](http://www.obs-vlfr.fr/~irisson/ "jean-olivier irisson : work"), at Université Pierre et Marie Curie ([UPMC](http://www.upmc.fr/)). All code is released under the [GNU General Public License v3.0](https://www.gnu.org/copyleft/gpl.html "The GNU General Public License v3.0 - GNU Project - Free Software Foundation").
+`discr` is written by [Jean-Olivier Irisson](http://www.obs-vlfr.fr/~irisson/ "jean-olivier irisson : work"), at Université Pierre et Marie Curie ([UPMC](http://www.upmc.fr/)). All code is released under the [GNU General Public License v3.0](https://www.gnu.org/copyleft/gpl.html "The GNU General Public License v3.0 - GNU Project - Free Software Foundation").
 
 The DISC instrument is developed by [Claire Paris](https://www.rsmas.miami.edu/users/cparis/ "Physical-Biological Interactions - Paris' Lab") at the Rosenstiel School of Marine and Atmospheric Sciences ([RSMAS](http://www.rsmas.miami.edu/ "| The Rosenstiel School of Marine and Atmospheric Science at the University of Miami")) of the University of Miami.
 

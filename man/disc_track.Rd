@@ -19,7 +19,7 @@ Use the manual tracking plugin to record a track
 }
 \examples{
 # get example deployments included with the package
-deploys <- system.file("extdata", "deployments", package = "discusr")
+deploys <- system.file("extdata", "deployments", package = "discr")
 # copy them to a writable, temporary directory
 temp <- tempdir()
 file.copy(deploys, temp, recursive=TRUE)

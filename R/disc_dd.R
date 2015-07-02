@@ -1,4 +1,4 @@
-#' Get or set discusr deployments directory
+#' Get or set discr deployments directory
 #'
 #' This is the directory where deployments are stored (usually as a set of numbered folders). Data will be read from and written to this directory. Settings will also be stored there.
 #'
