@@ -19,7 +19,7 @@ disc_extract_deployments(raw, ids = NULL, deploy.dir = NULL,
   time in minutes.} \item{observation.time}{duration of
   the observation period (after acclimation) in minutes.}
   \item{width}{width to resize the images to, in pixels. When
-  NULL, images are not resized.} \item{split.pics}{wether
+  NULL, images are not resized.} \item{split.pics}{whether
   to create pictures in the deployments directory. TRUE by
   default but it can be useful to set it to false to quickly
   recreate the rest of the metadata (since the pictures are

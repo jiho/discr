@@ -7,7 +7,7 @@
 #' @param acclimation.time duration of the acclimation time in minutes.
 #' @param observation.time duration of the observation period (after acclimation) in minutes.
 #' @param width width to resize the images to, in pixels. When NULL, images are not resized.
-#' @param split.pics wether to create pictures in the deployments directory. TRUE by default but it can be useful to set it to false to quickly recreate the rest of the metadata (since the pictures are the longest to process)
+#' @param split.pics whether to create pictures in the deployments directory. TRUE by default but it can be useful to set it to false to quickly recreate the rest of the metadata (since the pictures are the longest to process)
 #' @inheritParams disc_dd
 #'
 #' @export
