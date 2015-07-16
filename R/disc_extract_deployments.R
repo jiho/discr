@@ -121,7 +121,6 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
 
     # create the deployment folder
     deployDir <- make_path(dest, x$deploy_id)
-    dir.create(deployDir, showWarnings=FALSE, recursive=TRUE)
     message("Extracting to ", deployDir)
     # when the deployment exists, move it around
     if (file.exists(deployDir)) {
@@ -130,6 +129,8 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
       dir.create(oldDeployDir, showWarnings=FALSE)
       file.copy(deployDir, oldDeployDir, recursive=TRUE)
       disc_message("Deployment ", basename(deployDir), " exists !!! Moving it to ", basename(oldDeployDir))
+    } else {
+      dir.create(deployDir, showWarnings=FALSE, recursive=TRUE)
     }
 
     # get start and stop time
