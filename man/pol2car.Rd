@@ -7,10 +7,9 @@
 pol2car(x, orig = c(0, 0))
 }
 \arguments{
-  \item{x}{matrix or data frame with columns [theta,rho],
-  with theta of class circular or in trigonometric reference}
-  \item{orig}{vector with the x,y coordinates of the origin,
-  defaults to (0,0)}
+\item{x}{matrix or data frame with columns [theta,rho], with theta of class circular or in trigonometric reference}
+
+\item{orig}{vector with the x,y coordinates of the origin, defaults to (0,0)}
 }
 \value{
 a data.frame with columns [x,y] in the same unit as rho

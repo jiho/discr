@@ -8,6 +8,7 @@
 #' @param observation.time duration of the observation period (after acclimation) in minutes.
 #' @param width width to resize the images to, in pixels. When NULL, images are not resized.
 #' @param split.pics whether to create pictures in the deployments directory. TRUE by default but it can be useful to set it to false to quickly recreate the rest of the metadata (since the pictures are the longest to process)
+#' @param parallel do the resizing/copying of images in parallel (on n-1 processor cores) to speed up the process
 #' @inheritParams disc_dd
 #'
 #' @export
@@ -22,13 +23,13 @@
 #' source <- system.file("extdata", "raw", package = "discr")
 #' dest   <- tempdir()
 #' disc_extract_deployments(raw=source, deploy.dir=dest, width=NULL,
-#'                          acclimation.time=2, observation.time=2)
+#'                          acclimation.time=2, observation.time=2, parallel=FALSE)
 #' # NOTE:
 #' # - the warning about deployment 2 being stopped earlier than the expected 2 mins
 #' # - the notice that the compass (cc) has 0 records in deployment 2
 #'
 #' system(paste0("ls -R ", dest))
-disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE) {
+disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE, parallel=TRUE) {
 
   message("Reading field logs")
   # convert to csv first using
@@ -166,14 +167,16 @@ disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation
           dir.create(picsDir, showWarnings=FALSE)
           dc$imgNb <- 1:nrow(dc)
           dc$file <- make_path(picsDir, str_c(dc$imgNb, ".jpg"))
-          registerDoParallel(detectCores()-1)
+          if (parallel) {
+            registerDoParallel(detectCores()-1)
+          }
           a_ply(dc, 1, function(x) {
             if (is.null(width)) {
               file.copy(x$origFile, x$file)
             } else {
               system(str_c("convert -resize ", width,"x \"", x$origFile, "\" \"", x$file, "\""))
             }
-          }, .parallel=TRUE)
+          }, .parallel=parallel)
         }
 
         # write the selected portion of the data to the deployment folder

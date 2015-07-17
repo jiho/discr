@@ -7,15 +7,18 @@
 disc_stats(dir, bin.angle = 0, sub = NULL, verbose = FALSE, ...)
 }
 \arguments{
-  \item{dir}{path the to the deployment directory}
-  \item{bin.angle}{precision at which to bin angles}
-  \item{sub}{subsample positions every sub seconds to make
-  them independent} \item{verbose}{output messages on the
-  console when TRUE} \item{...}{passthrough argument}
+\item{dir}{path the to the deployment directory}
+
+\item{bin.angle}{precision at which to bin angles}
+
+\item{sub}{subsample positions every sub seconds to make them independent}
+
+\item{verbose}{output messages on the console when TRUE}
+
+\item{...}{passthrough argument}
 }
 \description{
-Compute statistics (circular and activity-level) on a
-deployment's trajectory data and create plots
+Compute statistics (circular and activity-level) on a deployment's trajectory data and create plots
 }
 \examples{
 # get example deployments included with the package
@@ -40,9 +43,9 @@ read.csv(paste0(deploy1, "/stats.csv"))
 }
 \seealso{
 Other action.functions: \code{\link{disc_calibrate}};
-\code{\link{disc_camera_compass_angle}};
-\code{\link{disc_correct}};
-\code{\link{disc_track_compass}}; \code{\link{disc_track}};
-\code{\link{disc}}
+  \code{\link{disc_camera_compass_angle}};
+  \code{\link{disc_correct}};
+  \code{\link{disc_track_compass}};
+  \code{\link{disc_track}}; \code{\link{disc}}
 }
 

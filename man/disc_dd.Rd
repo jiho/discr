@@ -7,27 +7,15 @@
 disc_dd(deploy.dir = NULL)
 }
 \arguments{
-  \item{deploy.dir}{path to the directory containing
-  deployments (and associated options). By default
-  "deployments" in the current directory.}
+\item{deploy.dir}{path to the directory containing deployments (and associated options). By default "deployments" in the current directory.}
 }
 \value{
-The path to the deployment directory, which has been checked
-for existence and writability.
+The path to the deployment directory, which has been checked for existence and writability.
 }
 \description{
-This is the directory where deployments are stored (usually
-as a set of numbered folders). Data will be read from and
-written to this directory. Settings will also be stored
-there.
+This is the directory where deployments are stored (usually as a set of numbered folders). Data will be read from and written to this directory. Settings will also be stored there.
 }
 \details{
-The standard behaviour is having a "deployments" directory
-in the current working directory of R. If this is not
-adequate, this function can set it to something else (an
-absolute path on another drive, another relative path such
-as "data/deployments", etc.). To make this choice persistent
-across sessions, set the option \code{disc.deploy.dir} in
-your \code{.Rprofile}.
+The standard behaviour is having a "deployments" directory in the current working directory of R. If this is not adequate, this function can set it to something else (an absolute path on another drive, another relative path such as "data/deployments", etc.). To make this choice persistent across sessions, set the option \code{disc.deploy.dir} in your \code{.Rprofile}.
 }
 

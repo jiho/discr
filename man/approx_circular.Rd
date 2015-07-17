@@ -7,25 +7,19 @@
 approx_circular(x, angles, xout, ...)
 }
 \arguments{
-  \item{x}{"coordinate" (e.g. time of measurement) of
-  the angles to be interpolated} \item{angles}{angles to
-  be interpolated, of class circular or in trigonometric
-  reference} \item{xout}{"coordinates" where the interpolation
-  should take place} \item{...}{passed to approx}
+\item{x}{"coordinate" (e.g. time of measurement) of the angles to be interpolated}
+
+\item{angles}{angles to be interpolated, of class circular or in trigonometric reference}
+
+\item{xout}{"coordinates" where the interpolation should take place}
+
+\item{...}{passed to approx}
 }
 \value{
-A list with components x, containing the output coordinate
-(xout), and y, containing the interpolated angles (in the
-same circular reference as the input angles)
+A list with components x, containing the output coordinate (xout), and y, containing the interpolated angles (in the same circular reference as the input angles)
 }
 \description{
-Interpolate angles by converting them to cardinal
-coordinates, linearly interpolating positions in cardinal
-space (x, y) and converting the resulting points back
-into polar space (i.e. angles). Please note that this will
-not work for steps of angles >= pi in the input vector of
-angles; but this is very difficult to check in a general way
-so no check is made
+Interpolate angles by converting them to cardinal coordinates, linearly interpolating positions in cardinal space (x, y) and converting the resulting points back into polar space (i.e. angles). Please note that this will not work for steps of angles >= pi in the input vector of angles; but this is very difficult to check in a general way so no check is made
 }
 \examples{
 x <- c(0, 1)

@@ -7,16 +7,16 @@
 disc_correct(dir, camera.compass.angle = NULL, verbose = FALSE, ...)
 }
 \arguments{
-  \item{dir}{path the to the deployment directory}
-  \item{camera.compass.angle}{angle between the top of the
-  camera and the N of the digital compass. If NULL, should
-  be read from a file named "angle_camera_compass.txt" in the
-  deployment directory} \item{verbose}{output messages on the
-  console when TRUE} \item{...}{passthrough argument}
+\item{dir}{path the to the deployment directory}
+
+\item{camera.compass.angle}{angle between the top of the camera and the N of the digital compass. If NULL, should be read from a file named "angle_camera_compass.txt" in the deployment directory}
+
+\item{verbose}{output messages on the console when TRUE}
+
+\item{...}{passthrough argument}
 }
 \description{
-Correct tracks (camera frame of reference) based on rotation
-of DISC to get polar-relevant coordinates
+Correct tracks (camera frame of reference) based on rotation of DISC to get polar-relevant coordinates
 }
 \examples{
 # get example deployments included with the package
@@ -42,8 +42,9 @@ list.files(deploy2)
 }
 \seealso{
 Other action.functions: \code{\link{disc_calibrate}};
-\code{\link{disc_camera_compass_angle}};
-\code{\link{disc_stats}}; \code{\link{disc_track_compass}};
-\code{\link{disc_track}}; \code{\link{disc}}
+  \code{\link{disc_camera_compass_angle}};
+  \code{\link{disc_stats}};
+  \code{\link{disc_track_compass}};
+  \code{\link{disc_track}}; \code{\link{disc}}
 }
 

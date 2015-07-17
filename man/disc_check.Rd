@@ -7,15 +7,9 @@
 disc_check()
 }
 \description{
-Checks the deployments directory (including wether a non-
-standard one is set), the options set in this deployments
-directory, and wether all required executables are
-installed. If some are not available it gives platform
-specific tips on how to install them. The function has no
-arguments.
+Checks the deployments directory (including wether a non-standard one is set), the options set in this deployments directory, and wether all required executables are installed. If some are not available it gives platform specific tips on how to install them. The function has no arguments.
 }
 \seealso{
-\code{\link{disc_dd}} to get or set the deployments
-directory, \code{\link{disc_conf}} to read or set options
+\code{\link{disc_dd}} to get or set the deployments directory, \code{\link{disc_conf}} to read or set options
 }
 

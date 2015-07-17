@@ -6,36 +6,34 @@
 \usage{
 disc_extract_deployments(raw, ids = NULL, deploy.dir = NULL,
   acclimation.time = 5, observation.time = 15, width = 1600,
-  split.pics = TRUE)
+  split.pics = TRUE, parallel = TRUE)
 }
 \arguments{
-  \item{raw}{path to the directory where the raw data and
-  the deployment and leg logs are.} \item{ids}{deployment
-  identifiers to extract; if NULL (the default) extract
-  all deployments} \item{deploy.dir}{path to the directory
-  containing deployments (and associated options).
-  By default "deployments" in the current directory.}
-  \item{acclimation.time}{duration of the acclimation
-  time in minutes.} \item{observation.time}{duration of
-  the observation period (after acclimation) in minutes.}
-  \item{width}{width to resize the images to, in pixels. When
-  NULL, images are not resized.} \item{split.pics}{whether
-  to create pictures in the deployments directory. TRUE by
-  default but it can be useful to set it to false to quickly
-  recreate the rest of the metadata (since the pictures are
-  the longest to process)}
+\item{raw}{path to the directory where the raw data and the deployment and leg logs are.}
+
+\item{ids}{deployment identifiers to extract; if NULL (the default) extract all deployments}
+
+\item{deploy.dir}{path to the directory containing deployments (and associated options). By default "deployments" in the current directory.}
+
+\item{acclimation.time}{duration of the acclimation time in minutes.}
+
+\item{observation.time}{duration of the observation period (after acclimation) in minutes.}
+
+\item{width}{width to resize the images to, in pixels. When NULL, images are not resized.}
+
+\item{split.pics}{whether to create pictures in the deployments directory. TRUE by default but it can be useful to set it to false to quickly recreate the rest of the metadata (since the pictures are the longest to process)}
+
+\item{parallel}{do the resizing/copying of images in parallel (on n-1 processor cores) to speed up the process}
 }
 \description{
-Read the deployment logs, read necessary data in the raw
-data directory, extract data for each deployment based on
-date and time
+Read the deployment logs, read necessary data in the raw data directory, extract data for each deployment based on date and time
 }
 \examples{
 # get an example dataset included with the package
 source <- system.file("extdata", "raw", package = "discr")
 dest   <- tempdir()
 disc_extract_deployments(raw=source, deploy.dir=dest, width=NULL,
-                         acclimation.time=2, observation.time=2)
+                         acclimation.time=2, observation.time=2, parallel=FALSE)
 # NOTE:
 # - the warning about deployment 2 being stopped earlier than the expected 2 mins
 # - the notice that the compass (cc) has 0 records in deployment 2

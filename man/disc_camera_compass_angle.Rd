@@ -7,16 +7,16 @@
 disc_camera_compass_angle(dir, sub = NULL, verbose = FALSE, ...)
 }
 \arguments{
-  \item{dir}{deployment directory} \item{sub}{subsampling
-  interval, in s} \item{verbose}{output messages on the
-  console when TRUE} \item{...}{passthrough argument}
+\item{dir}{deployment directory}
+
+\item{sub}{subsampling interval, in s}
+
+\item{verbose}{output messages on the console when TRUE}
+
+\item{...}{passthrough argument}
 }
 \description{
-Measure angle of analog compasses on images, use that as
-a reference, compare it to the digital compass record and
-deduce the angle between the camera and the digital compass.
-This is mandatory to use the digital compass to correct the
-tracks.
+Measure angle of analog compasses on images, use that as a reference, compare it to the digital compass record and deduce the angle between the camera and the digital compass. This is mandatory to use the digital compass to correct the tracks.
 }
 \examples{
 # get example deployments included with the package
@@ -35,8 +35,8 @@ list.files(deploy1)
 }
 \seealso{
 Other action.functions: \code{\link{disc_calibrate}};
-\code{\link{disc_correct}}; \code{\link{disc_stats}};
-\code{\link{disc_track_compass}}; \code{\link{disc_track}};
-\code{\link{disc}}
+  \code{\link{disc_correct}}; \code{\link{disc_stats}};
+  \code{\link{disc_track_compass}};
+  \code{\link{disc_track}}; \code{\link{disc}}
 }
 

@@ -7,9 +7,13 @@
 disc_track_compass(dir, sub = NULL, verbose = FALSE, ...)
 }
 \arguments{
-  \item{dir}{deployment directory} \item{sub}{subsampling
-  interval, in s} \item{verbose}{output messages on the
-  console when TRUE} \item{...}{passthrough argument}
+\item{dir}{deployment directory}
+
+\item{sub}{subsampling interval, in s}
+
+\item{verbose}{output messages on the console when TRUE}
+
+\item{...}{passthrough argument}
 }
 \description{
 Measure angle of analog compasses on images
@@ -35,8 +39,8 @@ head(read.csv(paste0(deploy2, "/compass_analog_log.csv")))
 }
 \seealso{
 Other action.functions: \code{\link{disc_calibrate}};
-\code{\link{disc_camera_compass_angle}};
-\code{\link{disc_correct}}; \code{\link{disc_stats}};
-\code{\link{disc_track}}; \code{\link{disc}}
+  \code{\link{disc_camera_compass_angle}};
+  \code{\link{disc_correct}}; \code{\link{disc_stats}};
+  \code{\link{disc_track}}; \code{\link{disc}}
 }
 

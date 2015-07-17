@@ -10,15 +10,12 @@ polar(template = "geographics", ...)
 scale_x_circular(template = "geographics", ...)
 }
 \arguments{
-  \item{template}{"geographics" for bearings, "none"
-  or "trigonometrics" for trigonometric angles; can be
-  abbreviated} \item{...}{passed to \code{\link[ggplot2]
-  {scale_x_continuous}}}
+\item{template}{"geographics" for bearings, "none" or "trigonometrics" for trigonometric angles; can be abbreviated}
+
+\item{...}{passed to \code{\link[ggplot2]{scale_x_continuous}}}
 }
 \description{
-\code{polar()} set polar coordinates and appropriate scales
-and \code{scale_x_circular()} only sets the scale, in a
-ggplot
+\code{polar()} set polar coordinates and appropriate scales and \code{scale_x_circular()} only sets the scale, in a ggplot
 }
 \examples{
 library("ggplot2")
@@ -30,7 +27,6 @@ d <- data.frame(x=runif(10, 0, 2*pi), y=runif(10))
 ggplot(d) + geom_point(aes(x=x, y=y)) + polar(template="none")
 }
 \seealso{
-\code{\link[circular]{circular}} and \code{\link[ggplot2]
-{scale_x_continuous}}
+\code{\link[circular]{circular}} and \code{\link[ggplot2]{scale_x_continuous}}
 }
 

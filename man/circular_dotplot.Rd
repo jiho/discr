@@ -7,12 +7,11 @@
 circular_dotplot(x, bin = 5, ...)
 }
 \arguments{
-  \item{x}{vector of angles, assumed to be bearings (in
-  degrees, from North). A simple numeric vector is supplied,
-  it is assumed to follow the conventions of bearings. When
-  a vector of class "\code{circular}" is supplied, it is
-  converted to bearings} \item{bin}{bin width in degrees}
-  \item{...}{passed to \code{\link[ggplot2]{geom_point}}}
+\item{x}{vector of angles, assumed to be bearings (in degrees, from North). A simple numeric vector is supplied, it is assumed to follow the conventions of bearings. When a vector of class "\code{circular}" is supplied, it is converted to bearings}
+
+\item{bin}{bin width in degrees}
+
+\item{...}{passed to \code{\link[ggplot2]{geom_point}}}
 }
 \description{
 Circular dotplot

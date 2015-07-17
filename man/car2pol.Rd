@@ -7,14 +7,12 @@
 car2pol(x, orig = c(0, 0))
 }
 \arguments{
-  \item{x}{matrix or data frame with columns [x,y]}
-  \item{orig}{vector with the x,y coordinates of the origin,
-  defaults to (0,0)}
+\item{x}{matrix or data frame with columns [x,y]}
+
+\item{orig}{vector with the x,y coordinates of the origin, defaults to (0,0)}
 }
 \value{
-a data.frame with columns [theta,rho], with theta following
-trigonometric conventions and rho in the same unit as the
-input x and y
+a data.frame with columns [theta,rho], with theta following trigonometric conventions and rho in the same unit as the input x and y
 }
 \description{
 Convert from cardinal to polar coordinates

@@ -14,23 +14,17 @@ as.trig(x)
 as.angle(x)
 }
 \arguments{
-  \item{x}{vector of angles; either a numeric vector, in
-  which case numbers are assumed to be angles which follow
-  the convention of the function used (trigonometric angles,
-  bearings, etc.); or a vector of class circular, in which
-  case the angles will be converted from their current
-  convention to the convention of the function used}
+\item{x}{vector of angles; either a numeric vector, in which case numbers are assumed to be angles which follow the convention of the function used (trigonometric angles, bearings, etc.); or a vector of class circular, in which case the angles will be converted from their current convention to the convention of the function used}
 }
 \description{
 Set or convert angles conventions
 }
 \details{
-\describe{ \item{as.bearing}{Bearings are angles from
-North, always positive, measured clockwise, in degrees}
-\item{as.trig}{Trigonometric angles are angles from
-the horizontal, measured counter-clockwise, in radians}
-\item{as.angle}{"Angles" are trigonometric angles but in
-degrees} }
+\describe{
+\item{as.bearing}{Bearings are angles from North, always positive, measured clockwise, in degrees}
+\item{as.trig}{Trigonometric angles are angles from the horizontal, measured counter-clockwise, in radians}
+\item{as.angle}{"Angles" are trigonometric angles but in degrees}
+}
 }
 \examples{
 as.trig(pi/2)
@@ -44,7 +38,6 @@ as.trig(as.bearing(0))
 as.trig(as.bearing(90))
 }
 \seealso{
-\code{\link[circular]{circular}} and \code{\link[circular]
-{conversion.circular}} in package \code{circular}
+\code{\link[circular]{circular}} and \code{\link[circular]{conversion.circular}} in package \code{circular}
 }
 

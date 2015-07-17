@@ -10,13 +10,10 @@ disc_status(deploy.dir = NULL)
 dstatus(deploy.dir = NULL)
 }
 \arguments{
-  \item{deploy.dir}{path to the directory containing
-  deployments (and associated options). By default
-  "deployments" in the current directory.}
+\item{deploy.dir}{path to the directory containing deployments (and associated options). By default "deployments" in the current directory.}
 }
 \description{
-Give information about deployments (number of pictures,
-metadata files, data files, etc.)
+Give information about deployments (number of pictures, metadata files, data files, etc.)
 }
 \examples{
 # get example deployments included with the package

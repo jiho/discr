@@ -7,9 +7,11 @@
 disc_calibrate(dir, verbose = FALSE, ...)
 }
 \arguments{
-  \item{dir}{path to the deployment directory} \item{verbose}
-  {output messages on the console when TRUE} \item{...}
-  {passthrough argument}
+\item{dir}{path to the deployment directory}
+
+\item{verbose}{output messages on the console when TRUE}
+
+\item{...}{passthrough argument}
 }
 \description{
 Calibrate aquarium position
@@ -32,10 +34,9 @@ list.files(deploy1)
 disc_conf(deploy.dir=dd)
 }
 \seealso{
-Other action.functions:
-\code{\link{disc_camera_compass_angle}};
-\code{\link{disc_correct}}; \code{\link{disc_stats}};
-\code{\link{disc_track_compass}}; \code{\link{disc_track}};
-\code{\link{disc}}
+Other action.functions: \code{\link{disc_camera_compass_angle}};
+  \code{\link{disc_correct}}; \code{\link{disc_stats}};
+  \code{\link{disc_track_compass}};
+  \code{\link{disc_track}}; \code{\link{disc}}
 }
 

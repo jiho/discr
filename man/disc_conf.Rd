@@ -13,23 +13,17 @@ dconf(..., deploy.dir = NULL, verbose = FALSE)
 \method{print}{disc_conf}(x, ...)
 }
 \arguments{
-  \item{...}{named arguments with settings to set}
-  \item{deploy.dir}{path to the directory containing
-  deployments (and associated options). By default
-  "deployments" in the current directory.} \item{verbose}{when
-  TRUE, options are shown after being read}
+\item{...}{named arguments with settings to set}
+
+\item{deploy.dir}{path to the directory containing deployments (and associated options). By default "deployments" in the current directory.}
+
+\item{verbose}{when TRUE, options are shown after being read}
 }
 \description{
 Read and write project-level settings
 }
 \details{
-Settings are read, in order, from the defaults, then
-the configuration file in the deployments directory and
-finally from the arguments provided in \code{...}. Then
-those settings are set with the function \code{\link[base]
-{options}} to be accessible from any other function in
-\code{discr}. Finally, the non-default settings are stored
-in the file \code{"disc.conf"} in the deployments directory.
+Settings are read, in order, from the defaults, then the configuration file in the deployments directory and finally from the arguments provided in \code{...}. Then those settings are set with the function \code{\link[base]{options}} to be accessible from any other function in \code{discr}. Finally, the non-default settings are stored in the file \code{"disc.conf"} in the deployments directory.
 }
 \examples{
 disc_conf()

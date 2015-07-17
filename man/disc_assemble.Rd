@@ -10,13 +10,11 @@ disc_assemble(pattern, ids = NULL, deploy.dir = NULL)
 dassemble(pattern, ids = NULL, deploy.dir = NULL)
 }
 \arguments{
-  \item{pattern}{pattern to look for in the file name;
-  passed to \code{\link[base]{list.files}}. Only \code{.csv}
-  files are searched for.} \item{ids}{deployment ids to
-  limit the search to; if NULL (the default) get data from
-  all deployments} \item{deploy.dir}{path to the directory
-  containing deployments (and associated options). By default
-  "deployments" in the current directory.}
+\item{pattern}{pattern to look for in the file name; passed to \code{\link[base]{list.files}}. Only \code{.csv} files are searched for.}
+
+\item{ids}{deployment ids to limit the search to; if NULL (the default) get data from all deployments}
+
+\item{deploy.dir}{path to the directory containing deployments (and associated options). By default "deployments" in the current directory.}
 }
 \description{
 Assemble data of a given kind from several deployments
