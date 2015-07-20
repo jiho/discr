@@ -61,6 +61,12 @@ disc_assemble <- function(pattern, ids=NULL, deploy.dir=NULL) {
   }
   deploy_id <- laply(bits, `[`, n-1)
   d$deploy_id <- deploy_id[d$X1]
+  
+  # deal with the special (but common) case of all integer deployment ids
+  # = when all are integer, make the deploy_id integer
+  if ( ! any(is.na(suppressWarnings(as.integer(d$deploy_id)))) ) {
+    d$deploy_id <- as.integer(d$deploy_id)
+  }
 
   # from the file name
   d$fileName <- files[d$X1]
