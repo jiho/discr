@@ -1,0 +1,2 @@
+leg,gopro_start,gopro_stop,gopro_dir,gopro_offset,cc_start,cc_stop,cc_dir,cc_offset,hobo_start,hobo_stop,hobo_dir,hobo_offset,gt31_start,gt31_stop,gt31_dir,gt31_offset,comment,otherDataOfInterest
+2015-01-01,10:00:00,15:00:00,pics,43,10:00:00,15:00:00,compass,3,10:00:00,15:00:00,hobo,-5,10:00:00,15:00:00,gps,2700,"example line, to replace with your data","you can add columns such as this one, with no “_” in the column name"
