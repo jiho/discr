@@ -25,32 +25,43 @@
 
 ## Basic usage
 
+### Start a new project
+
+In R, use
+
+    library("discr")
+    disc_start_project()
+
+to create a new project template in the current directory (you can then move it to wherever you want). See `?disc_start_project` for other arguments.
+
+
 ### Data collection
 
-Data collected with the DISC is stored in one directory. A subdirectory is created for each deployment leg (usually per day). Within each leg, a subdirectory is created for each sensor on the DISC (camera, compass, light sensor etc.). The information for every leg and every deployment within each leg is written down in a log file, in the form of a spreadsheet (saved as a Comma Separated Values, `*.csv`, file), which is stored in the top level DISC directory.
+Raw data collected with the DISC is stored in one directory (`raw` in the project template). A subdirectory is created for each deployment leg (usually one per day). Within each leg, a subdirectory is created for each sensor on the DISC (camera, compass, light sensor, etc.). The information for every leg and every deployment within each leg is written down in a log file, in the form of a spreadsheet (saved as a Comma Separated Values, `*.csv`, file), which is stored in the `raw` directory.
 
 The final hierarchy usually looks like
 
     DISC_A/
-        leg_1/
-            pics/
-                G001234.JPG
-                G001235.JPG
-                G001236.JPG
+        raw/
+            leg_1/
+                pics/
+                    G001234.JPG
+                    G001235.JPG
+                    G001236.JPG
+                    ...
+                compass/
+                    DATALOG.txt
+                hobo/
+                    123459.hobo
+                    123459.csv
                 ...
-            compass/
-                DATALOG.txt
-            hobo/
-                123459.hobo
-                123459.csv
-            ...
-        leg_2/
-            pics/
-            compass/
-            hobo/
-            ...
-        leg_log.csv
-        deployment_log.csv
+            leg_2/
+                pics/
+                compass/
+                hobo/
+                ...
+            leg_log.csv
+            deployment_log.csv
 
 The format for the `leg_log.csv` file is:
 
@@ -87,26 +98,20 @@ The deployment log usually has other columns such as fish species, meteorologica
 
 ### Extract deployments
 
-The directory described above holds the whole raw data record. To be analysed, it needs to be split into deployments. The deployments are smaller than the raw data and are usually stored elsewhere. The usual (and simplest way of working) is to create a new directory which will be your R working directory for the project (where you will stode your custom analysis code etc.) and to store deployments in a sub-directory of it called "deployments".
+The directory described above holds the whole raw data record. To be analysed, it needs to be split into deployments. The deployments are smaller than the raw data and are usually stored in another directory of your project called `deployments`. Once all the deployments are extracted, the raw data (which can be quite big) can be moved and stored elsewhere.
 
-NB: if you use RStudio <http://www.rstudio.com/products/rstudio/download/>, this translates into creating a new project (`File > New Project...`, use a new directory, create an empty project) and creating a "deployments" directory inside it.
+In an R console, in your project directory:
 
-In an R console, in your working directory:
-
-    # load 'discr'
     library("discr")
-    # create the deployments directory
-    dir.create("deployments")
-    # extract deployments
-    disc_extract_deployments(raw="/path/to/raw/data")
-
+    disc_extract_deployments(raw="raw")
+        
 If you want to extract only a few deployments, use
 
-    disc_extract_deployments(raw="/path/to/raw/data", ids=10:20)
+    disc_extract_deployments(raw="raw", ids=10:20)
 
 for deployments 10 to 20 or
 
-    disc_extract_deployments(raw="/path/to/raw/data", ids=c("1a", "2a", "2b", "6"))
+    disc_extract_deployments(raw="raw", ids=c("1a", "2a", "2b", "6"))
 
 for deployments 1a, 2a, 3b and 6, for example. (NB: This highlights why having integer deployment identifiers is easier.)
 
@@ -115,15 +120,15 @@ See `?disc_extract_deployments` for more information.
 
 ### Process deployments
 
-Open R in your working directory (or open the RStudio project created above). In the console load `discr`
+In your project directory, load `discr`
 
     library("discr")
 
-The process deployments with a command such as
+Then process deployments with a command such as
 
     disc(1:10, actions=c("calib", "track"))
 
-to calibrate the arena dimensions and track the larva on deployments 1 to 10.
+to calibrate the arena dimensions and track the larva, in deployments 1 to 10.
 
 See `?disc` for a description of all actions and more examples. Default actions are "calibrate", "track", "correct", and "stats".
 
@@ -139,7 +144,7 @@ and now `disc()` again. Good luck!
 
 ### Analyse data
 
-Again, open R in your working directory (or open the RStudio project) and load `discr`
+Again, open R in your project directory and load `discr`
 
     library("discr")
 
