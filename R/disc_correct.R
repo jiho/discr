@@ -62,8 +62,8 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
   # aquarium diameter in cm
   diameter <- getOption("disc.diameter")
 
-  # Read and reformat larvae tracks
-  #--------------------------------------------------------------------------
+  ##{ Read and reformat larvae tracks ----
+
   if (verbose) { disc_message("read and process larvae tracks") }
 
   t <- read.csv(tracksFile)
@@ -81,10 +81,43 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
   # # Split larvae tracks in a list, one element per larva
   # tracks = split(trackLarva, trackLarva$trackNb)
   # nbTracks = length(tracks)
+  
+  # }
 
+  ##{ Compute swimming speed, direction, turning angles etc. -----
+  
+  if (verbose) { disc_message("compute swimming characteristics") }
 
-  # Read and reformat compass tracks
-  #--------------------------------------------------------------------------
+  # Compute swimming direction and speed
+  t <- ddply(t, ~trackNb, function(x) {
+    
+    # compute displacement in x and y
+    # = position at t+1 - position at t
+    dx <- c(NA, diff(x$x))
+    dy <- c(NA, diff(x$y))
+    # and time difference
+    dt <- diff(x$dateTime)
+    units(dt) <- "secs" # force computation in seconds
+    x$dt <- as.numeric(c(NA,dt))
+    
+    # convert to polar coordinates (i.e. vector of displacement since last point)
+    displacement <- car2pol(cbind(dx, dy), c(0,0))
+
+    # store swimming heading in the appropriate circular class
+    x$heading <- as.bearing(displacement$theta)
+    # NB: this is heading in the reference of the aquarium
+
+    # compute speed from displacement and interval
+    x$speed <- displacement$rho / x$dt
+
+    # TODO compute turning angle
+
+    return(x)
+  })
+  # }
+
+  ##{ Read and reformat compass tracks ----
+
   if (verbose) { disc_message("read and process compass log") }
 
   # read compass record
@@ -139,17 +172,16 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
   # might remove a few points at the beginning and end of the track, where the angle cannot be interpolated
   t <- t[ ! is.na(t$cameraHeading) , ]
 
+  # }
 
-
-  # Compute larvae tracks in a cardinal reference
-  #--------------------------------------------------------------------------
+  ##{ Compute larvae tracks in a cardinal reference ----
 
   if (verbose) { disc_message("compute larvae tracks in a cardinal reference") }
 
   # read calibration data
   coordAquarium <- read.csv(make_path(dir, .files$aquarium.coord))
 
-  # correct for the rotation, putting the north at upwards
+  # correct for the rotation, putting the north upwards
   t <- ddply(t, ~trackNb, function(x) {
 
     # convert track to polar coordinates
@@ -164,6 +196,10 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
     # correct for the rotation: add the angle in the chamber relative to the top of the frame to the heading of the top of the frame to find the true heading
     xCor <- x
     xCor$theta <- as.bearing(x$theta + x$cameraHeading)
+    xCor$heading <- as.bearing(x$heading + x$cameraHeading)
+
+    # remove speed from the rotated track
+    xCor$speed <- NA
 
     # label the rotated data
     xCor$rotation <- "rotated"
@@ -174,78 +210,23 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
     # recompute cartesian positions from the polar definition
     x[,c("x","y")] <- pol2car(x[,c("theta","rho")])
 
-    # convert x, y, and rho to human significant measures (cm)
-    # we use the diameter of the aquarium as a reference
-    # we are given its value in cm and we have the perimeter, hence the diameter, in pixels
-    px2cm <- diameter / ( coordAquarium$perim / pi )
-    x[,c("x","y","rho")] <- x[,c("x","y","rho")] * px2cm
-
-    return(invisible(x))
+    return(x)
   })
 
-# # TODO Compute swimming directions and speed when available
-# ## Compute tracks characteristics   - BELOW HERE NEEDS WORK **** - MF
-# #------------------------------------------------------------
-#
-# # Take omitted frames into account in larvae tracks
-# # fetch the names of all images
-# imagePath = paste("ls -1 ",dir,"/pics/*.jpg | cut -d '/' -f 3 | cut -d '.' -f 1", sep="")
-# images = sort(as.numeric(system(imagePath, intern=T)))
-# # images = sort(as.numeric(system("ls -1 ../pics/*.jpg | cut -d '/' -f 3 | cut -d '.' -f 1", intern=T)))
-# # there are two levels of nesting of lists, hence the double llply construct
-# tracks = llply(tracks, .fun=function(tr, ...){
-#   llply(tr, .fun=function(x, imgNames) {
-#     # prepare a full, empty data.frame with one line per image
-#     t = as.data.frame(matrix(nrow=length(imgNames),ncol=length(names(x))))
-#     names(t) = names(x)
-#     # specify the content of columns that must not be empty
-#     t$trackNb = x$trackNb[1]
-#     t$correction = x$correction[1]
-#     t$imgNb = imgNames
-#     # set classes similarly to the original data.frame
-#     class(t$date) = class(x$date)
-#     class(t$exactDate) = class(x$exactDate)
-#     # fill with values from the orignal data.frame and leave NAs elsewhere
-#     t[ t$imgNb %in% x$imgNb,] = x;
-#     return(t);}
-#   , ...)}
-# , images)
-#
-#
-# # Compute swimming direction and speed
-# for (i in 1:nbTracks) {
-#   tracks[[i]] = llply(tracks[[i]], function(t) {
-#     # Compute swimming directions
-#     # compute swimming vectors in x and y directions
-#     # = position at t+1 - position at t
-#     dirs = t[2:nrow(t),c("x","y")] - t[1:(nrow(t)-1),c("x","y")]
-#     dirs = rbind(NA,dirs)
-#     # convert to headings by considering that these vectors originate from 0,0
-#     headings = car2pol(dirs, c(0,0))$theta
-#     # convert to the appropriate circular class
-#     headings = conversion.circular(headings, units="degrees", template="geographics", modulo="2pi")
-#     # store that in the orignal dataframe
-#     t$heading = headings
-#
-#     # Compute speeds in cm/s
-#     # compute time difference between pictures
-#     dirs$interval = c(NA,as.numeric(diff(t$exactDate)))
-#     # compute speed from displacement and interval
-#     t$speed = sqrt(dirs$x^2 + dirs$y^2) / dirs$interval
-#
-#     return(t)
-#   })
-#
-#   # Suppress speed for the uncorrected data: it does not make sense because the corrected "trajectory" is never really travelled
-#   tracks[[i]][["corrected"]]$speed = NA
-# }
+  # convert x, y, and rho to human significant measures (cm)
+  # we use the diameter of the aquarium as a reference
+  # we are given its value in cm and we have the perimeter, hence the diameter, in pixels
+  px2cm <- diameter / ( coordAquarium$perim / pi )
+  t[,c("x","y","speed","rho")] <- t[,c("x","y","speed","rho")] * px2cm
 
+  # }
 
-  # Saving tracks for statistical analysis and plotting
-  #--------------------------------------------------------------------------
+  ##{ Save tracks for statistical analysis and plotting ----
+
   # Write it to a csv file
   destFile <- make_path(dir, .files$rotated.tracks)
   if (verbose) { disc_message("write corrected track to ", destFile) }
   write.csv(t, file=destFile, row.names=F)
-
+  
+  # }
 }
