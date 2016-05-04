@@ -16,9 +16,12 @@ A data.frame with columns
 \describe{
 \item{n: }{sample size}
 \item{mean: }{mean angle}
-\item{variance: }{angular variance}
-\item{r: }{Rayleigh r}
-\item{p.value: }{p-value of Rayleigh's test}
+\item{se.mean: }{standard error of the mean angle}
+\item{kappa: }{kappa parameter (concentration) of a Von Mises distribution fitted to the data}
+\item{se.kappa: }{standard error of the kappa parameter}
+\item{variance: }{angular variance (i.e. 1-r)}
+\item{r: }{Rayleigh's r, quantifying concentration}
+\item{p.value: }{p-value of the Rayleigh test}
 }
 }
 \description{
