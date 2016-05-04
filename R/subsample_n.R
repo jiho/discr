@@ -18,7 +18,7 @@ subsample_n <- function(x, sub, verbose=FALSE, ...) {
   } else {
     # checks
     if (!is.POSIXt(x)) {
-      stop("Need a vector date and times of class POSIXct")
+      stop("Need a vector of date and times of class POSIXct")
     }
     
     intervals <- diff(as.numeric(x))

@@ -85,7 +85,7 @@ from.below <- function(x) {
   a$rotation <- "counter"
   circularp(x) <- a
 
-  # _convert_ back to clockwise (this actually changes the numbers and compute the symmetry)
+  # _convert_ back to clockwise (this actually changes the numbers and computes the symmetry)
   x <- as.bearing(conversion.circular(x, units="degrees", rotation="clock"))
 
   return(x)
