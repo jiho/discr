@@ -9,6 +9,8 @@
 #' @export
 #' @family action functions
 #'
+#' @seealso \code{\link{summary.circular}} for a description of the output statistics.
+#'
 #' @importFrom lubridate ymd_hms
 #' @importFrom plyr round_any ddply count rbind.fill
 #' @importFrom stringr str_replace fixed str_c

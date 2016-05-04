@@ -42,6 +42,8 @@ read.csv(paste0(deploy1, "/stats.csv"))
 # Note the difference in n compared to above
 }
 \seealso{
+\code{\link{summary.circular}} for a description of the output statistics.
+
 Other action.functions: \code{\link{disc_calibrate}},
   \code{\link{disc_camera_compass_angle}},
   \code{\link{disc_correct}},
