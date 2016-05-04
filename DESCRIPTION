@@ -2,7 +2,7 @@ Package: discr
 Title: Drifting In Situ Chamber User Software in R
 Description: Implements procedures to extract and analysed the data produced by
     the Drifting In Situ Chamber (DISC).
-Version: 0.4
+Version: 0.5
 Authors@R: "Jean-Olivier Irisson <irisson@normalesup.org> [aut, cre]"
 Depends:
     R (>= 3.0.2)
