@@ -2,3 +2,4 @@
 # *.jar
 # work in progress
 scratch/*
+.Rproj.user
