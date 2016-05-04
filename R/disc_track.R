@@ -22,7 +22,7 @@
 #'
 #' # run the action
 #' disc_conf(deploy.dir=dd)
-#' \donttest{disc_track(dir=deploy1, verbose=TRUE)}
+#' \dontrun{disc_track(dir=deploy1, verbose=TRUE)}
 #' # inspect results
 #' list.files(deploy1)
 #' head(read.csv(paste0(deploy1, "/larvae_tracks.csv")))

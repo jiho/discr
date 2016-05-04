@@ -4,7 +4,7 @@
 \alias{disc_start_project}
 \title{Create a new project architecture}
 \usage{
-disc_start_project(path = ".", name = "DISC", ...)
+disc_start_project(path = ".", name = "DISC")
 }
 \arguments{
 \item{path}{path where the project is to be created. Current directory by default}

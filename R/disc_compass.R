@@ -28,7 +28,7 @@
 #'
 #' # run the action
 #' disc_conf(deploy.dir=dd)
-#' \donttest{disc_track_compass(dir=deploy2, verbose=TRUE)}
+#' \dontrun{disc_track_compass(dir=deploy2, verbose=TRUE)}
 #' # inspect results
 #' list.files(deploy2)
 #' head(read.csv(paste0(deploy2, "/compass_analog_log.csv")))

@@ -21,7 +21,7 @@
 #'
 #' # run the action
 #' disc_conf(deploy.dir=dd)
-#' \donttest{disc_calibrate(dir=deploy1, verbose=TRUE)}
+#' \dontrun{disc_calibrate(dir=deploy1, verbose=TRUE)}
 #' # inspect results
 #' list.files(deploy1)
 #' # note that the aquarium coordinates are remembered

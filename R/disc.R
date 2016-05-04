@@ -29,7 +29,7 @@
 #'
 #' disc_status(dd)
 #'
-#' \donttest{# perform some actions on deployment 1
+#' \dontrun{# perform some actions on deployment 1
 #' disc(ids=1, actions=c("calibrate", "track"), sub=10, deploy.dir=dd)
 #' # action names can be abbreviated
 #' disc(1, actions=c("cor", "st"), deploy.dir=dd)

@@ -5,7 +5,7 @@
 #' 
 #' @importFrom stringr str_c
 #' @export
-disc_start_project <- function(path=".", name="DISC", ...) {
+disc_start_project <- function(path=".", name="DISC") {
 
   if ( ! dir.exists(path) ) {
     stop(path, " does not exist or is not a directory")

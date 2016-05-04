@@ -29,7 +29,7 @@ deploy1 <- paste0(dd, "1")
 
 # run the action
 disc_conf(deploy.dir=dd)
-\donttest{disc_camera_compass_angle(dir=deploy1, sub=10, verbose=TRUE)}
+\dontrun{disc_camera_compass_angle(dir=deploy1, sub=10, verbose=TRUE)}
 # the angle is also stored in a file "angle_camera_compass.txt"
 list.files(deploy1)
 }
