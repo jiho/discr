@@ -4,10 +4,13 @@
 \alias{angles}
 \alias{as.angle}
 \alias{as.bearing}
+\alias{as.heading}
 \alias{as.trig}
 \title{Set or convert angles conventions}
 \usage{
 as.bearing(x)
+
+as.heading(x)
 
 as.trig(x)
 
@@ -22,6 +25,7 @@ Set or convert angles conventions
 \details{
 \describe{
 \item{as.bearing}{Bearings are angles from North, always positive, measured clockwise, in degrees}
+\item{as.heading}{Headings are angles from North, positive in the clockwise direction, in degrees, always in [-180;180]}
 \item{as.trig}{Trigonometric angles are angles from the horizontal, measured counter-clockwise, in radians}
 \item{as.angle}{"Angles" are trigonometric angles but in degrees}
 }

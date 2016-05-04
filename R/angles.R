@@ -4,6 +4,7 @@
 #'
 #' @details \describe{
 #' \item{as.bearing}{Bearings are angles from North, always positive, measured clockwise, in degrees}
+#' \item{as.heading}{Headings are angles from North, positive in the clockwise direction, in degrees, always in [-180;180]}
 #' \item{as.trig}{Trigonometric angles are angles from the horizontal, measured counter-clockwise, in radians}
 #' \item{as.angle}{"Angles" are trigonometric angles but in degrees}
 #' }
@@ -35,6 +36,14 @@ as.bearing <- function(x) {
     # convert a circular-classed angle to the geographic conventions
     x <- conversion.circular(x, units="degrees", template="geographics", modulo="2pi")
   }
+  return(x)
+}
+
+#' @rdname angles
+#' @export
+as.heading <- function(x) {
+  x <- as.bearing(x)
+  x <- ifelse(x > 180, x-360, x)
   return(x)
 }
 

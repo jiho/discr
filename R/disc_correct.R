@@ -93,12 +93,13 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
     
     # compute displacement in x and y
     # = position at t+1 - position at t
-    dx <- c(NA, diff(x$x))
-    dy <- c(NA, diff(x$y))
-    # and time difference
+    # the displacement is associated with time t (i.e. the last one is unknown)
+    dx <- c(diff(x$x), NA)
+    dy <- c(diff(x$y), NA)
+    # and time difference between t and t+1
     dt <- diff(x$dateTime)
     units(dt) <- "secs" # force computation in seconds
-    x$dt <- as.numeric(c(NA,dt))
+    x$dt <- as.numeric(c(dt, NA))
     
     # compute elapsed time in minutes
     x$elapsed.min <- as.numeric(difftime(x$dateTime, x$dateTime[1], units="min"))
@@ -112,8 +113,6 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
 
     # compute speed from displacement and interval
     x$speed <- displacement$rho / x$dt
-
-    # TODO compute turning angle
 
     return(x)
   })
@@ -209,6 +208,12 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
     x$rotation <- "raw"
     # and combine the two
     x <- rbind(x, xCor)
+
+    # compute turning angle
+    # the angle associated with time t is the turn between the heading in the [t-1,t] and [t,t+1] intervals (=> unknown for t=0 and t=n)
+    n <- nrow(x)
+    x$turnAngle <- as.heading(c(NA, x$heading[2:n] - x$heading[1:(n-1)]))
+    # NB: diff() does not work for circular objects
 
     # recompute cartesian positions from the polar definition
     x[,c("x","y")] <- pol2car(x[,c("theta","rho")])
