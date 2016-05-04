@@ -10,8 +10,8 @@
 #' @family action functions
 #'
 #' @importFrom lubridate ymd_hms
-#' @importFrom plyr round_any ddply count
-#' @importFrom stringr str_replace fixed
+#' @importFrom plyr round_any ddply count rbind.fill
+#' @importFrom stringr str_replace fixed str_c
 #' @import ggplot2
 #'
 #' @examples
@@ -47,37 +47,62 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   # read tracks
   t <- read.csv(tracksFile, stringsAsFactors=FALSE)
   t$theta <- as.bearing(t$theta)
+  t$heading <- as.bearing(t$heading)
   t$cameraHeading <- as.bearing(t$cameraHeading)
   t$dateTime <- ymd_hms(t$dateTime)
 
   # bin angles if required
   if ( bin.angle != 0 ) {
   	t$theta <- round_any(t$theta, bin.angle)
+  	t$heading <- round_any(t$heading, bin.angle)
   }
 
 
   # subsample the data if needed
   if ( verbose ) disc_message("subsample data if needed")
   tComplete <- t
+  # TODO invert tComplete and t (use t_subsampled or t_sub)
   t <- ddply(t, ~trackNb+rotation, function(x) {
     subN <- subsample_n(x$dateTime, sub=sub, verbose=verbose)
     x <- x[seq(1, nrow(x), by=subN),]
     return(x)
   })
 
-
   # compute position statistics
   # i.e. statistics about how concentrated the positions are in the reference of the chamber or in a cardinal reference
   if ( verbose ) disc_message("compute position statistics")
-  stats <- ddply(t, ~trackNb+rotation, function(x) {
+  position_stats <- ddply(t, ~trackNb+rotation, function(x) {
     stats <- summary.circular(x$theta)
     return(stats)
   })
+  # position_stats$kind <- "position"
+
+  # compute movement statistics
+  # i.e. statistics about the swimming direction and speed of the larva
+  if ( verbose ) disc_message("compute movement statistics")
+  movement_stats <- ddply(tComplete, ~trackNb+rotation, function(x) {
+    # swimming direction
+    x <- x[!is.na(x$heading),]
+    dir_stats <- summary.circular(x$heading)
+    names(dir_stats) <- str_c("dir.", names(dir_stats))
+    # TODO add turning stats
+    
+    # swimming speed
+    speed_stats <- summary(x$speed)[c(1,3,4,6)]
+    names(speed_stats) <- tolower(names(speed_stats))
+    names(speed_stats) <- str_replace(names(speed_stats), fixed("."), "")
+    names(speed_stats) <- str_c("speed.", names(speed_stats))
+
+    stats <- as.data.frame(c(dir_stats, speed_stats))
+    return(stats)
+  })
+  # movement_stats$kind <- "direction"
+
+  # combine both
+  stats <- cbind(position_stats, dplyr::select(movement_stats, -trackNb, -rotation))
 
   # add mention of binning
   stats$bin.angle <- bin.angle
-
-  # TODO compute direction statistics
 
   # store the stats results
   destFile <- make_path(dir, .files$stats)
@@ -91,7 +116,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   # compass rotation
   if ( verbose ) disc_message("plot compass rotation")
   # for one track only (it's enough)
-  p <- ggplot(tComplete[tComplete$rotation == "raw",]) + polar() +
+  p <- ggplot(dplyr::filter(tComplete, rotation == "raw")) + polar() +
     geom_point(aes(x=cameraHeading, y=elapsed.min), size=2) +
     scale_y_continuous(limits=c(min(tComplete$elapsed.min, na.rm=T) - 20, max(tComplete$elapsed.min, na.rm=T)), breaks=seq(0, max(tComplete$elapsed.min, na.rm=T), by=2)) + 
     # geom_point(aes(x=cameraHeading, y=dateTime), size=2) +
@@ -115,7 +140,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
       return(data.frame(x = xx, y = yy))
   }
   p <- ggplot(tComplete, aes(x=x, y=y)) +
-    geom_path(data=circleFun(radius=radius), alpha=0.5) +
+    geom_path(data=circleFun(radius=radius), color="white") +
     geom_path(aes(colour=elapsed.min)) +
     facet_grid(trackNb~rotation) +
     coord_equal(xlim=c(-radiusT, radiusT), ylim=c(-radiusT, radiusT)) +
@@ -129,51 +154,68 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   posTitle <- bquote(atop(Positions, scriptstyle(.(sub))))
 
 
-  # position dotplot
-  if ( verbose ) disc_message("plot positions dotplot")
   # bin angles
   bin <- max(c(5, bin.angle))
-  tBinned <- ddply(t, ~trackNb+rotation, function(x, bin) {
-    x$theta <- as.numeric(round_any(x$theta, bin))
-    x$theta[x$theta==360] <- 0
 
-    # create a data.frame with count
-    counts <- count(x, "theta")
-
-    # repeat each point the appropriate number of times
-    d <- adply(counts, 1, function(x) {
-      data.frame(theta=x$theta, count=1:x$freq)
-    }, .expand=F)
-
-    # make the scale prettier
-    d$count <- 10 + d$count
-
-    return(d)
-  }, bin=bin)
-  p <- ggplot(tBinned) + polar() + labs(title=posTitle) +
-  	geom_point(aes(x=theta, y=count)) +
-    geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
-    # geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
-    scale_linetype_manual(values=c("solid", "dashed")) +
-    scale_y_continuous(name="r", limits=c(0, max(tBinned$count)), breaks=c(0, 10/2, 10), labels=c(0, 0.5, 1)) +
-    facet_grid(trackNb~rotation)
-  # TODO edit labels in first plot to remove N, S, E, W; that probably involved setting two plots up with grid.arrange.
-  plots <- c(plots, list(position_dotplot=p))
+  # # position dotplot
+  # if ( verbose ) disc_message("plot positions dotplot")
+  # tBinned <- ddply(t, ~trackNb+rotation, function(x, bin) {
+  #   x$theta <- as.numeric(round_any(x$theta, bin))
+  #   x$theta[x$theta==360] <- 0
+  #
+  #   # create a data.frame with count
+  #   counts <- count(x, "theta")
+  #
+  #   # repeat each point the appropriate number of times
+  #   d <- adply(counts, 1, function(x) {
+  #     data.frame(theta=x$theta, count=1:x$freq)
+  #   }, .expand=F)
+  #
+  #   # make the scale prettier
+  #   d$count <- 10 + d$count
+  #
+  #   return(d)
+  # }, bin=bin)
+  # p <- ggplot(tBinned) + polar() + labs(title=posTitle) +
+  #   geom_point(aes(x=theta, y=count)) +
+  #   geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
+  #   # geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
+  #   scale_linetype_manual(values=c("solid", "dashed")) +
+  #   scale_y_continuous(name="r", limits=c(0, max(tBinned$count)), breaks=c(0, 10/2, 10), labels=c(0, 0.5, 1)) +
+  #   facet_grid(trackNb~rotation)
+  # # TODO edit labels in first plot to remove N, S, E, W; that probably involved setting two plots up with grid.arrange.
+  # plots <- c(plots, list(position_dotplot=p))
 
 
   if ( verbose ) disc_message("plot positions histogram")
   # position histogram
   p <- ggplot(t) + polar() + labs(title=posTitle) +
-  	geom_histogram(aes(x=theta), binwidth=bin) +
+    geom_histogram(aes(x=theta), binwidth=bin) +
     geom_segment(aes(x=mean, y=-10, xend=mean, yend=-10+r*10, linetype=signif), data=stats) +
     scale_linetype_manual(values=c("solid", "dashed")) +
     scale_y_continuous(name="r", breaks=c(-10, -10/2, 0), labels=c(0, 0.5, 1)) +
     facet_grid(trackNb~rotation)
   plots <- c(plots, list(position_histogram=p))
 
-  # TODO density of position?
 
-  # TODO speed statistics
+  if ( verbose ) disc_message("plot directions histogram")
+  p <- ggplot(tComplete) + polar() + labs(title="Swimming directions") +
+    geom_histogram(aes(x=heading), binwidth=bin, na.rm=TRUE) +
+    geom_segment(aes(x=dir.mean, y=-10, xend=dir.mean, yend=-10+dir.r*10, linetype=dir.signif), data=stats) +
+    scale_linetype_manual(values=c("solid", "dashed")) +
+    scale_y_continuous(name="r", breaks=c(-10, -10/2, 0), labels=c(0, 0.5, 1)) +
+    facet_grid(trackNb~rotation)
+  plots <- c(plots, list(direction_histogram=p))
+
+  # TODO add turning angles
+
+  if ( verbose ) disc_message("plot swimming speeds")
+  p <- ggplot(dplyr::filter(tComplete, rotation=="raw")) + labs(title="Swimming speed (cm/s)") +
+    geom_histogram(aes(x=speed), binwidth=0.05, na.rm=TRUE) +
+    geom_vline(aes(xintercept=speed.mean), data=dplyr::filter(stats, rotation=="raw")) +
+    facet_grid(trackNb~.)
+  plots <- c(plots, list(speed_histogram=p))
+
 
   # plot them to a file
   if ( verbose ) disc_message("save plots as PDF")
