@@ -6,7 +6,7 @@
 
 2. Optionally install RStudio from <http://www.rstudio.com/products/rstudio/download/>
 
-2. Install `discr`. `discr` is an R package but it is not (yet) available in the official R packages repositories. To install it, start RStudio and, in the console, type
+2. Install `discr`. `discr` is an R package but it is not (yet) available in the official R packages repositories. To install it, start R/RStudio and, in the console, type
 
         install.packages("devtools")
         devtools::install_github("jiho/discr")
@@ -27,12 +27,12 @@
 
 ### Start a new project
 
-In R, use
+In R/RStudio, use
 
     library("discr")
     disc_start_project()
 
-to create a new project template in the current directory (you can then move it to wherever you want). See `?disc_start_project` for other arguments.
+to create a new project in the current directory (you can move it to wherever you want afterwards). See `?disc_start_project` for a description of the arguments. In this project, you can store your raw data, your processed data, and your personal data analysis scripts.
 
 
 ### Data collection
