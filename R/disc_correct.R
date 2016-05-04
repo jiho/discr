@@ -100,6 +100,9 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
     units(dt) <- "secs" # force computation in seconds
     x$dt <- as.numeric(c(NA,dt))
     
+    # compute elapsed time in minutes
+    x$elapsed.min <- as.numeric(difftime(x$dateTime, x$dateTime[1], units="min"))
+    
     # convert to polar coordinates (i.e. vector of displacement since last point)
     displacement <- car2pol(cbind(dx, dy), c(0,0))
 

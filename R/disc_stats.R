@@ -86,25 +86,14 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
 
 
   # prepare plots
-
-  # compute elapsed time to make it easier to plot
-  tComplete <- ddply(tComplete, ~trackNb+rotation, function(x) {
-    # compute elapsed time in seconds
-    x$elapsed <- x$dateTime - x$dateTime[1]
-    # convert to minutes
-    x$elapsed <- as.numeric(x$elapsed) / 60
-    return(x)
-  })
-
-
   plots <- list()
 
   # compass rotation
   if ( verbose ) disc_message("plot compass rotation")
   # for one track only (it's enough)
   p <- ggplot(tComplete[tComplete$rotation == "raw",]) + polar() +
-    geom_point(aes(x=cameraHeading, y=elapsed), size=2) +
-    scale_y_continuous(limits=c(min(tComplete$elapsed, na.rm=T) - 20, max(tComplete$elapsed, na.rm=T)), breaks=seq(0, max(tComplete$elapsed, na.rm=T), by=2)) + 
+    geom_point(aes(x=cameraHeading, y=elapsed.min), size=2) +
+    scale_y_continuous(limits=c(min(tComplete$elapsed.min, na.rm=T) - 20, max(tComplete$elapsed.min, na.rm=T)), breaks=seq(0, max(tComplete$elapsed.min, na.rm=T), by=2)) + 
     # geom_point(aes(x=cameraHeading, y=dateTime), size=2) +
     # scale_y_continuous(limits=c(min(tComplete$dateTime, na.rm=T) - 3600, max(tComplete$dateTime, na.rm=T) + 3600)) +
     # TODO fix this: does not work so I can't shift the min away from the center
@@ -127,7 +116,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   }
   p <- ggplot(tComplete, aes(x=x, y=y)) +
     geom_path(data=circleFun(radius=radius), alpha=0.5) +
-    geom_path(aes(colour=elapsed)) +
+    geom_path(aes(colour=elapsed.min)) +
     facet_grid(trackNb~rotation) +
     coord_equal(xlim=c(-radiusT, radiusT), ylim=c(-radiusT, radiusT)) +
     scale_x_continuous(breaks=NULL) + scale_y_continuous(breaks=NULL) +
