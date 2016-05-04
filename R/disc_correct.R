@@ -1,6 +1,7 @@
 #' Correct tracks (camera frame of reference) based on rotation of DISC to get polar-relevant coordinates
 #'
 #' @param dir path the to the deployment directory
+#' @param max.time.difference maximum number of seconds allowed between successive positions for the computation of movement of the organism. When the time difference is larger than \code{max.time.difference}, \code{heading} and \code{speed} are NA. This should not be too large because movement over several seconds is rarely in a straight line and the heading and speed computed here would therefore be meaningless.
 #' @param camera.compass.angle angle between the top of the camera and the N of the digital compass. If NULL, should be read from a file named "angle_camera_compass.txt" in the deployment directory
 #' @param verbose output messages on the console when TRUE
 #' @param ... passthrough argument
@@ -24,7 +25,7 @@
 #'
 #' # run the action
 #' disc_conf(deploy.dir=dd)
-#' disc_correct(dir=deploy1, verbose=TRUE)
+#' disc_correct(dir=deploy1, max.time.difference=5, verbose=TRUE)
 #' # inspect results
 #' list.files(deploy1)
 #' head(read.csv(paste0(deploy1, "/larvae_tracks.csv")))
@@ -33,7 +34,7 @@
 #'
 #' disc_correct(dir=deploy2, verbose=TRUE)
 #' list.files(deploy2)
-disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
+disc_correct <- function(dir, max.time.difference=2, camera.compass.angle=NULL, verbose=FALSE, ...) {
 
   disc_message("Correct rotation")
 
@@ -113,6 +114,11 @@ disc_correct <- function(dir, camera.compass.angle=NULL, verbose=FALSE, ...) {
 
     # compute speed from displacement and interval
     x$speed <- displacement$rho / x$dt
+    
+    # remove movement data if time difference is too large
+    large_steps <- x$dt > max.time.difference
+    x$heading[large_steps] <- NA
+    x$speed[large_steps]   <- NA
 
     return(x)
   })

@@ -4,10 +4,13 @@
 \alias{disc_correct}
 \title{Correct tracks (camera frame of reference) based on rotation of DISC to get polar-relevant coordinates}
 \usage{
-disc_correct(dir, camera.compass.angle = NULL, verbose = FALSE, ...)
+disc_correct(dir, max.time.difference = 2, camera.compass.angle = NULL,
+  verbose = FALSE, ...)
 }
 \arguments{
 \item{dir}{path the to the deployment directory}
+
+\item{max.time.difference}{maximum number of seconds allowed between successive positions for the computation of movement of the organism. When the time difference is larger than \code{max.time.difference}, \code{heading} and \code{speed} are NA. This should not be too large because movement over several seconds is rarely in a straight line and the heading and speed computed here would therefore be meaningless.}
 
 \item{camera.compass.angle}{angle between the top of the camera and the N of the digital compass. If NULL, should be read from a file named "angle_camera_compass.txt" in the deployment directory}
 
@@ -30,7 +33,7 @@ deploy2 <- paste0(dd, "2")  # analog compass
 
 # run the action
 disc_conf(deploy.dir=dd)
-disc_correct(dir=deploy1, verbose=TRUE)
+disc_correct(dir=deploy1, max.time.difference=5, verbose=TRUE)
 # inspect results
 list.files(deploy1)
 head(read.csv(paste0(deploy1, "/larvae_tracks.csv")))
