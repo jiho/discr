@@ -84,18 +84,30 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   if ( verbose ) disc_message("compute movement statistics")
   movement_stats <- ddply(tComplete, ~trackNb+rotation, function(x) {
     # swimming direction
-    x <- x[!is.na(x$heading),]
-    dir_stats <- summary.circular(x$heading)
+    dir_stats <- summary.circular(na.omit(x$heading))
     names(dir_stats) <- str_c("dir.", names(dir_stats))
-    # TODO add turning stats
-    
+
+    # turning angle
+    turns <- abs(na.omit(x$turnAngle))
+    turn_stats <- data.frame(
+      n = length(turns),
+      abs.mean = mean(turns),
+      freq.gt45 = sum(turns > 45) / length(turns)
+    )
+    names(turn_stats) <- str_c("turn.", names(turn_stats))
+
     # swimming speed
-    speed_stats <- summary(x$speed)[c(1,3,4,6)]
-    names(speed_stats) <- tolower(names(speed_stats))
-    names(speed_stats) <- str_replace(names(speed_stats), fixed("."), "")
+    speeds <- na.omit(x$speed)
+    speed_stats <- data.frame(
+      n = length(speeds),
+      mean = mean(speeds),
+      sd = sd(speeds),
+      median = median(speeds),
+      mad = mad(speeds)
+    )
     names(speed_stats) <- str_c("speed.", names(speed_stats))
 
-    stats <- as.data.frame(c(dir_stats, speed_stats))
+    stats <- cbind(dir_stats, turn_stats, speed_stats)
     return(stats)
   })
   # movement_stats$kind <- "direction"
@@ -209,7 +221,13 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
     facet_grid(trackNb~rotation)
   plots <- c(plots, list(direction_histogram=p))
 
-  # TODO add turning angles
+  if ( verbose ) disc_message("plot turning angles")
+  p <- ggplot(tComplete) +
+    geom_histogram(aes(x=turnAngle), binwidth=bin, na.rm=TRUE) +
+    scale_x_continuous(limits=c(-180, 180)) +
+    facet_grid(trackNb~rotation)
+  plots <- c(plots, list(turn_angle_histogram=p))
+
 
   if ( verbose ) disc_message("plot swimming speeds")
   p <- ggplot(dplyr::filter(tComplete, rotation=="raw")) + labs(title="Swimming speed (cm/s)") +
