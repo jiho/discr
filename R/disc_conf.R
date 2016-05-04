@@ -3,7 +3,7 @@
 #' Read and write project-level settings
 #'
 #' @details
-#' Settings are read, in order, from the defaults, then the configuration file in the deployments directory and finally from the arguments provided in \code{...}. Then those settings are set with the function \code{\link[base]{options}} to be accessible from any other function in \code{discuss}. Finally, the non-default settings are stored in the file \code{"disc.conf"} in the deployments directory.
+#' Settings are read, in order, from the defaults, then the configuration file in the deployments directory and finally from the arguments provided in \code{...}. Then those settings are set with the function \code{\link[base]{options}} to be accessible from any other function in \code{discusr}. Finally, the non-default settings are stored in the file \code{"disc.conf"} in the deployments directory.
 #'
 #' @param ... named arguments with settings to set
 #' @inheritParams disc_dd

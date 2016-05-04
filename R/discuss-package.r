@@ -1,6 +1,6 @@
-#' discuss
+#' discusr
 #'
-#' @name discuss
+#' @name discusr
 #' @docType package
 NULL
 

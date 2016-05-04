@@ -12,7 +12,7 @@
 #'
 #' @examples
 #' # get example deployments included with the package
-#' deploys <- system.file("extdata", "deployments", package = "discuss")
+#' deploys <- system.file("extdata", "deployments", package = "discusr")
 #' # copy them to a writable, temporary directory
 #' temp <- tempdir()
 #' file.copy(deploys, temp, recursive=TRUE)
@@ -46,8 +46,8 @@ disc_calibrate <- function(dir, verbose=FALSE, ...) {
 
   # prepare java command
   command <- str_c(
-    "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discuss"),
-    " -ijpath ", system.file("ij/", package="discuss"), " -eval \"",
+    "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discusr"),
+    " -ijpath ", system.file("ij/", package="discusr"), " -eval \"",
     " run('Image Sequence...', 'open=", picsDir, " number=1 starting=1 increment=1 scale=100 file=[] or=[] sort');",
     " makeOval(", getOption("disc.aquarium"), ");",
     " setTool('oval');",

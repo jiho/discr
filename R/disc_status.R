@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' # get example deployments included with the package
-#' deploys <- system.file("extdata", "deployments", package = "discuss")
+#' deploys <- system.file("extdata", "deployments", package = "discusr")
 #'
 #' disc_status(deploy.dir=deploys)
 disc_status <- function(deploy.dir=NULL) {

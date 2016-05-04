@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # get example deployments included with the package
-#' deploys <- system.file("extdata", "deployments", package = "discuss")
+#' deploys <- system.file("extdata", "deployments", package = "discusr")
 #' # copy them to a writable, temporary directory
 #' temp <- tempdir()
 #' file.copy(deploys, temp, recursive=TRUE)
@@ -67,11 +67,11 @@ disc_track <- function(dir, sub=NULL, verbose=FALSE, ...) {
 	# - save the tracks to an appropriate file
 	# - quit
   command <- str_c(
-    "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discuss"),
-    " -ijpath ", system.file("ij/", package="discuss"), " -eval \"",
+    "java -Xmx", getOption("disc.java_memory"), "m -jar ", system.file("ij/ij.jar", package="discusr"),
+    " -ijpath ", system.file("ij/", package="discusr"), " -eval \"",
     " run('Image Sequence...', 'open=", picsDir, " number=0 starting=1 increment=", subN, " scale=100 file=[] or=[] sort ", virtualStack,"');",
     " run('Manual Tracking', '');",
-    # " run('Compile and Run...', 'compile=", system.file("ij/", package="discuss"),"/plugins/Manual_Tracking.java');",
+    # " run('Compile and Run...', 'compile=", system.file("ij/", package="discusr"),"/plugins/Manual_Tracking.java');",
     " waitForUser('Track finished?',",
     " 'Press OK when done tracking');",
     " selectWindow('Tracks');",

@@ -30,7 +30,7 @@ configuration file in the deployments directory and finally
 from the arguments provided in \code{...}. Then those
 settings are set with the function
 \code{\link[base]{options}} to be accessible from any other
-function in \code{discuss}. Finally, the non-default
+function in \code{discusr}. Finally, the non-default
 settings are stored in the file \code{"disc.conf"} in the
 deployments directory.
 }

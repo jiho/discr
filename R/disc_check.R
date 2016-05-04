@@ -1,4 +1,4 @@
-#' Check discuss running environment
+#' Check discusr running environment
 #'
 #' Checks the deployments directory (including wether a non-standard one is set), the options set in this deployments directory, and wether all required executables are installed. If some are not available it gives platform specific tips on how to install them. The function has no arguments.
 #'

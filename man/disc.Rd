@@ -17,13 +17,13 @@ disc(ids = NULL, actions = c("calibrate", "track", "correct", "stats"),
   can be abbreviated. See below which actions are
   available.}
 
-  \item{...}{passed to the various actions functions. To
-  see which arguments are available, see the help of the
-  various action functions}
-
   \item{deploy.dir}{path to the directory containing
   deployments (and associated options). By default
   "deployments" in the current directory.}
+
+  \item{...}{passed to the various actions functions. To
+  see which arguments are available, see the help of the
+  various action functions}
 }
 \description{
 Run a disc analysis action
@@ -49,7 +49,7 @@ larvae in the arena} }
 }
 \examples{
 # get example deployments included with the package
-deploys <- system.file("extdata", "deployments", package = "discuss")
+deploys <- system.file("extdata", "deployments", package = "discusr")
 # copy them to a writable, temporary directory
 temp <- tempdir()
 file.copy(deploys, temp, recursive=TRUE)
