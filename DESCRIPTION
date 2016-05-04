@@ -1,7 +1,8 @@
-Package: discuss
-Title: Drifting In Situ Chamber User Software in S
-Description: Well in R actually, but S works better for the acronym ;)
-Version: 0.2
+Package: discusr
+Title: Drifting In Situ Chamber User Software in R
+Description: Implements procedures to extract and analysed the data produced by
+    the Drifting In Situ Chamber (DISC).
+Version: 0.3
 Authors@R: "Jean-Olivier Irisson <irisson@normalesup.org> [aut, cre]"
 Depends:
     R (>= 3.0.2)
