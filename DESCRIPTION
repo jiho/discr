@@ -18,3 +18,4 @@ Imports:
     assertthat,
     doParallel,
     gtools
+RoxygenNote: 5.0.1
