@@ -61,13 +61,22 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
 
 
   # subsample the data if needed
-  if ( verbose ) disc_message("subsample data if needed")
-  t_sub <- ddply(t, ~trackNb+rotation, function(x) {
-    # TODO subsample based on time directly (to better handle skipped frames)
-    subN <- subsample_n(x$dateTime, sub=sub, verbose=verbose)
-    x <- x[seq(1, nrow(x), by=subN),]
-    return(x)
-  })
+  if (is.null(sub)) {
+    t_sub <- t
+  } else {
+    if ( verbose ) disc_message("subsample position data")
+    t_sub <- ddply(t, ~trackNb+rotation, function(x) {
+      x_sub <- x[1,]
+      for (i in 2:nrow(x)) {
+        # add data only if it is at least `sub` seconds away from the previous time
+        if (difftime(x$dateTime[i], tail(x_sub, 1)$dateTime, units="secs") >= sub) {
+          x_sub <- rbind(x_sub, x[i,])
+        }
+      }
+      # TODO check if this for loop could be avoided
+      return(x_sub)
+    })
+  }
 
   # compute position statistics
   # i.e. statistics about how concentrated the positions are in the reference of the chamber or in a cardinal reference
