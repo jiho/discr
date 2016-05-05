@@ -62,9 +62,8 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
 
   # subsample the data if needed
   if ( verbose ) disc_message("subsample data if needed")
-  tComplete <- t
-  # TODO invert tComplete and t (use t_subsampled or t_sub)
-  t <- ddply(t, ~trackNb+rotation, function(x) {
+  t_sub <- ddply(t, ~trackNb+rotation, function(x) {
+    # TODO subsample based on time directly (to better handle skipped frames)
     subN <- subsample_n(x$dateTime, sub=sub, verbose=verbose)
     x <- x[seq(1, nrow(x), by=subN),]
     return(x)
@@ -73,7 +72,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   # compute position statistics
   # i.e. statistics about how concentrated the positions are in the reference of the chamber or in a cardinal reference
   if ( verbose ) disc_message("compute position statistics")
-  position_stats <- ddply(t, ~trackNb+rotation, function(x) {
+  position_stats <- ddply(t_sub, ~trackNb+rotation, function(x) {
     stats <- summary.circular(x$theta)
     return(stats)
   })
@@ -82,7 +81,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   # compute movement statistics
   # i.e. statistics about the swimming direction and speed of the larva
   if ( verbose ) disc_message("compute movement statistics")
-  movement_stats <- ddply(tComplete, ~trackNb+rotation, function(x) {
+  movement_stats <- ddply(t, ~trackNb+rotation, function(x) {
     # swimming direction
     dir_stats <- summary.circular(na.omit(x$heading))
     names(dir_stats) <- str_c("dir.", names(dir_stats))
@@ -130,11 +129,11 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   # compass rotation
   if ( verbose ) disc_message("plot compass rotation")
   # for one track only (it's enough)
-  p <- ggplot(dplyr::filter(tComplete, rotation == "raw")) + polar() +
+  p <- ggplot(dplyr::filter(t, rotation == "raw")) + polar() +
     geom_point(aes(x=cameraHeading, y=elapsed.min), size=2) +
-    scale_y_continuous(limits=c(min(tComplete$elapsed.min, na.rm=T) - 20, max(tComplete$elapsed.min, na.rm=T)), breaks=seq(0, max(tComplete$elapsed.min, na.rm=T), by=2)) + 
+    scale_y_continuous(limits=c(min(t$elapsed.min, na.rm=T) - 20, max(t$elapsed.min, na.rm=T)), breaks=seq(0, max(t$elapsed.min, na.rm=T), by=2)) + 
     # geom_point(aes(x=cameraHeading, y=dateTime), size=2) +
-    # scale_y_continuous(limits=c(min(tComplete$dateTime, na.rm=T) - 3600, max(tComplete$dateTime, na.rm=T) + 3600)) +
+    # scale_y_continuous(limits=c(min(t$dateTime, na.rm=T) - 3600, max(t$dateTime, na.rm=T) + 3600)) +
     # TODO fix this: does not work so I can't shift the min away from the center
     facet_grid(trackNb~.) +
     labs(title="Compass rotation")
@@ -153,7 +152,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
       yy <- center[2] + radius * sin(tt)
       return(data.frame(x = xx, y = yy))
   }
-  p <- ggplot(tComplete, aes(x=x, y=y)) +
+  p <- ggplot(t, aes(x=x, y=y)) +
     geom_path(data=circleFun(radius=radius), color="white") +
     geom_path(aes(colour=elapsed.min)) +
     facet_grid(trackNb~rotation) +
@@ -203,7 +202,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
 
   if ( verbose ) disc_message("plot positions histogram")
   # position histogram
-  p <- ggplot(t) + polar() + labs(title=posTitle) +
+  p <- ggplot(t_sub) + polar() + labs(title=posTitle) +
     geom_histogram(aes(x=theta), binwidth=bin) +
     geom_segment(aes(x=mean, y=-10, xend=mean, yend=-10+r*10, linetype=signif), data=stats) +
     scale_linetype_manual(values=c("solid", "dashed")) +
@@ -213,7 +212,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
 
 
   if ( verbose ) disc_message("plot directions histogram")
-  p <- ggplot(tComplete) + polar() + labs(title="Swimming directions") +
+  p <- ggplot(t) + polar() + labs(title="Swimming directions") +
     geom_histogram(aes(x=heading), binwidth=bin, na.rm=TRUE) +
     geom_segment(aes(x=dir.mean, y=-10, xend=dir.mean, yend=-10+dir.r*10, linetype=dir.signif), data=stats) +
     scale_linetype_manual(values=c("solid", "dashed")) +
@@ -222,7 +221,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   plots <- c(plots, list(direction_histogram=p))
 
   if ( verbose ) disc_message("plot turning angles")
-  p <- ggplot(tComplete) +
+  p <- ggplot(t) +
     geom_histogram(aes(x=turnAngle), binwidth=bin, na.rm=TRUE) +
     scale_x_continuous(limits=c(-180, 180)) +
     facet_grid(trackNb~rotation)
@@ -230,7 +229,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
 
 
   if ( verbose ) disc_message("plot swimming speeds")
-  p <- ggplot(dplyr::filter(tComplete, rotation=="raw")) + labs(title="Swimming speed (cm/s)") +
+  p <- ggplot(dplyr::filter(t, rotation=="raw")) + labs(title="Swimming speed (cm/s)") +
     geom_histogram(aes(x=speed), binwidth=0.05, na.rm=TRUE) +
     geom_vline(aes(xintercept=speed.mean), data=dplyr::filter(stats, rotation=="raw")) +
     facet_grid(trackNb~.)
