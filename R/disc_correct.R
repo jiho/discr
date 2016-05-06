@@ -85,7 +85,7 @@ disc_correct <- function(dir, max.time.difference=2, camera.compass.angle=NULL, 
   
   # }
 
-  ##{ Compute swimming speed, direction, turning angles etc. -----
+  ##{ Compute swimming direction and speed -----
   
   if (verbose) { disc_message("compute swimming characteristics") }
 
