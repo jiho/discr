@@ -15,6 +15,7 @@
 #' @importFrom plyr round_any ddply count rbind.fill
 #' @importFrom stringr str_replace fixed str_c
 #' @import ggplot2
+#' @import grid
 #'
 #' @examples
 #' # get example deployments included with the package
@@ -131,129 +132,117 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   write.csv(stats, file=destFile, row.names=FALSE)
 
 
+  # plots
+  disc_message("Plot results")
 
-  # prepare plots
-  plots <- list()
-
-  # compass rotation
-  if ( verbose ) disc_message("plot compass rotation")
-  # for one track only (it's enough)
-  p <- ggplot(dplyr::filter(t, rotation == "raw")) + polar() +
-    geom_point(aes(x=cameraHeading, y=elapsed.min), size=2) +
-    scale_y_continuous(limits=c(min(t$elapsed.min, na.rm=T) - 20, max(t$elapsed.min, na.rm=T)), breaks=seq(0, max(t$elapsed.min, na.rm=T), by=2)) + 
-    # geom_point(aes(x=cameraHeading, y=dateTime), size=2) +
-    # scale_y_continuous(limits=c(min(t$dateTime, na.rm=T) - 3600, max(t$dateTime, na.rm=T) + 3600)) +
-    # TODO fix this: does not work so I can't shift the min away from the center
-    facet_grid(trackNb~.) +
-    labs(title="Compass rotation")
-  plots <- c(plots, list(compass_rotation=p))
-
-  # trajectory
-  if ( verbose ) disc_message("plot trajectory")
-  # get arena radius to limit the plot
-  diameter <- getOption("disc.diameter")
-  radius <- diameter / 2
-  radiusT <- radius + 1 # add tolerance for limits
-  # draw the arena
-  circleFun <- function(center = c(0,0), radius = 1, npoints = 100){
-      tt <- seq(0, 2*pi, length.out = npoints)
-      xx <- center[1] + radius * cos(tt)
-      yy <- center[2] + radius * sin(tt)
-      return(data.frame(x = xx, y = yy))
-  }
-  p <- ggplot(t, aes(x=x, y=y)) +
-    geom_path(data=circleFun(radius=radius), color="white") +
-    geom_path(aes(colour=elapsed.min)) +
-    facet_grid(trackNb~rotation) +
-    coord_equal(xlim=c(-radiusT, radiusT), ylim=c(-radiusT, radiusT)) +
-    scale_x_continuous(breaks=NULL) + scale_y_continuous(breaks=NULL) +
-    labs(title="Trajectory")
-  plots <- c(plots, list(trajectory=p))
-
-
-  # positions
-  sub <- str_c(round(stats$mean), "\u00B0 (r=", round(stats$r, 3), ", p=", round(stats$p.value, 3), ")", collapse=" | ")
-  posTitle <- bquote(atop(Positions, scriptstyle(.(sub))))
-
-
-  # bin angles
-  bin <- max(c(5, bin.angle))
-
-  # # position dotplot
-  # if ( verbose ) disc_message("plot positions dotplot")
-  # tBinned <- ddply(t, ~trackNb+rotation, function(x, bin) {
-  #   x$theta <- as.numeric(round_any(x$theta, bin))
-  #   x$theta[x$theta==360] <- 0
-  #
-  #   # create a data.frame with count
-  #   counts <- count(x, "theta")
-  #
-  #   # repeat each point the appropriate number of times
-  #   d <- adply(counts, 1, function(x) {
-  #     data.frame(theta=x$theta, count=1:x$freq)
-  #   }, .expand=F)
-  #
-  #   # make the scale prettier
-  #   d$count <- 10 + d$count
-  #
-  #   return(d)
-  # }, bin=bin)
-  # p <- ggplot(tBinned) + polar() + labs(title=posTitle) +
-  #   geom_point(aes(x=theta, y=count)) +
-  #   geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
-  #   # geom_segment(aes(x=mean, y=0, xend=mean, yend=r*10, linetype=signif), data=stats) +
-  #   scale_linetype_manual(values=c("solid", "dashed")) +
-  #   scale_y_continuous(name="r", limits=c(0, max(tBinned$count)), breaks=c(0, 10/2, 10), labels=c(0, 0.5, 1)) +
-  #   facet_grid(trackNb~rotation)
-  # # TODO edit labels in first plot to remove N, S, E, W; that probably involved setting two plots up with grid.arrange.
-  # plots <- c(plots, list(position_dotplot=p))
-
-
-  if ( verbose ) disc_message("plot positions histogram")
-  # position histogram
-  p <- ggplot(t_sub) + polar() + labs(title=posTitle) +
-    geom_histogram(aes(x=theta), binwidth=bin) +
-    geom_segment(aes(x=mean, y=-10, xend=mean, yend=-10+r*10, linetype=signif), data=stats) +
-    scale_linetype_manual(values=c("solid", "dashed")) +
-    scale_y_continuous(name="r", breaks=c(-10, -10/2, 0), labels=c(0, 0.5, 1)) +
-    facet_grid(trackNb~rotation)
-  plots <- c(plots, list(position_histogram=p))
-
-
-  if ( verbose ) disc_message("plot directions histogram")
-  p <- ggplot(t) + polar() + labs(title="Swimming directions") +
-    geom_histogram(aes(x=heading), binwidth=bin, na.rm=TRUE) +
-    geom_segment(aes(x=dir.mean, y=-10, xend=dir.mean, yend=-10+dir.r*10, linetype=dir.signif), data=stats) +
-    scale_linetype_manual(values=c("solid", "dashed")) +
-    scale_y_continuous(name="r", breaks=c(-10, -10/2, 0), labels=c(0, 0.5, 1)) +
-    facet_grid(trackNb~rotation)
-  plots <- c(plots, list(direction_histogram=p))
-
-  if ( verbose ) disc_message("plot turning angles")
-  p <- ggplot(t) +
-    geom_histogram(aes(x=turnAngle), binwidth=bin, na.rm=TRUE) +
-    scale_x_continuous(limits=c(-180, 180)) +
-    facet_grid(trackNb~rotation)
-  plots <- c(plots, list(turn_angle_histogram=p))
-
-
-  if ( verbose ) disc_message("plot swimming speeds")
-  p <- ggplot(dplyr::filter(t, rotation=="raw")) + labs(title="Swimming speed (cm/s)") +
-    geom_histogram(aes(x=speed), binwidth=0.05, na.rm=TRUE) +
-    geom_vline(aes(xintercept=speed.mean), data=dplyr::filter(stats, rotation=="raw")) +
-    facet_grid(trackNb~.)
-  plots <- c(plots, list(speed_histogram=p))
-
-
-  # plot them to a file
-  if ( verbose ) disc_message("save plots as PDF")
-  destFile <- str_replace(destFile, fixed(".csv"), ".pdf")
-	pdf(file=destFile, width=7, height=1+3*length(unique(t$trackNb)), pointsize=10)
 	# set a theme with smaller fonts and grey background
-	theme_set(theme_gray(10))
-	dummy = l_ply(plots, print, .progress="text")
-	# close PDF file
-	dummy = dev.off()
+	theme_set(theme_gray(10) + theme(legend.margin=unit(0, "cm")))
 
-  return(invisible(plots))
+  for (track in sort(unique(stats$trackNb))) {
+    if ( verbose ) disc_message("plot track ", track)
+
+    # select data for current track
+    c_t <- dplyr::filter(t, trackNb==track)
+    c_t_sub <- dplyr::filter(t_sub, trackNb==track)
+    c_stats <- dplyr::filter(stats, trackNb==track)
+
+    # prepare plot list
+    plots <- list()
+
+    if ( verbose ) disc_message("plot compass rotation")
+    tot_duration <- max(c_t$elapsed.min, na.rm=T)
+    p <- ggplot(dplyr::filter(c_t, rotation == "raw")) + polar() +
+      # plot compass positions
+      geom_point(aes(x=cameraHeading, y=elapsed.min, fill=elapsed.min), size=2, colour=alpha("black", 0.5), shape=21) +
+      # shift them away from the center
+      scale_y_continuous(limits=c(-tot_duration, NA), breaks=seq(0, tot_duration, by=2)) +
+      scale_fill_distiller(palette="YlGnBu") +
+      labs(title="Compass rotation")
+    plots <- c(plots, list(compass_rotation=ggplotGrob(p)))
+  
+    if ( verbose ) disc_message("plot trajectory")
+    # get arena radius to limit the plot
+    diameter <- getOption("disc.diameter")
+    rad <- diameter / 2 + 1 # add tolerance for aquarium size
+    p <- ggplot(c_t, aes(x=x, y=y)) + labs(title="Trajectory") +
+      # draw aquarium
+      annotation_custom(
+        grob=grid::circleGrob(r=unit(0.5,"npc"), gp=grid::gpar(col="white", lwd=2)),
+        xmin=-rad, xmax=rad, ymin=-rad, ymax=rad
+      ) +
+      # draw trajectories (superpose a black and a coloured version)
+      geom_path(size=1.25, colour="grey40") +
+      geom_path(aes(colour=elapsed.min)) +
+      facet_grid(.~rotation) +
+      # nicer plot settings
+      scale_colour_distiller(palette="YlGnBu") +
+      theme(legend.position="top") +
+      # force equal scales and no grid
+      coord_equal(xlim=c(-rad, rad), ylim=c(-rad, rad)) +
+      scale_x_continuous(breaks=NULL) + scale_y_continuous(breaks=NULL)
+    plots <- c(plots, list(trajectory=ggplotGrob(p)))
+
+    # angle binning (5 degrees minimum, or bin.angle)
+    bin <- max(c(5, bin.angle))
+
+    if ( verbose ) disc_message("plot positions histogram")
+    c_stats$rot.label <- with(c_stats, str_c(rotation, "\n",round(mean),"\u00B0, r=", round(r, 2), ", p=", round(p.value, 3)))
+    c_t_sub <- dplyr::left_join(c_t_sub, dplyr::select(c_stats, rotation, rot.label), by="rotation")
+    # position histogram
+    p <- ggplot() + polar() + labs(title="Positions") + facet_grid(.~rot.label) +
+      # histogram of positions
+      geom_histogram(aes(x=theta), data=c_t_sub, binwidth=bin) +
+      # mean angle and Rayleigh r
+      geom_segment(aes(x=mean, y=-10, xend=mean, yend=-10+r*10, linetype=signif), data=c_stats) +
+      scale_linetype_manual("Directionality", limits=c(TRUE, FALSE), breaks=c(TRUE, FALSE), labels=c("signif.", "non-signif."), values=c("solid", "dashed")) +
+      scale_y_continuous(name="Rayleigh's r", breaks=c(-10, -10/2, 0), labels=c(0, 0.5, 1)) +
+      # larger legend key to make it more readable
+      theme(legend.position="top", legend.key.width=unit(1, "cm"))
+    # change the direction labels for the raw positions
+    g <- ggplotGrob(p)
+    g$grobs[[5]]$children[[4]]$children[[1]]$label <- c("top", "", "", "")
+    # grid.draw(g)
+    plots <- c(plots, list(position_histogram=g))
+
+    if ( verbose ) disc_message("plot directions histogram")
+    c_stats$rot.label <- with(c_stats, str_c(rotation, "\n",round(dir.mean),"\u00B0, r=", round(dir.r, 2), ", p=", round(dir.p.value, 3)))
+    c_t <- dplyr::left_join(c_t_sub, dplyr::select(c_stats, rotation, rot.label), by="rotation")
+    p <- ggplot() + polar() + labs(title="Swimming directions") + facet_grid(.~rot.label) +
+      geom_histogram(aes(x=heading), data=c_t, binwidth=bin, na.rm=TRUE) +
+      geom_segment(aes(x=dir.mean, y=-10, xend=dir.mean, yend=-10+dir.r*10, linetype=dir.signif), data=c_stats) +
+      scale_linetype_manual("Directionality", limits=c(TRUE, FALSE), breaks=c(TRUE, FALSE), labels=c("signif.", "non-signif."), values=c("solid", "dashed")) +
+      scale_y_continuous(name="Rayleigh's r", breaks=c(-10, -10/2, 0), labels=c(0, 0.5, 1)) +
+      # larger legend key to make it more readable
+      theme(legend.position="top", legend.key.width=unit(1, "cm"))
+    # change the direction labels for the raw positions
+    g <- ggplotGrob(p)
+    g$grobs[[5]]$children[[4]]$children[[1]]$label <- c("top", "", "", "")
+    # grid.draw(g)
+    plots <- c(plots, list(direction_histogram=g))
+
+    if ( verbose ) disc_message("plot turning angles")
+    p <- ggplot(c_t) + facet_grid(.~rotation) + labs(title="Turning angles") +
+      geom_histogram(aes(x=turnAngle), binwidth=bin, na.rm=TRUE) +
+      scale_x_continuous("angle", limits=c(-180, 180))
+    plots <- c(plots, list(turn_angle_histogram=ggplotGrob(p)))
+
+    if ( verbose ) disc_message("plot swimming speeds")
+    p <- ggplot(c_t) + labs(title="Swimming speeds", x="speed (cm/s)") +
+      geom_histogram(aes(x=speed, y=..density..), binwidth=0.05, na.rm=TRUE) +
+      geom_density(aes(x=speed), na.rm=TRUE)
+      # geom_vline(aes(xintercept=speed.mean), data=c_stats, na.rm=TRUE)
+    plots <- c(plots, list(speed_histogram=ggplotGrob(p)))
+
+    # plot them to a file
+    destFile <- make_path(dir, str_c("plots_", track, ".pdf"))
+  	pdf(file=destFile, width=7, height=4.5, pointsize=10)
+    l_ply(plots, function(x) {
+      grid.newpage()
+      grid.draw(x)
+    })
+  	# close PDF file
+  	dev.off()
+  }
+
+  return(invisible(stats))
 }
