@@ -135,9 +135,16 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
   # plots
   disc_message("Plot results")
 
-	# set a theme with smaller fonts and grey background
-	theme_set(theme_gray(10) + theme(legend.margin=unit(0, "cm")))
+	# set a theme with smaller fonts, grey background, etc.
+	theme_set(
+    theme_gray(10) +
+    theme(
+      legend.margin=unit(0, "cm"),
+      legend.position="top"
+    )
+  )
 
+  # plot each track separately
   for (track in sort(unique(stats$trackNb))) {
     if ( verbose ) disc_message("plot track ", track)
 
@@ -148,90 +155,111 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
 
     # prepare plot list
     plots <- list()
-
-    if ( verbose ) disc_message("plot compass rotation")
-    tot_duration <- max(c_t$elapsed.min, na.rm=T)
-    p <- ggplot(dplyr::filter(c_t, rotation == "raw")) + polar() +
-      # plot compass positions
-      geom_point(aes(x=cameraHeading, y=elapsed.min, fill=elapsed.min), size=2, colour=alpha("black", 0.5), shape=21) +
-      # shift them away from the center
-      scale_y_continuous(limits=c(-tot_duration, NA), breaks=seq(0, tot_duration, by=2)) +
-      scale_fill_distiller(palette="YlGnBu") +
-      labs(title="Compass rotation")
-    plots <- c(plots, list(compass_rotation=ggplotGrob(p)))
   
     if ( verbose ) disc_message("plot trajectory")
     # get arena radius to limit the plot
     diameter <- getOption("disc.diameter")
     rad <- diameter / 2 + 1 # add tolerance for aquarium size
-    p <- ggplot(c_t, aes(x=x, y=y)) + labs(title="Trajectory") +
+    p <- ggplot(c_t, aes(x=x, y=y)) +
+      facet_grid(.~rotation) + labs(title="Trajectory") +
       # draw aquarium
       annotation_custom(
         grob=grid::circleGrob(r=unit(0.5,"npc"), gp=grid::gpar(col="white", lwd=2)),
         xmin=-rad, xmax=rad, ymin=-rad, ymax=rad
       ) +
-      # draw trajectories (superpose a black and a coloured version)
+      annotate("text", x=0, y=rad, label="N", size=3, colour="grey30") +
+      # draw trajectories (superpose a black and a coloured version to fake an outline)
       geom_path(size=1.25, colour="grey40") +
       geom_path(aes(colour=elapsed.min)) +
-      facet_grid(.~rotation) +
-      # nicer plot settings
+      # make plot nicer
       scale_colour_distiller(palette="YlGnBu") +
-      theme(legend.position="top") +
-      # force equal scales and no grid
       coord_equal(xlim=c(-rad, rad), ylim=c(-rad, rad)) +
+      theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
       scale_x_continuous(breaks=NULL) + scale_y_continuous(breaks=NULL)
-    plots <- c(plots, list(trajectory=ggplotGrob(p)))
+    # change the bearing label for raw trajectory
+    g <- ggplotGrob(p)
+    g$grobs[[5]]$children[[3]]$label <- "top"
+    plots <- c(plots, list(trajectory=g))
 
     # angle binning (5 degrees minimum, or bin.angle)
     bin <- max(c(5, bin.angle))
 
     if ( verbose ) disc_message("plot positions histogram")
-    c_stats$rot.label <- with(c_stats, str_c(rotation, "\n",round(mean),"\u00B0, r=", round(r, 2), ", p=", round(p.value, 3)))
+    # prepare facet labels
+    # = add statistics
+    c_stats$rot.label <- with(c_stats, str_c(rotation, "\n", round(mean),"\u00B0, r=", round(r, 2), ", p=", round(p.value, 3)))
     c_t_sub <- dplyr::left_join(c_t_sub, dplyr::select(c_stats, rotation, rot.label), by="rotation")
     # position histogram
-    p <- ggplot() + polar() + labs(title="Positions") + facet_grid(.~rot.label) +
+    p <- ggplot() +
+      polar() + facet_grid(.~rot.label) + labs(title="Positions") +
       # histogram of positions
       geom_histogram(aes(x=theta), data=c_t_sub, binwidth=bin) +
       # mean angle and Rayleigh r
       geom_segment(aes(x=mean, y=-10, xend=mean, yend=-10+r*10, linetype=signif), data=c_stats) +
+      geom_point(aes(x=mean, y=-10+r*10), data=c_stats, size=1) +
+      # nicer scales
       scale_linetype_manual("Directionality", limits=c(TRUE, FALSE), breaks=c(TRUE, FALSE), labels=c("signif.", "non-signif."), values=c("solid", "dashed")) +
       scale_y_continuous(name="Rayleigh's r", breaks=c(-10, -10/2, 0), labels=c(0, 0.5, 1)) +
       # larger legend key to make it more readable
       theme(legend.position="top", legend.key.width=unit(1, "cm"))
-    # change the direction labels for the raw positions
+    # change the bearing label for raw trajectory
     g <- ggplotGrob(p)
-    g$grobs[[5]]$children[[4]]$children[[1]]$label <- c("top", "", "", "")
-    # grid.draw(g)
+    g$grobs[[5]]$children[[5]]$children[[1]]$label <- c("top", "", "", "")
     plots <- c(plots, list(position_histogram=g))
 
     if ( verbose ) disc_message("plot directions histogram")
+    # prepare facet labels
+    # = add statistics
     c_stats$rot.label <- with(c_stats, str_c(rotation, "\n",round(dir.mean),"\u00B0, r=", round(dir.r, 2), ", p=", round(dir.p.value, 3)))
     c_t <- dplyr::left_join(c_t_sub, dplyr::select(c_stats, rotation, rot.label), by="rotation")
-    p <- ggplot() + polar() + labs(title="Swimming directions") + facet_grid(.~rot.label) +
+    p <- ggplot() +
+      polar() + facet_grid(.~rot.label) + labs(title="Swimming directions") +
+      # histogram of swimming directions
       geom_histogram(aes(x=heading), data=c_t, binwidth=bin, na.rm=TRUE) +
+      # mean swimming direction and Rayleigh r
       geom_segment(aes(x=dir.mean, y=-10, xend=dir.mean, yend=-10+dir.r*10, linetype=dir.signif), data=c_stats) +
+      geom_point(aes(x=dir.mean, y=-10+dir.r*10), data=c_stats, size=1) +
+      # nicer scales
       scale_linetype_manual("Directionality", limits=c(TRUE, FALSE), breaks=c(TRUE, FALSE), labels=c("signif.", "non-signif."), values=c("solid", "dashed")) +
       scale_y_continuous(name="Rayleigh's r", breaks=c(-10, -10/2, 0), labels=c(0, 0.5, 1)) +
       # larger legend key to make it more readable
       theme(legend.position="top", legend.key.width=unit(1, "cm"))
-    # change the direction labels for the raw positions
+    # change the bearing label for raw trajectory
     g <- ggplotGrob(p)
-    g$grobs[[5]]$children[[4]]$children[[1]]$label <- c("top", "", "", "")
-    # grid.draw(g)
+    g$grobs[[5]]$children[[5]]$children[[1]]$label <- c("top", "", "", "")
     plots <- c(plots, list(direction_histogram=g))
 
     if ( verbose ) disc_message("plot turning angles")
-    p <- ggplot(c_t) + facet_grid(.~rotation) + labs(title="Turning angles") +
+    p <- ggplot(c_t) +
+      facet_grid(.~rotation) + labs(title="Turning angles") +
+      # histogram of turning angles
       geom_histogram(aes(x=turnAngle), binwidth=bin, na.rm=TRUE) +
+      # force homogeneous limits
       scale_x_continuous("angle", limits=c(-180, 180))
     plots <- c(plots, list(turn_angle_histogram=ggplotGrob(p)))
 
     if ( verbose ) disc_message("plot swimming speeds")
-    p <- ggplot(c_t) + labs(title="Swimming speeds", x="speed (cm/s)") +
+    p <- ggplot(c_t) +
+      labs(title="Swimming speeds") +
+      # histogram and density of swimming speeds
       geom_histogram(aes(x=speed, y=..density..), binwidth=0.05, na.rm=TRUE) +
-      geom_density(aes(x=speed), na.rm=TRUE)
-      # geom_vline(aes(xintercept=speed.mean), data=c_stats, na.rm=TRUE)
+      geom_density(aes(x=speed), na.rm=TRUE) +
+      # geom_vline(aes(xintercept=speed.mean), data=c_stats, na.rm=TRUE) +
+      scale_x_continuous("speed (cm/s)", limits=c(0, NA))
     plots <- c(plots, list(speed_histogram=ggplotGrob(p)))
+
+    if ( verbose ) disc_message("plot compass rotation")
+    tot_duration <- max(c_t$elapsed.min, na.rm=T)
+    p <- ggplot(dplyr::filter(c_t, rotation == "raw")) +
+      polar() + labs(title="Compass rotation") +
+      # plot compass positions
+      geom_point(aes(x=cameraHeading, y=elapsed.min, fill=elapsed.min), size=2, colour=alpha("black", 0.5), shape=21) +
+      # shift them away from the centre
+      scale_y_continuous(limits=c(-tot_duration, NA), breaks=seq(0, tot_duration, by=2)) +
+      # make plot nicer
+      scale_fill_distiller(palette="YlGnBu") +
+      theme(legend.position="right")
+    plots <- c(plots, list(compass_rotation=ggplotGrob(p)))
 
     # plot them to a file
     destFile <- make_path(dir, str_c("plots_", track, ".pdf"))
