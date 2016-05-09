@@ -2,7 +2,7 @@
 #'
 #' Read the deployment logs, read necessary data in the raw data directory, extract data for each deployment based on date and time
 #'
-#' @param raw path to the directory where the raw data and the deployment and leg logs are.
+#' @param raw path to the directory where the raw data and the deployment and leg logs are; by default in a subdirectory called \code{raw} in the current directory
 #' @param ids deployment identifiers to extract; if NULL (the default) extract all deployments
 #' @param acclimation.time duration of the acclimation time in minutes.
 #' @param observation.time duration of the observation period (after acclimation) in minutes.
@@ -29,7 +29,7 @@
 #' # - the notice that the compass (cc) has 0 records in deployment 2
 #'
 #' system(paste0("ls -R ", dest))
-disc_extract_deployments <- function(raw, ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE, parallel=TRUE) {
+disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE, parallel=TRUE) {
 
   message("Reading field logs")
   # convert to csv first using

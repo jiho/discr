@@ -4,12 +4,12 @@
 \alias{disc_extract_deployments}
 \title{Extract data for each deployment}
 \usage{
-disc_extract_deployments(raw, ids = NULL, deploy.dir = NULL,
+disc_extract_deployments(raw = "raw", ids = NULL, deploy.dir = NULL,
   acclimation.time = 5, observation.time = 15, width = 1600,
   split.pics = TRUE, parallel = TRUE)
 }
 \arguments{
-\item{raw}{path to the directory where the raw data and the deployment and leg logs are.}
+\item{raw}{path to the directory where the raw data and the deployment and leg logs are; by default in a subdirectory called \code{raw} in the current directory}
 
 \item{ids}{deployment identifiers to extract; if NULL (the default) extract all deployments}
 

@@ -103,19 +103,19 @@ The directory described above holds the whole raw data record. To be analysed, i
 In an R console, in your project directory:
 
     library("discr")
-    disc_extract_deployments(raw="raw")
+    disc_extract_deployments()
         
 If you want to extract only a few deployments, use
 
-    disc_extract_deployments(raw="raw", ids=10:20)
+    disc_extract_deployments(ids=10:20)
 
 for deployments 10 to 20 or
 
-    disc_extract_deployments(raw="raw", ids=c("1a", "2a", "2b", "6"))
+    disc_extract_deployments(ids=c("1a", "2a", "2b", "6"))
 
 for deployments 1a, 2a, 3b and 6, for example. (NB: This highlights why having integer deployment identifiers is easier.)
 
-See `?disc_extract_deployments` for more information.
+If the raw data is stored elsewhere, used the argument `raw` to give the path to the data. See `?disc_extract_deployments` for more information.
 
 
 ### Process deployments
