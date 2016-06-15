@@ -248,7 +248,6 @@ disc_read.hobo <- function(dir, ...) {
   d$dateTime <- parse_date_time(d$dateTime, orders="mdy Ims p", quiet=TRUE)
 
   return(d)
-
 }
 
 
