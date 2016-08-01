@@ -24,7 +24,7 @@ check_exec <- function(exec, url="", package=exec, notes="", error.out=FALSE, ..
       # otherwise, try to provide some OS-specific installation instructions
       os <- guess_os()
       if (os == "mac") {
-        install <- str_c("Install homebrew: http://mxcl.github.io/homebrew/\n",
+        install <- str_c("Install homebrew: http://brew.sh/\n",
                          "Then, install ", package, " with: brew install ", package)
       } else if (os == "debian-like") {
         install <- str_c("Install it with: sudo apt-get install ", package)
