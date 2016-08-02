@@ -3,7 +3,7 @@
 \name{disc_read}
 \alias{disc_read}
 \alias{disc_read.cc}
-\alias{disc_read.compass_opentag}
+\alias{disc_read.compassOpentag}
 \alias{disc_read.ctd_opentag}
 \alias{disc_read.dst}
 \alias{disc_read.ez}
@@ -31,7 +31,7 @@ disc_read(dir, ...)
 
 \method{disc_read}{remora}(dir, ...)
 
-\method{disc_read}{compass_opentag}(dir, ...)
+\method{disc_read}{compassOpentag}(dir, ...)
 
 \method{disc_read}{cc}(dir, ...)
 

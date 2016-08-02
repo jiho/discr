@@ -186,7 +186,7 @@ disc_read.remora <- function(dir, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.compass_opentag <- function(dir, ...) {
+disc_read.compassOpentag <- function(dir, ...) {
   # file <- "inst/tests/compass_opentag_sample.csv"
 
   # read and subsample the data (because we don't need one reading every millisecond)
