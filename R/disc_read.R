@@ -13,9 +13,7 @@
 #' @details
 #' \code{\link{disc_extract_deployments}} reads data from all sensors defined in the leg log file. To do so it looks for an appropriate method for the generic function \code{disc_read}, i.e. a function named \code{disc_read.nameofsensor}. Do read data from a new sensor, one just need to define such as function, which takes the path to a directory (where the data is stored) as input and gives a data.frame as output, with at least a column called "\code{dateTime}" holding the date and time in the default format for \code{link[base]{as.POSIXct}} (i.e. "YYYY-MM-DD HH:MM:SS"). The rest of the columns depend on the sensors. The only constraint is for compass-type data to have a column named "\code{heading}"
 #'
-#' @importFrom plyr rename
-#' @importFrom dplyr arrange
-#' @importFrom dplyr select
+#' @importFrom dplyr rename arrange select
 #' @importFrom stringr str_c
 #' @importFrom lubridate parse_date_time
 disc_read <- function(dir, ...) {
@@ -75,7 +73,7 @@ disc_read.trackstick <- function(dir, ...) {
   d <- read.csv(file, stringsAsFactors=FALSE, ...)
 
   # homogenise output
-  d <- rename(d, c("Latitude"="lat", "Longitude"="lon"))
+  d <- rename(d, lat=Latitude, lon=Longitude)
 
   d$dateTime <- parse_date_time(d$Date, orders="m/d/Y H:M", quiet=TRUE)
   d <- select(d, -Date)
@@ -102,7 +100,7 @@ disc_read.dst <- function(dir, ...) {
   d <- read.table(file, skip=max(header), stringsAsFactors=FALSE, col.names=c("recordNb", "date", "time", "temperature", "depth", "salinity"), ...)
 
   # homogenise output
-  # d <- rename(d, c("Heading"="heading"))
+  # d <- rename(d, heading=Heading)
 
   d$dateTime <- str_c(d$date, " ", d$time)
   d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms")
@@ -124,7 +122,7 @@ disc_read.ctd_opentag <- function(dir, ...) {
   d <- read.csv(file, stringsAsFactors=FALSE)
 
   # homogenise output
-  d <- rename(d, c("Pressure"="depth", "Temperature"="temperature"))
+  d <- rename(d, depth=Pressure, temperature=Temperature)
 
   d$dateTime <- str_c(d$FileDate, d$FileTime, sep=" ")
   d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms", quiet=TRUE)
@@ -150,7 +148,7 @@ disc_read.ez <- function(dir, ...) {
   d <- read.csv(file, stringsAsFactors=FALSE, ...)
 
   # homogenise output
-  d <- rename(d, c("Heading"="heading"))
+  d <- rename(d, heading=Heading)
 
   d$dateTime <- NA
 
@@ -171,7 +169,7 @@ disc_read.remora <- function(dir, ...) {
   d <- read.csv(file, stringsAsFactors=FALSE, ...)
 
   # homogenise output
-  d <- rename(d, c("Date"="dateTime", "Heading"="heading"))
+  d <- rename(d, dateTime=Date, heading=heading)
 
   d$dateTime <- parse_date_time(d$dateTime, orders="d-b-Y H:M:S", locale="en_US.UTF-8", quiet=TRUE)
   # NB: force english locale to make sure the month name is properly recognized
@@ -195,7 +193,7 @@ disc_read.compassOpentag <- function(dir, ...) {
   # NB: using scan and subsamping afterwards or using sed is actually not faster (strange though...)
 
   # homogenise output
-  # d <- rename(d, c("Heading"="heading"))
+  # d <- rename(d, heading=Heading)
 
   d$dateTime <- str_c(d$FileDate, d$FileTime, sep=" ")
   d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms", quiet=TRUE)
