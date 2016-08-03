@@ -121,7 +121,8 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
     }
     
     # cut each video file (in parallel when there are more than 1)
-    if ( n > 1) {
+    parallel <- (n > 1)
+    if ( parallel ) {
       doParallel::registerDoParallel(cores=min(n, parallel::detectCores()-1))
     }
     plyr::a_ply(ds, 1, function(x) {
@@ -147,8 +148,10 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
       # cut the original file
       exit <- system2("ffmpeg", str_c(" -i ", x$file, " ", startOffset, " -c copy -an ", stopOffset, " ", x$tempfile), stdout=FALSE, stderr=FALSE)
       check_status(exit, str_c("Could not cut video file: ", x$file))
-    }, .parallel=(n > 1))
-
+    }, .parallel=parallel)
+    if ( parallel ) {
+      doParallel::stopImplicitCluster()
+    }
 
     # create final video
     # define a standard names the output file
