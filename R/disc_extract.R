@@ -39,6 +39,32 @@ disc_extract.default <- function(data, start, stop, dir, ...) {
   
 }
 
+# Resize images and convert them to grayscale
+process_images <- function(files, width, gray) {
+  # convert arguments into convert/mogrify options
+  if (!is.null(width)) {
+    width <- str_c("-resize ", width, "x\\>")
+  }
+  
+  if (gray) {
+    gray <- "-colorspace gray"
+  } else {
+    gray <- NULL
+  }
+
+  # if nothing is to be done, exit immediately
+  if (is.null(with) & is.null(gray)) {
+    return(invisible(NULL))
+  }
+  # other wise process images (in parallel)
+  doParallel::registerDoParallel(parallel::detectCores()-1)
+  plyr::l_ply(files, function(x) {
+    system(str_c("mogrify ", width, " ", gray, " -quality 100 \"", x, "\""))
+  }, .parallel=TRUE)
+  doParallel::stopImplicitCluster()
+}
+
+
 #' @rdname disc_extract
 #' @export
 #' @param width width to resize the images to, in pixels. When NULL, images are not resized.
@@ -62,23 +88,10 @@ disc_extract.gopro <- function(data, start, stop, dir, width=1600, gray=FALSE, .
     # create the pictures directory for this deployment
     dir.create(dir, showWarnings=FALSE)
 
-    # copy or convert the original images into their destination directory
-    doParallel::registerDoParallel(parallel::detectCores()-1)
-    a_ply(ds, 1, function(x) {
-      if ( is.null(width) & ! gray ) {
-        file.copy(x$origFile, x$file)
-      } else {
-        if (!is.null(width)) {
-          width <- str_c("-resize ", width,"x")
-        }
-        if (gray) {
-          gray <- "-colorspace gray"
-        } else {
-          gray <- NULL
-        }
-        system(str_c("convert \"", x$origFile, "\" ", width, " ", gray, " \"", x$file, "\""))
-      }
-    }, .parallel=FALSE)
+    # copy the original images into their destination directory
+    file.copy(x$origFile, x$file)
+    # and process them there if needed
+    process_images(x$file, width=width, gray=gray)
   }
 
 }
@@ -192,6 +205,9 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
     show_nb_records(log, picsDir)
     logFile <- str_c(picsDir, "_log.csv")
     write.csv(log, file=logFile, row.names=FALSE)
+    
+    # process images if needed (reduce size, greyscale, etc.)
+    process_images(log$file, width=width, gray=gray)
   }
 
 }
