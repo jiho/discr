@@ -102,7 +102,7 @@ disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, accli
   # read the data for the appropriate legs and correct the time stamps
   message("Inspecting data from each sensor in each leg", appendLF=FALSE)
   sensorDataList <- plyr::llply(sensors, function(sensor) {
-    message("\n  ", format(sensor, width=10), appendLF=FALSE)
+    message("\n  ", format(sensor, width=12), appendLF=FALSE)
 
     # read the data per leg because there is a time shift to be done per leg
     D <- plyr::ddply(legLog, ~leg, function(dl) {
