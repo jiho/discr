@@ -126,16 +126,15 @@ disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, accli
     # create the deployment folder
     deployDir <- make_path(dest, x$deploy_id)
     message("Extracting to ", deployDir)
-    # when the deployment exists, move it around
+    # when the deployment exists, archive it
     if (file.exists(deployDir)) {
-      # move the data to a directory with the prefix "old."
-      oldDeployDir <- make_path(dest, str_c("old.", x$deploy_id))
-      dir.create(oldDeployDir, showWarnings=FALSE)
-      file.copy(deployDir, oldDeployDir, recursive=TRUE)
-      disc_message("Deployment ", basename(deployDir), " exists !!! Moving it to ", basename(oldDeployDir))
-    } else {
-      dir.create(deployDir, showWarnings=FALSE, recursive=TRUE)
+      # move the data to a directory appended with its modification time
+      mtime <- file.info(deployDir)$mtime
+      oldDeployDir <- str_c(deployDir, "_",format(mtime, "%Y-%m-%d_%H-%M-%S"))
+      file.rename(deployDir, oldDeployDir)
+      warning("Deployment ", basename(deployDir), " exists. Archiving it to ", basename(oldDeployDir), call.=FALSE)
     }
+    dir.create(deployDir, showWarnings=FALSE, recursive=TRUE)
 
     # get start and stop time for this deployment
     start <- parse_date_time(str_c(x$date_start, " ", x$time_start), orders="ymd hms")
