@@ -12,11 +12,7 @@
 #' @inheritParams disc_dd
 #'
 #' @export
-#' @importFrom stringr str_detect str_split_fixed str_c
-#' @importFrom plyr ldply join d_ply l_ply adply a_ply llply
-#' @importFrom parallel detectCores
-#' @importFrom doParallel registerDoParallel
-#' @importFrom tools file_ext
+#' @importFrom stringr str_c
 #'
 #' @examples
 #' # get an example dataset included with the package
@@ -30,63 +26,71 @@
 #'
 #' system(paste0("ls -R ", dest))
 disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE, parallel=TRUE) {
+  ## Prepare arguments ----
+  
+  # check directory arguments
+  # raw source
+  if (!file.exists(raw)) {
+    stop("Cannot find raw data directory: ", raw)
+  }
+  # destination directory
+  dest <- disc_dd(deploy.dir)
 
+  # read logs
   message("Reading field logs")
-  # convert to csv first using
-  # soffice --headless --convert-to csv test.ods
-
-  # read the logs
   legLog <- read.csv(make_path(raw, "leg_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
   deployLog <- read.csv(make_path(raw, "deployment_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
+
+  # check deployment ids
   if ( any(duplicated(deployLog$deploy_id)) ) {
-    stop("Deployment ids need to be unique. Check you deployment log")
+    stop("Deployment ids need to be unique. Check your deployment log")
   }
+  if ( is.null(ids) ) {
+    # if no deployment ids are specified, keep them all
+    ids <- deployLog$deploy_id
+  } else {
+    # if some are specified, verify they are valid
+    unknownIds <- setdiff(ids, deployLog$deploy_id)
+    if (length(unknownIds) > 0) {
+      warning("Deployments ", str_c(unknownIds, collapse=", "), " do not exist and will be ignored.")
+    }
+  }
+  # select appropriate deployment ids and corresponding legs
+  deployLog <- dplyr::filter(deployLog, deploy_id %in% ids)
+  legLog <- dplyr::filter(legLog, leg %in% deployLog$leg)
 
   # detect sensors
-  # sensors are specified in the legLog in the form "sensor name"_"info category"
+  # sensors are specified in leg_log.csv in the form "sensor name"_"info category"
+  # usual infos are : start, stop, dir, offset
   colNames <- names(legLog)
-  sensorColumns <- colNames[str_detect(colNames, "_")]
-  sensorInfo <- str_split_fixed(sensorColumns, "_", 2)
+  sensorColumns <- colNames[stringr::str_detect(colNames, "_")]
+  sensorInfo <- stringr::str_split_fixed(sensorColumns, "_", 2)
   sensors <- unique(sensorInfo[,1])
   infos <- unique(sensorInfo[,2])
 
-  # fill the missing infos with defaults
   # make sure all columns are present (and fill the missing ones with NA)
   allSensorColumns <- str_c(rep(sensors, each=length(infos)), infos, sep="_")
   legLog[,setdiff(allSensorColumns, names(legLog))] <- NA
-  # if the folder is not provided, use the name of the sensor
+  # fill missing infos with defaults
   for (sensor in sensors) {
+    # if the sensor-specific directory is not provided, use the name of the sensor
     col <- str_c(sensor, "_dir")
     legLog[,col][is.na(legLog[,col])] <- sensor
-  }
-  # if the offset is not provided, set it to 0
-  for (sensor in sensors) {
+
+    # if the offset is not provided, set it to 0
     col <- str_c(sensor, "_offset")
     legLog[,col][is.na(legLog[,col])] <- 0
   }
 
-
-  # set destination directory
-  dest <- disc_dd(deploy.dir)
-
-
-  # if no deployment id is specified, keep them all
-  if ( is.null(ids) ) {
-    ids <- deployLog$deploy_id
-  }
-
-  # select appropriate deployment ids and corresponding logs
-  deployLog <- deployLog[deployLog$deploy_id %in% ids,]
-  legLog <- legLog[legLog$leg %in% deployLog$leg,]
-
-
-  # for all sensors, read the data for the appropriate legs and correct the time stamps
-  message("Reading all data", appendLF=FALSE)
-  D <- llply(sensors, function(sensor) {
+  ## Read data or metadata for all sensors ----
+  
+  # read the data for the appropriate legs and correct the time stamps
+  message("Inspecting data from each sensor in each leg", appendLF=FALSE)
+  sensorDataList <- plyr::llply(sensors, function(sensor) {
     message("\n  ", format(sensor, width=10), appendLF=FALSE)
 
     # read the data per leg because there is a time shift to be done per leg
-    D <- ddply(legLog, ~leg, function(dl) {
+    D <- plyr::ddply(legLog, ~leg, function(dl) {
       cat(".")
       # get the folder in which the data is
       sensorDirName <- dl[,str_c(sensor,"_dir")]
@@ -99,9 +103,7 @@ disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, accli
         d <- disc_read(dataDir)
 
         # shift the time by the offset for this sensor
-        # if the offset is not provided, do not shift anything
-        offset <- dl[,str_c(sensor,"_offset")]
-        d$dateTime <- d$dateTime + offset
+        d$dateTime <- d$dateTime + dl[,str_c(sensor,"_offset")]
       } else {
         d <- NULL
       }
@@ -114,11 +116,12 @@ disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, accli
     return(D)
   })
   cat("\n")
-  names(D) <- sensors
+  names(sensorDataList) <- sensors
 
-  # split into deployments
-  log <- join(deployLog, legLog, by="leg")
-  d_ply(log, ~deploy_id, function(x) {
+  ## Split into deployments ----
+  log <- dplyr::left_join(deployLog, legLog, by="leg")
+  
+  plyr::d_ply(log, ~deploy_id, function(x) {
 
     # create the deployment folder
     deployDir <- make_path(dest, x$deploy_id)
@@ -134,10 +137,11 @@ disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, accli
       dir.create(deployDir, showWarnings=FALSE, recursive=TRUE)
     }
 
-    # get start and stop time
+    # get start and stop time for this deployment
     start <- parse_date_time(str_c(x$date_start, " ", x$time_start), orders="ymd hms")
     start <- start + acclimation.time * 60
     stopTheoretical <- start + observation.time * 60
+    # check that the stop time is compatible with the deployment duration
     stopRecorded <- parse_date_time(str_c(x$date_stop, " ", x$time_stop), orders="ymd hms")
     if ( stopTheoretical > stopRecorded ) {
       warning("Deployment ", x$deploy_id, " was stopped early.", call.=FALSE)
@@ -149,7 +153,7 @@ disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, accli
     disc_message(start, " -> ", stop, " = ", duration, " mins")
 
     # for all sensors
-    l_ply(sensors, function(sensor) {
+    plyr::l_ply(sensors, function(sensor) {
       # select the portion of the data for this deployment
       d <- D[[sensor]]
       dc <- d[d$dateTime >= start & d$dateTime <= stop,]
