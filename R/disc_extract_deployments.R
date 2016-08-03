@@ -170,12 +170,15 @@ disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, accli
     plyr::l_ply(sensors, function(sensor) {
       # select the portion of the data for this deployment
       d <- sensorDataList[[sensor]]
-      # define where it should be stored
-      sensorDirName <- x[,str_c(sensor, "_dir")]
-      sensorDir <- make_path(deployDir, sensorDirName)
-      # extract the data
-      class(d) <- c(sensor, class(d))
-      disc_extract(d, start, stop, sensorDir, ...)
+      # if this sensor has data (i.e. was present), extract it
+      if (nrow(d) != 0) {
+        # define where it should be stored
+        sensorDirName <- x[,str_c(sensor, "_dir")]
+        sensorDir <- make_path(deployDir, sensorDirName)
+        # extract the data
+        class(d) <- c(sensor, class(d))
+        disc_extract(d, start, stop, sensorDir, ...)
+      }
     })
   })
 
