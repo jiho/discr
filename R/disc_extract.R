@@ -17,8 +17,9 @@ disc_extract <- function(data, start, stop, dir, ...) {
   UseMethod("disc_extract")
 }
 
+# Utility function to display the number of records (lines) in a data.frame
 show_nb_records <- function(x, dir) {
-  # count the number of data points
+  # count the number of records
   n <- nrow(x)
   # and give a nice summary message
   disc_message(format(basename(dir), width=10), " ", format(n, width=4), if(n==0) { " !!!" })
