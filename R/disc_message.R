@@ -4,10 +4,7 @@
 #
 # @param ... message components passed to \code{cat}
 #
-#' @importFrom stringr str_c
-#' @importFrom stringr str_trim
-#' @importFrom stringr str_sub
-#' @importFrom stringr str_length
+#' @importFrom stringr str_c str_trim str_sub str_length
 disc_message <- function(...) {
   # concatenate the message bits
   message <- str_c(..., sep="")
