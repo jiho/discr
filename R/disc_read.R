@@ -216,13 +216,15 @@ disc_read.cc <- function(dir, ...) {
   files <- list.files(dir, pattern=glob2rx("DATALOG.TXT"), full.names=TRUE)
 
   # there should be only one per directory, but just in case, loop automatically over all files
-  d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE, col.names=c("dateTime", "pitch", "roll", "heading", "junk"), ...)
+  d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE, col.names=c("dateTime", "pitch", "roll", "heading", "light"), ...)
 
   # compute date+time for R
   d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
 
-  # keep only relevant data
-  d <- select(d, -junk)
+  # remove light if completely empty (early versions of the CC)
+  if (all(is.na(d$light))) {
+    d <- select(d, -light)
+  }
 
   return(d)
 }
