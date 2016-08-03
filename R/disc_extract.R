@@ -126,24 +126,26 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
     }
     plyr::a_ply(ds, 1, function(x) {
       # define start time for ffmpeg
+      # when we extract frames, later, the frame for the first segment defined by fps (segment duration = 1/fps) will actually be in the middle of the segment, i.e. at (start + 0.5s) for fps=1. So we shift the time here by half a segment (1/fps/2) to account for it
       if (start > x$begin) {
-        startOffset <- start - x$begin
+        startOffset <- start - (x$begin + ((1/fps)/2))
+        # TODO test with 25fps videos and check whether to add a second at start or end to end up with the correct video duration
         # format it as an ffmpeg seek index HH:MM:SS.S
-        startOffset <- format(ymd_hms("2000-01-01 00:00:00") + startOffset, "-ss %H:%M:%S.0")
+        startOffset <- format(ymd_hms("2000-01-01 00:00:00") + startOffset, "-ss %H:%M:%OS1")
       } else {
         startOffset <- NULL
       }
       
       # define end for ffmpeg
       if (stop < x$end) {
-        stopOffset <- stop - x$begin
-        stopOffset <- format(ymd_hms("2000-01-01 00:00:00") + stopOffset, "-to %H:%M:%S.0")
+        stopOffset <- stop - (x$begin + ((1/fps)/2))
+        stopOffset <- format(ymd_hms("2000-01-01 00:00:00") + stopOffset, "-to %H:%M:%OS1")
       } else {
         stopOffset <- NULL
       }
       
       # cut the original file
-      exit <- system2("ffmpeg", str_c(startOffset, " -i ", x$file, " ", startOffset, " -c copy -an ", stopOffset, " ", x$tempfile), stdout=FALSE, stderr=FALSE)
+      exit <- system2("ffmpeg", str_c(" -i ", x$file, " ", startOffset, " -c copy -an ", stopOffset, " ", x$tempfile), stdout=FALSE, stderr=FALSE)
       check_status(exit, str_c("Could not cut video file: ", x$file))
     }, .parallel=(n>1))
 
@@ -175,9 +177,14 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
     # extract frames
     exit <- system2("ffmpeg", str_c(" -i ", outputFile, " -vf fps=", fps, " ", picsDir, "/%d.jpg"), stdout=FALSE, stderr=FALSE)
     check_status(exit, "Could not extract frames from ", outputFile)
-    # create the corresponding log file, with a timestamp for each picture
+    # when doing this, ffmpeg extracts one frame in the middle of each second plus one frame for the last image in the video. List all frames in order and discard this last one
     picsFiles <- gtools::mixedsort(list.files(picsDir, full=TRUE))
-    picsTimes <- start+(1:length(picsFiles)-1)*(1/fps)
+    file.remove(tail(picsFiles, 1))
+    picsFiles <- picsFiles[-length(picsFiles)]
+    # create the corresponding log file, with a timestamp for each picture
+    # because we shifted the video by fps/2 seconds and the first frame is taken in the middle of the segment, it is actually at time start here (which is what we want)
+    # NB: this computation is actually not totally accurate but that's probably in part because the framerate of GoPros may not be completely constant
+    picsTimes <- start + ((0:(length(picsFiles)-1))*(1/fps))
     log <- data.frame(file=picsFiles, dateTime=picsTimes)
     show_nb_records(log, picsDir)
     logFile <- str_c(picsDir, "_log.csv")
