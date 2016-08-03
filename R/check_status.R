@@ -5,7 +5,7 @@
 # @param ... passed to \code{\link[base]{stop}}
 check_status <- function(status, message="discr error or unexpected termination", ...) {
   if ( status != 0 ) {
-    stop(message, call.=FALSE)
+    stop(message, call.=FALSE, ...)
   }
 
   return(invisible(status))
