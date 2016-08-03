@@ -21,7 +21,7 @@ disc_read <- function(dir, ...) {
 
 
 
-## GPS
+## GPS ----
 
 #' @rdname disc_read
 #' @export
@@ -86,7 +86,7 @@ disc_read.trackstick <- function(dir, ...) {
 }
 
 
-## CTD
+## CTD ----
 
 #' @rdname disc_read
 #' @export
@@ -137,7 +137,7 @@ disc_read.ctd_opentag <- function(dir, ...) {
 }
 
 
-## COMPASS
+## COMPASS ----
 
 #' @rdname disc_read
 #' @export
@@ -228,6 +228,8 @@ disc_read.cc <- function(dir, ...) {
 }
 
 
+## Light sensors ----
+
 #' @rdname disc_read
 #' @export
 disc_read.hobo <- function(dir, ...) {
@@ -247,6 +249,8 @@ disc_read.hobo <- function(dir, ...) {
   return(d)
 }
 
+
+## Pictures and video ----
 
 #' @rdname disc_read
 #' @export
