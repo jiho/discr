@@ -8,6 +8,7 @@
 \alias{disc_read.dst}
 \alias{disc_read.ez}
 \alias{disc_read.gopro}
+\alias{disc_read.goproVideo}
 \alias{disc_read.gt31}
 \alias{disc_read.hobo}
 \alias{disc_read.igotu}
@@ -39,6 +40,8 @@ disc_read(dir, ...)
 \method{disc_read}{hobo}(dir, ...)
 
 \method{disc_read}{gopro}(dir, ...)
+
+\method{disc_read}{goproVideo}(dir, ...)
 
 \method{disc_read}{remoraAr}(dir, ...)
 }

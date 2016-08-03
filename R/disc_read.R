@@ -268,3 +268,36 @@ disc_read.gopro <- function(dir, ...) {
 
   return(d)
 }
+
+#' @rdname disc_read
+#' @export
+disc_read.goproVideo <- function(dir, ...) {
+  # get all MP4 files
+  files <- list.files(dir, pattern=glob2rx("G*.MP4"), full.names=TRUE, recursive=TRUE)
+
+  # get start time for each file
+  d <- plyr::ldply(files, function(file) {
+    out <- system2("ffprobe", str_c("-select_streams v:0 -print_format csv -show_entries stream=duration:stream_tags=creation_time ", file), stdout=TRUE, stderr=FALSE)
+    out <- read.csv(text=out, header=F, col.names=c("stream", "duration", "begin"))
+    out$file <- file
+    return(out)
+  })
+  
+  # remove the stream column
+  d <- dplyr::select(d, -stream)
+  
+  # convert into POSIXct
+  d$begin <- parse_date_time(d$begin, orders="ymd hms")
+  
+  # compute end time
+  d$end <- d$begin + d$duration
+  
+  # gather start and end in one column
+  d <- tidyr::gather(d, key=type, value=dateTime, begin, end)
+
+  # and order by time
+  d <- arrange(d, dateTime, type)
+
+  return(d)
+}
+

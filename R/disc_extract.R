@@ -4,7 +4,7 @@
 #'
 #' @param data data (or metadata) for this sensor, read by \code{\link{disc_read}}.
 #' @param start,stop start and stop times, as \code{\link[base]{POSIXct}} objects.
-#' @param dir destination directory, where the extracted data should be stored.
+#' @param dir destination directory, where the extracted data should be stored (without trailing slash, to be able to also name a file based on it).
 #' @param ... passed to the various methods.
 #'
 #' @details
@@ -83,3 +83,90 @@ disc_extract.gopro <- function(data, start, stop, dir, width=1600, gray=FALSE, .
 
 }
 
+#' @rdname disc_extract
+#' @export
+#' @inheritParams disc_extract.gopro
+disc_extract.goproVideo <- function(data, start, stop, dir, width=1600, gray=FALSE, ...) {
+
+  # create directory for videos
+  dir.create(dir)
+  
+  # compute time interval for each video
+  ds <- tidyr::spread(data, key=type, value=dateTime)
+  ds <- dplyr::arrange(ds, begin)
+  ds$interval <- lubridate::interval(ds$begin, ds$end)
+
+  # detect which videos the deployment overlaps with
+  deployInterval <- lubridate::interval(start, stop)
+  ds <- ds[lubridate::int_overlaps(deployInterval, ds$interval),]
+  show_nb_records(ds, dir)
+
+  if (nrow(ds) >= 1) {
+    files <- ds$file
+    n <- length(files)
+    ds$order <- 1:n
+
+    # prepare temporary names for the video files we will cut from those original videos
+    ds$tempfile <- make_path(dir, str_c("tempvid", ds$order, ".mp4"))
+    
+    # check time difference between videos if there are more than 1
+    if (n > 1) {
+      timeDifferences <- ds$end[1:(n-1)] - ds$begin[2:n]
+      units(timeDifferences) <- "secs"
+      timeDifferences <- as.numeric(timeDifferences)
+      if (any(timeDifferences > 2) ) {
+        stop("Gap of more than 2 seconds between videos that are supposed to be in the same deployment. This should not happen. Check your log.")
+      }
+    }
+    
+    # cut each video file (in parallel when there are more than 1)
+    if (n>1) {
+      doParallel::registerDoParallel(cores=min(n, parallel::detectCores()-1))
+    }
+    plyr::a_ply(ds, 1, function(x) {
+      # define start time for ffmpeg
+      if (start > x$begin) {
+        startOffset <- start - x$begin
+        # format it as an ffmpeg seek index HH:MM:SS.S
+        startOffset <- format(ymd_hms("2000-01-01 00:00:00") + startOffset, "-ss %H:%M:%S.0")
+      } else {
+        startOffset <- NULL
+      }
+      
+      # define end for ffmpeg
+      if (stop < x$end) {
+        stopOffset <- stop - x$begin
+        stopOffset <- format(ymd_hms("2000-01-01 00:00:00") + stopOffset, "-to %H:%M:%S.0")
+      } else {
+        stopOffset <- NULL
+      }
+      
+      # cut the original file
+      exit <- system2("ffmpeg", str_c(startOffset, " -i ", x$file, " ", startOffset, " -c copy -an ", stopOffset, " ", x$tempfile), stdout=FALSE, stderr=FALSE)
+      check_status(exit, str_c("Could not cut video file: ", x$file))
+    }, .parallel=(n>1))
+
+
+    # create final video
+    # define a standard names the output file
+    outputFile <- str_c(dir, ".mp4")
+    # when there is only one video, just rename it
+    if (n == 1) {
+      file.rename(ds$tempfile, outputFile)
+    # when there are several videos, join them
+    } else {
+      # prepare the file list for ffmpeg
+      listFile <- make_path(dir, "list.txt")
+      cat(str_c("file ", ds$tempfile), file=listFile, sep="\n")
+      # concatenate files
+      exit <- system2("ffmpeg", str_c("-f concat -safe 0 -i ", listFile, " -c copy -an ", outputFile), stdout=FALSE, stderr=FALSE)
+      check_status(exit, str_c("Could not concatenate files: ", str_c(ds$tempfile, collapse=",")))
+    }
+    
+    # cleanup and remove temporary files
+    exit <- unlink(dir, recursive=TRUE)
+    check_status(exit, str_c("Could not remove ", dir))
+    
+  }
+
+}

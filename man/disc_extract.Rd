@@ -4,6 +4,7 @@
 \alias{disc_extract}
 \alias{disc_extract.default}
 \alias{disc_extract.gopro}
+\alias{disc_extract.goproVideo}
 \title{Raw data extraction}
 \usage{
 disc_extract(data, start, stop, dir, ...)
@@ -12,13 +13,16 @@ disc_extract(data, start, stop, dir, ...)
 
 \method{disc_extract}{gopro}(data, start, stop, dir, width = 1600,
   gray = FALSE, ...)
+
+\method{disc_extract}{goproVideo}(data, start, stop, dir, width = 1600,
+  gray = FALSE, ...)
 }
 \arguments{
 \item{data}{data (or metadata) for this sensor, read by \code{\link{disc_read}}.}
 
 \item{start, stop}{start and stop times, as \code{\link[base]{POSIXct}} objects.}
 
-\item{dir}{destination directory, where the extracted data should be stored.}
+\item{dir}{destination directory, where the extracted data should be stored (without trailing slash, to be able to also name a file based on it).}
 
 \item{...}{passed to the various methods.}
 
