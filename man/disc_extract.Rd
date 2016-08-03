@@ -14,8 +14,8 @@ disc_extract(data, start, stop, dir, ...)
 \method{disc_extract}{gopro}(data, start, stop, dir, width = 1600,
   gray = FALSE, ...)
 
-\method{disc_extract}{goproVideo}(data, start, stop, dir, width = 1600,
-  gray = FALSE, ...)
+\method{disc_extract}{goproVideo}(data, start, stop, dir, fps = 1,
+  width = 1600, gray = FALSE, ...)
 }
 \arguments{
 \item{data}{data (or metadata) for this sensor, read by \code{\link{disc_read}}.}
@@ -29,6 +29,8 @@ disc_extract(data, start, stop, dir, ...)
 \item{width}{width to resize the images to, in pixels. When NULL, images are not resized.}
 
 \item{gray}{logical; whether to convert the images to grayscale.}
+
+\item{fps}{number of frames to extract per second. 0.5 gives one frame every two seconds.}
 }
 \description{
 Extract data corresponding to one deployment from the raw data recorded by a sensor over a leg.

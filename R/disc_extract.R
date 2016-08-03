@@ -85,8 +85,9 @@ disc_extract.gopro <- function(data, start, stop, dir, width=1600, gray=FALSE, .
 
 #' @rdname disc_extract
 #' @export
+#' @param fps number of frames to extract per second. 0.5 gives one frame every two seconds.
 #' @inheritParams disc_extract.gopro
-disc_extract.goproVideo <- function(data, start, stop, dir, width=1600, gray=FALSE, ...) {
+disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, gray=FALSE, ...) {
 
   # create directory for videos
   dir.create(dir)
@@ -167,6 +168,20 @@ disc_extract.goproVideo <- function(data, start, stop, dir, width=1600, gray=FAL
     exit <- unlink(dir, recursive=TRUE)
     check_status(exit, str_c("Could not remove ", dir))
     
+    # extract frames from the video
+    # create the pics directory
+    picsDir <- str_replace(dir, "vids", "pics")
+    dir.create(picsDir)
+    # extract frames
+    exit <- system2("ffmpeg", str_c(" -i ", outputFile, " -vf fps=", fps, " ", picsDir, "/%d.jpg"), stdout=FALSE, stderr=FALSE)
+    check_status(exit, "Could not extract frames from ", outputFile)
+    # create the corresponding log file, with a timestamp for each picture
+    picsFiles <- gtools::mixedsort(list.files(picsDir, full=TRUE))
+    picsTimes <- start+(1:length(picsFiles)-1)*(1/fps)
+    log <- data.frame(file=picsFiles, dateTime=picsTimes)
+    show_nb_records(log, picsDir)
+    logFile <- str_c(picsDir, "_log.csv")
+    write.csv(log, file=logFile, row.names=FALSE)
   }
 
 }
