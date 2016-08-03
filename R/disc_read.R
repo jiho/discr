@@ -30,7 +30,7 @@ disc_read.gt31 <- function(dir, ...) {
   files <- list.files(dir, pattern=glob2rx("*.plt"), full.names=TRUE)
 
   # there should be only one per directory, but just in case, loop automatically over all files
-  d <- ldply(files, read.table, skip=6, stringsAsFactors=FALSE, sep=",", strip.white=TRUE, col.names=c("lat", "lon", "?", "?", "?", "date", "time"), ...)
+  d <- plyr::ldply(files, read.table, skip=6, stringsAsFactors=FALSE, sep=",", strip.white=TRUE, col.names=c("lat", "lon", "?", "?", "?", "date", "time"), ...)
 
   # compute date+time for R
   d$dateTime <- str_c(d$date, " ", d$time)
@@ -50,7 +50,7 @@ disc_read.igotu <- function(dir, ...) {
   files <- list.files(dir, pattern=glob2rx("*.csv"), full.names=TRUE)
 
   # there should be only one per directory, but just in case, loop automatically over all files
-  d <- ldply(files, read.csv, stringsAsFactors=FALSE, ...)
+  d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE, ...)
 
   d$dateTime <- str_c(d$Date, " ", d$Time)
   d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
@@ -216,7 +216,7 @@ disc_read.cc <- function(dir, ...) {
   files <- list.files(dir, pattern=glob2rx("DATALOG.TXT"), full.names=TRUE)
 
   # there should be only one per directory, but just in case, loop automatically over all files
-  d <- ldply(files, read.csv, stringsAsFactors=FALSE, col.names=c("dateTime", "pitch", "roll", "heading", "junk"), ...)
+  d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE, col.names=c("dateTime", "pitch", "roll", "heading", "junk"), ...)
 
   # compute date+time for R
   d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
@@ -237,7 +237,7 @@ disc_read.hobo <- function(dir, ...) {
   files <- list.files(dir, pattern=glob2rx("*.csv"), full.names=TRUE)
 
   # there should be only one per directory, but just in case, loop automatically over all files
-  d <- ldply(files, read.csv, stringsAsFactors=FALSE, skip=1, ...)
+  d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE, skip=1, ...)
 
   # keep only appropriate columns and label them
   d <- d[,2:4]
