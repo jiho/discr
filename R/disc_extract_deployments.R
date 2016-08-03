@@ -1,16 +1,30 @@
 #' Extract data for each deployment
 #'
-#' Read the deployment logs, read necessary data in the raw data directory, extract data for each deployment based on date and time
+#' Read the leg and deployment logs, read necessary data in the raw data directory, extract data for each deployment based on date and time.
 #'
-#' @param raw path to the directory where the raw data and the deployment and leg logs are; by default in a subdirectory called \code{raw} in the current directory
-#' @param ids deployment identifiers to extract; if NULL (the default) extract all deployments
+#' @param raw path to the directory where the raw data and the deployment and leg logs are; by default in a subdirectory called \code{raw} in the current directory.
+#' @param ids deployment identifiers to extract; if NULL (the default) extract all deployments.
+#' @inheritParams disc_dd
 #' @param acclimation.time duration of the acclimation time in minutes.
 #' @param observation.time duration of the observation period (after acclimation) in minutes.
-#' @param width width to resize the images to, in pixels. When NULL, images are not resized.
-#' @param split.pics whether to create pictures in the deployments directory. TRUE by default but it can be useful to set it to false to quickly recreate the rest of the metadata (since the pictures are the longest to process)
-#' @param parallel do the resizing/copying of images in parallel (on n-1 processor cores) to speed up the process
-#' @inheritParams disc_dd
+#' @param ... passed to the various \code{\link{disc_extract}} methods for each sensor.
 #'
+#' @details
+#' To extract individual deployments from the raw leg data, \code{\link{disc_extract_deployments}}
+#' \enumerate{
+#'   \item{reads data (or descriptive metadata, such as start and stop time, number of records, etc.) from all sensors defined in the \code{leg_log.csv} file;}
+#'   \item{synchronises all these records using the time offsets set in \code{leg_log.csv};}
+#'   \item{reads \code{deployment_log.csv} and extracts the data for each deployment based on the start and stop time.}
+#' }
+#' 
+#' To read data from a given sensor, \code{disc_extract_deployments} looks for an appropriate method for the generic function \code{\link{disc_read}}, i.e. a function named \code{disc_read.nameofsensor}. This function outputs a \code{data.frame} with at least one column called \code{dateTime} of class \code{\link[base]{POSIXct}} used to account for the offset.
+#' 
+#' Similarly, to extract data from a given sensor for one deployment, \code{disc_extract_deployments} looks for an appropriate method for \code{\link{disc_extract}}. The default method deals with a \code{data.frame} with a column \code{dateTime}. Other methods can be defined for data that does not fit in a \code{data.frame} (video recordings, audio recodings, etc.)
+#' 
+#' To read and extract data from a new sensor, one just needs to define an appropriate method for \code{\link{disc_read}} and possibly \code{\link{disc_extract}}. See the help of these two functions to know more about tem
+#'
+#' @seealso \code{\link{disc_read}} and \code{\link{disc_extract}}.
+#' 
 #' @export
 #' @importFrom stringr str_c
 #'
@@ -25,7 +39,8 @@
 #' # - the notice that the compass (cc) has 0 records in deployment 2
 #'
 #' system(paste0("ls -R ", dest))
-disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, width=1600, split.pics=TRUE, parallel=TRUE) {
+disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, acclimation.time=5, observation.time=15, ...) {
+
   ## Prepare arguments ----
   
   # check directory arguments
@@ -154,37 +169,13 @@ disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, accli
     # for all sensors
     plyr::l_ply(sensors, function(sensor) {
       # select the portion of the data for this deployment
-      d <- D[[sensor]]
-      dc <- d[d$dateTime >= start & d$dateTime <= stop,]
-      n <- nrow(dc)
-      disc_message(format(sensor, width=10), " ", n, " records", if(n==0) { " !!!" })
-
-      if (n > 1) {
-        # get the folder name in which the data was
-        # by convention, pictures are in .files$pictures, compass data is in "compass"
-        sensorDirName <- x[,str_c(sensor, "_dir")]
-
-        # for pictures, resize the images and number them sequentially
-        if ( sensorDirName == .files$pictures & split.pics ) {
-          picsDir <- make_path(deployDir, sensorDirName)
-          dir.create(picsDir, showWarnings=FALSE)
-          dc$imgNb <- 1:nrow(dc)
-          dc$file <- make_path(picsDir, str_c(dc$imgNb, ".jpg"))
-          if (parallel) {
-            registerDoParallel(detectCores()-1)
-          }
-          a_ply(dc, 1, function(x) {
-            if (is.null(width)) {
-              file.copy(x$origFile, x$file)
-            } else {
-              system(str_c("convert -resize ", width,"x \"", x$origFile, "\" \"", x$file, "\""))
-            }
-          }, .parallel=parallel)
-        }
-
-        # write the selected portion of the data to the deployment folder
-        write.csv(dc, file=make_path(deployDir, str_c(sensorDirName, "_log.csv")), row.names=FALSE)
-      }
+      d <- sensorDataList[[sensor]]
+      # define where it should be stored
+      sensorDirName <- x[,str_c(sensor, "_dir")]
+      sensorDir <- make_path(deployDir, sensorDirName)
+      # extract the data
+      class(d) <- c(sensor, class(d))
+      disc_extract(d, start, stop, sensorDir, ...)
     })
   })
 

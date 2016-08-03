@@ -5,13 +5,12 @@
 \title{Extract data for each deployment}
 \usage{
 disc_extract_deployments(raw = "raw", ids = NULL, deploy.dir = NULL,
-  acclimation.time = 5, observation.time = 15, width = 1600,
-  split.pics = TRUE, parallel = TRUE)
+  acclimation.time = 5, observation.time = 15, ...)
 }
 \arguments{
-\item{raw}{path to the directory where the raw data and the deployment and leg logs are; by default in a subdirectory called \code{raw} in the current directory}
+\item{raw}{path to the directory where the raw data and the deployment and leg logs are; by default in a subdirectory called \code{raw} in the current directory.}
 
-\item{ids}{deployment identifiers to extract; if NULL (the default) extract all deployments}
+\item{ids}{deployment identifiers to extract; if NULL (the default) extract all deployments.}
 
 \item{deploy.dir}{path to the directory containing deployments (and associated options). By default "deployments" in the current directory.}
 
@@ -19,14 +18,24 @@ disc_extract_deployments(raw = "raw", ids = NULL, deploy.dir = NULL,
 
 \item{observation.time}{duration of the observation period (after acclimation) in minutes.}
 
-\item{width}{width to resize the images to, in pixels. When NULL, images are not resized.}
-
-\item{split.pics}{whether to create pictures in the deployments directory. TRUE by default but it can be useful to set it to false to quickly recreate the rest of the metadata (since the pictures are the longest to process)}
-
-\item{parallel}{do the resizing/copying of images in parallel (on n-1 processor cores) to speed up the process}
+\item{...}{passed to the various \code{\link{disc_extract}} methods for each sensor.}
 }
 \description{
-Read the deployment logs, read necessary data in the raw data directory, extract data for each deployment based on date and time
+Read the leg and deployment logs, read necessary data in the raw data directory, extract data for each deployment based on date and time.
+}
+\details{
+To extract individual deployments from the raw leg data, \code{\link{disc_extract_deployments}}
+\enumerate{
+  \item{reads data (or descriptive metadata, such as start and stop time, number of records, etc.) from all sensors defined in the \code{leg_log.csv} file;}
+  \item{synchronises all these records using the time offsets set in \code{leg_log.csv};}
+  \item{reads \code{deployment_log.csv} and extracts the data for each deployment based on the start and stop time.}
+}
+
+To read data from a given sensor, \code{disc_extract_deployments} looks for an appropriate method for the generic function \code{\link{disc_read}}, i.e. a function named \code{disc_read.nameofsensor}. This function outputs a \code{data.frame} with at least one column called \code{dateTime} of class \code{\link[base]{POSIXct}} used to account for the offset.
+
+Similarly, to extract data from a given sensor for one deployment, \code{disc_extract_deployments} looks for an appropriate method for \code{\link{disc_extract}}. The default method deals with a \code{data.frame} with a column \code{dateTime}. Other methods can be defined for data that does not fit in a \code{data.frame} (video recordings, audio recodings, etc.)
+
+To read and extract data from a new sensor, one just needs to define an appropriate method for \code{\link{disc_read}} and possibly \code{\link{disc_extract}}. See the help of these two functions to know more about tem
 }
 \examples{
 # get an example dataset included with the package
@@ -39,5 +48,8 @@ disc_extract_deployments(raw=source, deploy.dir=dest, width=NULL,
 # - the notice that the compass (cc) has 0 records in deployment 2
 
 system(paste0("ls -R ", dest))
+}
+\seealso{
+\code{\link{disc_read}} and \code{\link{disc_extract}}.
 }
 

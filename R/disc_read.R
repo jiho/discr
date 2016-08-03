@@ -1,17 +1,16 @@
-#
-# Functions to read the raw data from each leg of deployment
-# Each function should return a data.frame with at least a "dateTime" column
-#
-
 #' Raw data reading
 #'
-#' Read data from various sensors output somewhat uniformed records
+#' Read data from various sensors and output somewhat uniformed records.
 #'
-#' @param dir path to the directory in which the files to read are
-#' @param ... passed to \code{\link[utils]{read.table}} which does the actual reading
+#' @param dir path to the directory containing the files to read.
+#' @param ... passed to other functions that do the actual reading, most often \code{\link[utils]{read.table}}.
 #'
 #' @details
-#' \code{\link{disc_extract_deployments}} reads data from all sensors defined in the leg log file. To do so it looks for an appropriate method for the generic function \code{disc_read}, i.e. a function named \code{disc_read.nameofsensor}. Do read data from a new sensor, one just need to define such as function, which takes the path to a directory (where the data is stored) as input and gives a data.frame as output, with at least a column called "\code{dateTime}" holding the date and time in the default format for \code{link[base]{as.POSIXct}} (i.e. "YYYY-MM-DD HH:MM:SS"). The rest of the columns depend on the sensors. The only constraint is for compass-type data to have a column named "\code{heading}"
+#' All methods of this generic function should takes the path to a directory (where the data is stored) as input and give a data.frame as output, with at least a column called \code{dateTime} of class \code{\link[base]{POSIXct}} containing the date and time of that record. This column will be used to shift the data by a user configured offset (in \code{\link{disc_extract_deployments}}) and synchronise sensors. The rest of the columns depend on the sensors. The only constraint is for compass-type data to have a column named \code{heading}.
+#' 
+#' For instruments that output binary data (videos, audio files, etc.), the \code{disc_read} method should provide time stamps and paths to the various files. This information is then used by the appropriate \code{disc_extract} method to actually move/split/etc. the leg-level binary file into a file for each deployment.
+#'
+#' @seealso \code{\link{disc_extract}} and \code{\link{disc_extract_deployments}}
 #'
 #' @importFrom dplyr rename arrange select
 #' @importFrom stringr str_c
