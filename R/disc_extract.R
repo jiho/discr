@@ -174,8 +174,8 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
     # create the pics directory
     picsDir <- str_replace(dir, "vids", "pics")
     dir.create(picsDir)
-    # extract frames
-    exit <- system2("ffmpeg", str_c(" -i ", outputFile, " -vf fps=", fps, " ", picsDir, "/%d.jpg"), stdout=FALSE, stderr=FALSE)
+    # extract frames as high quality jpegs
+    exit <- system2("ffmpeg", str_c(" -i ", outputFile, " -vf fps=", fps, " -qscale:v 2 ", picsDir, "/%d.jpg"), stdout=FALSE, stderr=FALSE)
     check_status(exit, "Could not extract frames from ", outputFile)
     # when doing this, ffmpeg extracts one frame in the middle of each second plus one frame for the last image in the video. List all frames in order and discard this last one
     picsFiles <- gtools::mixedsort(list.files(picsDir, full=TRUE))
