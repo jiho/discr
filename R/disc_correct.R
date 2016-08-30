@@ -100,7 +100,7 @@ disc_correct <- function(dir, max.time.difference=2, camera.compass.angle=NULL, 
     # and time difference between t and t+1
     dt <- diff(x$dateTime)
     units(dt) <- "secs" # force computation in seconds
-    x$dt <- as.numeric(c(dt, NA))
+    x$dt <- c(as.numeric(dt), NA)
     
     # compute elapsed time in minutes
     x$elapsed.min <- as.numeric(difftime(x$dateTime, x$dateTime[1], units="min"))
