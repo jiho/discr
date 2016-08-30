@@ -43,7 +43,7 @@ disc_extract.default <- function(data, start, stop, dir, ...) {
 process_images <- function(files, width, gray) {
   # convert arguments into convert/mogrify options
   if (!is.null(width)) {
-    width <- str_c("-resize ", width, "x\\>")
+    width <- str_c("-resize ", width, "x")
   }
   
   if (gray) {
