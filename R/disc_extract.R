@@ -89,11 +89,10 @@ disc_extract.gopro <- function(data, start, stop, dir, width=1600, gray=FALSE, .
     dir.create(dir, showWarnings=FALSE)
 
     # copy the original images into their destination directory
-    file.copy(x$origFile, x$file)
-    # and process them there if needed
-    process_images(x$file, width=width, gray=gray)
+    exit <- file.copy(ds$origFile, ds$file)
+    # and process them if needed
+    process_images(ds$file, width=width, gray=gray)
   }
-
 }
 
 #' @rdname disc_extract
