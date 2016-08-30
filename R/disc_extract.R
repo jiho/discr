@@ -90,6 +90,7 @@ disc_extract.gopro <- function(data, start, stop, dir, width=1600, gray=FALSE, .
 
     # copy the original images into their destination directory
     exit <- file.copy(ds$origFile, ds$file)
+    check_status(all(exit), str_c(sum(!exit), " frames could not be copied to ", dir))
     # and process them if needed
     process_images(ds$file, width=width, gray=gray)
   }
