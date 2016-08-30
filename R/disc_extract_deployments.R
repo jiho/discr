@@ -53,8 +53,8 @@ disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, accli
 
   # read logs
   message("Reading field logs")
-  legLog <- read.csv(make_path(raw, "leg_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
-  deployLog <- read.csv(make_path(raw, "deployment_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
+  legLog <- read_csv_auto(make_path(raw, "leg_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
+  deployLog <- read_csv_auto(make_path(raw, "deployment_log.csv"), stringsAsFactors=FALSE, na.strings=c("NA", ""))
 
   # check deployment ids
   if ( any(duplicated(deployLog$deploy_id)) ) {

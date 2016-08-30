@@ -279,7 +279,7 @@ disc_read.goproVideo <- function(dir, ...) {
 
   # get start time for each file
   d <- plyr::ldply(files, function(file) {
-    out <- system2("ffprobe", str_c("-select_streams v:0 -print_format csv -show_entries stream=duration:stream_tags=creation_time ", file), stdout=TRUE, stderr=FALSE)
+    out <- system2("ffprobe", str_c("-select_streams v:0 -print_format csv -show_entries stream=duration:stream_tags=creation_time \"", file, "\""), stdout=TRUE, stderr=FALSE)
     out <- read.csv(text=out, header=F, col.names=c("stream", "duration", "begin"))
     out$file <- file
     return(out)

@@ -159,26 +159,26 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
       }
       
       # cut the original file
-      exit <- system2("ffmpeg", str_c(" -i ", x$file, " ", startOffset, " -c copy -an ", stopOffset, " ", x$tempfile), stdout=FALSE, stderr=FALSE)
+      exit <- system2("ffmpeg", str_c(" -i \"", x$file, "\" ", startOffset, " ", stopOffset, " -c copy -an \"", x$tempfile, "\""), stdout=FALSE, stderr=FALSE)
       check_status(exit, str_c("Could not cut video file: ", x$file))
     }, .parallel=parallel)
     if ( parallel ) {
       doParallel::stopImplicitCluster()
     }
 
-    # create final video
-    # define a standard names the output file
-    outputFile <- str_c(dir, ".mp4")
+    # create complete video
+    tempfileComplete <- str_c(dir, "/tempfile_complete.mp4")
     # when there is only one video, just rename it
     if (n == 1) {
-      file.rename(ds$tempfile, outputFile)
+      file.rename(ds$tempfile, tempfileComplete)
     # when there are several videos, join them
     } else {
       # prepare the file list for ffmpeg
       listFile <- make_path(dir, "list.txt")
       cat(str_c("file ", ds$tempfile), file=listFile, sep="\n")
       # concatenate files
-      exit <- system2("ffmpeg", str_c("-f concat -safe 0 -i ", listFile, " -c copy -an ", outputFile), stdout=FALSE, stderr=FALSE)
+      exit <- system2("ffmpeg", str_c("-f concat -safe 0 -i \"", listFile, "\" -c copy -an \"", tempfileComplete, 
+      "\""), stdout=FALSE, stderr=FALSE)
       check_status(exit, str_c("Could not concatenate files: ", str_c(ds$tempfile, collapse=",")))
     }
     
@@ -191,7 +191,7 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
     picsDir <- str_replace(dir, "vids", "pics")
     dir.create(picsDir)
     # extract frames as high quality jpegs
-    exit <- system2("ffmpeg", str_c(" -i ", outputFile, " -vf fps=", fps, " -qscale:v 2 ", picsDir, "/%d.jpg"), stdout=FALSE, stderr=FALSE)
+    exit <- system2("ffmpeg", str_c(" -i \"", tempfileComplete, "\" -vf fps=", fps, " -qscale:v 2 \"", picsDir, "/%d.jpg\""), stdout=FALSE, stderr=FALSE)
     check_status(exit, "Could not extract frames from ", outputFile)
     # when doing this, ffmpeg extracts one frame in the middle of each second plus one frame for the last image in the video. List all frames in order and discard this last one
     picsFiles <- gtools::mixedsort(list.files(picsDir, full=TRUE))
