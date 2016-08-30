@@ -63,7 +63,7 @@ disc_track_compass <- function(dir, sub=NULL, verbose=FALSE, ...) {
 
   # open every subN images in the folder and manually measure the compass angle on each
   # save the results to a temporary file
-  compassAngleFile <- tempfile()
+  compassAngleFile <- normalizePath(tempfile(), winslash="/", mustWork=FALSE)
 
 	if ( verbose ) disc_message("opening images for compass angle detection")
 

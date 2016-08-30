@@ -39,8 +39,8 @@ disc_calibrate <- function(dir, verbose=FALSE, ...) {
 
 
   # prepare storage
-  aquariumCoordFile <- tempfile()
-  aquariumBoundingBoxFile <- tempfile()
+  aquariumCoordFile <- normalizePath(tempfile(), winslash="/", mustWork=FALSE)
+  aquariumBoundingBoxFile <- normalizePath(tempfile(), winslash="/", mustWork=FALSE)
 
   if ( verbose ) disc_message("open first image for calibration")
 
