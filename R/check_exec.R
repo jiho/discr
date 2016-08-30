@@ -33,7 +33,7 @@ check_exec <- function(exec, url="", package=exec, notes="", error.out=FALSE, ..
       } else if (os == "suse-like") {
         install <- str_c("Install it with: sudo zypper install ", package)
       } else if (os == "windows") {
-        stop("Windows is not supported at this time")
+        install <- str_c("Install Cygwin: https://www.cygwin.com (probably x86_64) with the default options.\nAt the package selection step, select package \"", package, "\" (in Graphics).\nThe first time you run it, go to Control Panel > System > Advanced System Settings > Environment Variables > System Variables, search for the `Path` variable, click `Modify` and preprend \"c:\\cygwin64\\bin;\" to it. Restart R.")
       } else {
         install <- str_c("Search your package manager for ", package)
       }
