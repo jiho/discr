@@ -86,7 +86,7 @@ disc_extract.gopro <- function(data, start, stop, dir, width=1600, gray=FALSE, .
     write.csv(ds, file=str_c(dir, "_log.csv"), row.names=FALSE)
 
     # create the pictures directory for this deployment
-    dir.create(dir, showWarnings=FALSE)
+    dir.create(dir)
 
     # copy the original images into their destination directory
     exit <- file.copy(ds$origFile, ds$file)
