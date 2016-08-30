@@ -264,7 +264,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
     # plot them to a file
     destFile <- make_path(dir, str_c("plots_", track, ".pdf"))
   	pdf(file=destFile, width=7, height=4.5, pointsize=10)
-    l_ply(plots, function(x) {
+    plyr::l_ply(plots, function(x) {
       grid.newpage()
       grid.draw(x)
     })
