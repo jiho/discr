@@ -2,22 +2,19 @@
 #
 # @param img full path to one or several image files
 # @param tz force a time zone (most time computations are relative so getting the time zone right probably does not matter)
-#' @importFrom stringr str_c
-#' @importFrom lubridate parse_date_time
-#' @importFrom plyr round_any laply
 image_time <- function(img, tz="UTC") {
   # get date and times
   chunkSize <- 500
   dateTime <- c()
   for (i in seq(1, length(img), by=chunkSize)) {
     # message(i, " ", i+chunkSize-1)
-    command <- str_c("exif -t=DateTimeOriginal -m \"", str_c(na.omit(img[i:(i+chunkSize-1)]), collapse="\" \""), "\"")
+    command <- stringr::str_c("exif -t=DateTimeOriginal -m \"", stringr::str_c(na.omit(img[i:(i+chunkSize-1)]), collapse="\" \""), "\"")
     # TODO use the 0x9291 or SubSecTimeOriginal tags too?
     dateTime <- c(dateTime, system(command, intern=TRUE))
   }
 
   # convert them to R representations
-  dateTime <- parse_date_time(dateTime, orders="ymd hms", tz=tz)
+  dateTime <- lubridate::parse_date_time(dateTime, orders="ymd hms", tz=tz)
 
   # resolve split seconds
   steps <- as.numeric(diff(dateTime))
