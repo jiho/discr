@@ -18,35 +18,80 @@ image_time <- function(files, tz="UTC") {
   order <- order(dateTime)
   dateTime <- dateTime[order]
 
-  # resolve split seconds
+  # inspect time steps between images to detect large steps (camera shutdown) and reconstruct sub-seconds if necessary
   steps <- as.numeric(diff(dateTime))
-  # if many steps are 0, then the delay is probably < 1 sec and the camera does not record those in EXIF data
-  if (sum(steps == 0) > 1/10*length(dateTime)) {
-    options("digits.secs"=2)
-    # detect and remove large steps = probable camera shutdown
-    large_steps <- steps > 1
-    # compute the actual time step
-    (true_step <- mean(steps[!large_steps]))
-
-    warning("Images seem to have been taken at < 1 s intervals but split seconds were not recorded in the images' EXIF data. They are being reconstructed assuming the actual interval between images was: ", true_step, " s.")
-
-    n_large_steps <- sum(large_steps)
-    if (n_large_steps > 0) {
-      warning("In addition, ", n_large_steps, " event(s) was/were detected during which the camera did not take images for more than 1 s. Those situations are assumed to be pauses in sampling and split-seconds reconstruction omits them.")
-    }
-    
-    # now process the data in batches between the jumps
-    pieces <- c(0, cumsum(large_steps))
-    d <- data.frame(dateTime, pieces)
-    d <- ddply(d, ~pieces, function(x) {
-      x$dateTime <- x$dateTime[1] + seq(from=0, along=x$dateTime) * true_step
-      return(x)
-    })
-    dateTime <- d$dateTime
-  }
   
+  # detect sub-second intervals not actually recorded in the time stamps
+  # = several 0 second intervals
+  if (sum(steps == 0) > 1/10*length(dateTime)) {
+
+    # detect steps over 1 s = probable camera shutdown
+    # we need to remove them in the following
+    large_steps <- steps > 1
+
+    # take a guess for the actual time interval
+    dt <- mean(steps[!large_steps])
+    warning("Images have been taken at < 1 s intervals but split seconds were not recorded in the EXIF data.
+  The average interval between images was ", round(dt, 3), " s and is used to reconstruct sub-second times.")
+
+    # now guess time step and start time in each batch, between jumps
+    d <- data.frame(dateTime, step=c(NA, steps), piece=c(0, cumsum(large_steps)))
+    d <- plyr::ddply(d, ~piece, fit_t0_dt)
+    dateTime <- d$dateTimeFixed
+  }
+
   # put them back in the order of the files
   dateTime[order] <- dateTime
 
   return(dateTime)
+}
+
+# Given
+# x data.frame with columns:
+#   dateTime  date and time, full seconds
+#   steps     steps between records in the dateTime column, in seconds
+# find the start time and time steps (with sub-second resolution) that find the full-second data best
+fit_t0_dt <- function(x) {
+  # search all valid possibilities for the sub-second start and sub-second interval
+  fineness <- 100 
+  range_t0 <- c(0, 1)
+  range_dt <- dt + c(-0.1, 0.1)
+  grid <- expand.grid(
+    t0=seq(range_t0[1], range_t0[2], length=fineness*5),
+    dt=seq(range_dt[1], range_dt[2], length=fineness+1)
+    # NB: odd number allows to fit exactly the guessed value in case it is correct
+  )
+  # compute end time and remove points that do not fit the data
+  startTime <- min(x$dateTime)
+  endTime   <- max(x$dateTime)
+  ends <- (startTime + grid$t0) + (nrow(x)-1) * grid$dt
+  grid <- grid[ends > endTime & ends < (endTime + 1),]
+  # ggplot(grid) + geom_point(aes(x=dt, y=t0))
+
+  # compute the match between steps
+  score <- function(grid_line, observed_steps) {
+    # recompute the rounded time vector
+    t0 <- grid_line[1]
+    dt <- grid_line[2]
+    n <- length(observed_steps)
+    x <- t0 + 0:n * dt
+    x <- floor(x)
+    # and steps
+    recomputed_steps <- diff(x)
+    # compute the number of mismatches
+    score <- as.numeric(observed_steps != recomputed_steps)
+    return(sum(score))
+  }
+  grid$score <- apply(grid, 1, score, observed_steps=x$step[-1])
+  # ggplot(grid) + geom_raster(aes(x=dt, y=t0, fill=score))
+
+  # keep only the appropriate values for the start time and time step
+  grid <- grid[grid$score == min(grid$score, na.rm=TRUE),]
+  # ggplot(grid) + geom_raster(aes(x=dt, y=t0, fill=score))
+  fitted_t0 <- mean(grid$t0)
+  fitted_dt <- mean(grid$dt)
+  # message("t0=", fitted_t0, " dt=", fitted_dt)
+
+  x$dateTimeFixed <- (startTime + fitted_t0) + seq(from=0, along=x$dateTime) * fitted_dt
+  return(x)
 }
