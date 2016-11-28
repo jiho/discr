@@ -15,6 +15,8 @@ image_time <- function(files, tz="UTC") {
 
   # convert them to R representation
   dateTime <- lubridate::parse_date_time(dateTime, orders="ymdHMS", tz=tz)
+  order <- order(dateTime)
+  dateTime <- dateTime[order]
 
   # resolve split seconds
   steps <- as.numeric(diff(dateTime))
@@ -43,5 +45,8 @@ image_time <- function(files, tz="UTC") {
     dateTime <- d$dateTime
   }
   
+  # put them back in the order of the files
+  dateTime[order] <- dateTime
+
   return(dateTime)
 }
