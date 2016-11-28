@@ -41,7 +41,7 @@ disc_extract.default <- function(data, start, stop, dir, ...) {
 
 # Resize images and convert them to grayscale
 process_images <- function(files, width, gray) {
-  # convert arguments into convert/mogrify options
+  # convert function arguments into convert/mogrify options
   if (!is.null(width)) {
     width <- str_c("-resize ", width, "x")
   }
