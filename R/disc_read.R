@@ -268,6 +268,18 @@ disc_read.gopro <- function(dir, ...) {
   # make sure it is ordered by time (listing files can be done in non chronological order)
   d <- d[order(d$dateTime),]
 
+  # detect camera shutdown (step of > 30sec)
+  steps <- diff(d$dateTime)
+  large_steps <- steps > 30
+  # warn about them
+  if (any(large_steps)) {
+    large_steps_indexes <- which(large_steps)
+    large_steps_times <- plyr::laply(large_steps_indexes, function(x) {
+      stringr::str_c(dateTime[x:(x+1)], collapse=" -> ")
+    })
+    warning("The camera did not record data between:\n  ", stringr::str_c(large_steps_times, collapse="\n  "), "\n  Was this expected?")
+  }
+
   return(d)
 }
 
