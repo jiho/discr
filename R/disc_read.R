@@ -34,7 +34,7 @@ disc_read.gt31 <- function(dir, ...) {
 
   # compute date+time for R
   d$dateTime <- str_c(d$date, " ", d$time)
-  d$dateTime <- parse_date_time(d$dateTime, orders="dmy hms", quiet=TRUE)
+  d$dateTime <- parse_date_time(d$dateTime, orders="dmy HMS", quiet=TRUE)
 
   # keep only relevant data
   d <- select(d, dateTime, lon, lat)
@@ -53,7 +53,7 @@ disc_read.igotu <- function(dir, ...) {
   d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE, ...)
 
   d$dateTime <- str_c(d$Date, " ", d$Time)
-  d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
+  d$dateTime <- parse_date_time(d$dateTime, orders="ymd HMS", quiet=TRUE)
   d <- select(d, -Date, -Time)
 
   d <- select(d, dateTime, lon=Latitude, lat=Longitude)
@@ -102,7 +102,7 @@ disc_read.dst <- function(dir, ...) {
   # d <- rename(d, heading=Heading)
 
   d$dateTime <- str_c(d$date, " ", d$time)
-  d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms")
+  d$dateTime <- parse_date_time(d$dateTime, orders="mdy HMS")
   d <- select(d, -date, -time)
 
   d <- select(d, dateTime, depth, temperature)
@@ -124,7 +124,7 @@ disc_read.ctd_opentag <- function(dir, ...) {
   d <- rename(d, depth=Pressure, temperature=Temperature)
 
   d$dateTime <- str_c(d$FileDate, d$FileTime, sep=" ")
-  d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms", quiet=TRUE)
+  d$dateTime <- parse_date_time(d$dateTime, orders="mdy HMS", quiet=TRUE)
   d$dateTime <- d$dateTime + d$Time.from.Start..s.
   d <- select(d, -FileDate, -FileTime, -Time.from.Start..s.)
 
@@ -195,7 +195,7 @@ disc_read.compassOpentag <- function(dir, ...) {
   # d <- rename(d, heading=Heading)
 
   d$dateTime <- str_c(d$FileDate, d$FileTime, sep=" ")
-  d$dateTime <- parse_date_time(d$dateTime, orders="mdy hms", quiet=TRUE)
+  d$dateTime <- parse_date_time(d$dateTime, orders="mdy HMS", quiet=TRUE)
   options(digits.secs=3)
   d$dateTime <- d$dateTime + d$Time.from.Start..s.
   d <- select(d, -FileDate, -FileTime, -Time.from.Start..s.)
@@ -219,7 +219,7 @@ disc_read.cc <- function(dir, ...) {
   d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE, col.names=c("dateTime", "pitch", "roll", "heading", "light"), ...)
 
   # compute date+time for R
-  d$dateTime <- parse_date_time(d$dateTime, orders="ymd hms", quiet=TRUE)
+  d$dateTime <- parse_date_time(d$dateTime, orders="ymd HMS", quiet=TRUE)
 
   # remove light if completely empty (early versions of the CC)
   if (all(is.na(d$light))) {
@@ -289,7 +289,7 @@ disc_read.goproVideo <- function(dir, ...) {
   d <- dplyr::select(d, -stream)
   
   # convert into POSIXct
-  d$begin <- parse_date_time(d$begin, orders="ymd hms")
+  d$begin <- parse_date_time(d$begin, orders="ymd HMS")
   
   # compute end time
   d$end <- d$begin + d$duration

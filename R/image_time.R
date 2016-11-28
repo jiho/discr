@@ -2,8 +2,8 @@
 #
 # @param files full path to one or several image files
 # @param tz force a time zone (most time computations are relative so getting the time zone right probably does not matter)
-  # get date and times
 image_time <- function(files, tz="UTC") {
+  # get date and times from EXIF data
   chunkSize <- 500
   dateTime <- c()
   for (i in seq(1, length(files), by=chunkSize)) {
@@ -13,8 +13,8 @@ image_time <- function(files, tz="UTC") {
     dateTime <- c(dateTime, system(command, intern=TRUE))
   }
 
-  # convert them to R representations
-  dateTime <- lubridate::parse_date_time(dateTime, orders="ymd hms", tz=tz)
+  # convert them to R representation
+  dateTime <- lubridate::parse_date_time(dateTime, orders="ymdHMS", tz=tz)
 
   # resolve split seconds
   steps <- as.numeric(diff(dateTime))
