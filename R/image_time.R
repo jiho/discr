@@ -1,14 +1,14 @@
 # Extract time from EXIF data
 #
-# @param img full path to one or several image files
+# @param files full path to one or several image files
 # @param tz force a time zone (most time computations are relative so getting the time zone right probably does not matter)
-image_time <- function(img, tz="UTC") {
   # get date and times
+image_time <- function(files, tz="UTC") {
   chunkSize <- 500
   dateTime <- c()
-  for (i in seq(1, length(img), by=chunkSize)) {
+  for (i in seq(1, length(files), by=chunkSize)) {
     # message(i, " ", i+chunkSize-1)
-    command <- stringr::str_c("exif -t=DateTimeOriginal -m \"", stringr::str_c(na.omit(img[i:(i+chunkSize-1)]), collapse="\" \""), "\"")
+    command <- stringr::str_c("exif -t=DateTimeOriginal -m \"", stringr::str_c(na.omit(files[i:(i+chunkSize-1)]), collapse="\" \""), "\"")
     # TODO use the 0x9291 or SubSecTimeOriginal tags too?
     dateTime <- c(dateTime, system(command, intern=TRUE))
   }
