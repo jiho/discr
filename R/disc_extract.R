@@ -64,6 +64,10 @@ process_images <- function(files, width, gray) {
   doParallel::stopImplicitCluster()
 }
 
+# Difftime in seconds
+diff_secs <- function(time1, time2) {
+  as.numeric(difftime(time1, time2, units="secs"))
+}
 
 #' @rdname disc_extract
 #' @export
@@ -98,116 +102,154 @@ disc_extract.gopro <- function(data, start, stop, dir, width=1600, gray=FALSE, .
 
 #' @rdname disc_extract
 #' @export
-#' @param fps number of frames to extract per second. 0.5 gives one frame every two seconds.
+#' @param fps number of frames to extract per second. 0.5 gives one frame every two seconds, 1/3 gives one frame every 3 seconds, 2 gives one frame every 0.5 seconds.
 #' @inheritParams disc_extract.gopro
 disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, gray=FALSE, ...) {
-
-  # create directory for videos
-  dir.create(dir)
   
-  # compute time interval for each video
-  ds <- tidyr::spread(data, key=type, value=dateTime)
-  ds <- dplyr::arrange(ds, begin)
-  ds$interval <- lubridate::interval(ds$begin, ds$end)
+  # compute time interval for each source video
+  # NB: GoPros cut files in ~ 21 mins portions
+  d <- tidyr::spread(data, key="type", value="dateTime")
+  d <- dplyr::arrange(d, begin)
+  d$interval <- lubridate::interval(d$begin, d$end)
 
-  # detect which videos the deployment overlaps with
+  # detect which source videos the deployment overlaps with
   deployInterval <- lubridate::interval(start, stop)
-  ds <- ds[lubridate::int_overlaps(deployInterval, ds$interval),]
+  ds <- d[lubridate::int_overlaps(deployInterval, d$interval),]
   show_nb_records(ds, dir)
+  n <- nrow(ds)
 
-  if (nrow(ds) >= 1) {
-    files <- ds$file
-    n <- length(files)
-    ds$order <- 1:n
-
-    # prepare temporary names for the video files we will cut from those original videos
-    ds$tempfile <- make_path(dir, str_c("tempvid", ds$order, ".mp4"))
-    
-    # check time difference between videos if there are more than 1
+  # from each source video, we:
+  # - extract the piece we need
+  # - extract pictures
+  # NB: 
+  # to extract pictures, we start from the source video again which is the best way to make the first frames match between the extracted deployment video and the still frames
+  # when the deployment overlaps two source videos, we do not concatenate the source videos then extract the full deployment because that (i) is longer, (ii) creates a large, useless, temporary file, (iii) looses track of the start time of the video
+  # => we treat each source video independently
+  if (n < 1) {
+    stop("No video matches this deployment. Check your deployment log.")
+  } else {
+    # check time difference between source videos if there are more than 1
     if (n > 1) {
-      timeDifferences <- ds$end[1:(n-1)] - ds$begin[2:n]
-      units(timeDifferences) <- "secs"
-      timeDifferences <- as.numeric(timeDifferences)
+      timeDifferences <- diff_secs(ds$begin[2:n], ds$end[1:(n-1)])
+      # detect jumps
       if (any(timeDifferences > 2) ) {
-        stop("Gap of more than 2 seconds between videos that are supposed to be in the same deployment. This should not happen. Check your log.")
+        stop("Gap of more than 2 seconds between source videos that are supposed to span the same deployment. This should not happen. Check your deployments log.")
       }
     }
     
-    # cut each video file (in parallel when there are more than 1)
+    # create directory for output videos
+    dir.create(dir)
+    # and temporary storage
+    temp <- make_path(dir, "temp")
+    dir.create(temp)
+    # TODO this could just be dir
+    
+    # record the order of files arranged by begin time
+    # (used later on to define temporary names etc.)
+    ds$order <- 1:n
+    # prepare temporary file name(s) for the file we will cut from the source video
+    ds$temp_video_file <- make_path(temp, str_c("vid", ds$order, ".mp4"))
+    # prepare temporary directory(ies) for the frames we will extract from the source video
+    ds$temp_pics_dir   <- make_path(temp, str_c("pics", ds$order))
+    
+    # process each source video file (in parallel when there are more than 1)
+    # = cut the video
+    #   extract frames, compute time stamps and return the data
     parallel <- (n > 1)
     if ( parallel ) {
       doParallel::registerDoParallel(cores=min(n, parallel::detectCores()-1))
     }
-    plyr::a_ply(ds, 1, function(x) {
-      # define start time for ffmpeg
-      # when we extract frames, later, the frame for the first segment defined by fps (segment duration = 1/fps) will actually be in the middle of the segment, i.e. at (start + 0.5s) for fps=1. So we shift the time here by half a segment (1/fps/2) to account for it
+    pics <- plyr::adply(ds, 1, function(x) {
+      ## Cut source video
+      
+      # start of the deployment from the start of the current video
       if (start > x$begin) {
-        startOffset <- start - (x$begin + ((1/fps)/2))
-        # TODO test with 25fps videos and check whether to add a second at start or end to end up with the correct video duration
-        # format it as an ffmpeg seek index HH:MM:SS.S
-        startOffset <- format(ymd_hms("2000-01-01 00:00:00") + startOffset, "-ss %H:%M:%OS1")
+        start_offset_num <- diff_secs(start, x$begin)
+        start_offset <- str_c("-ss ", start_offset_num)
       } else {
-        startOffset <- NULL
+        start_offset_num <- 0
+        start_offset <- NULL
       }
       
-      # define end for ffmpeg
+      # end of the deployment from the *start* of the current video
+      # (i.e. duration of video to extract)
       if (stop < x$end) {
-        stopOffset <- stop - (x$begin + ((1/fps)/2))
-        stopOffset <- format(ymd_hms("2000-01-01 00:00:00") + stopOffset, "-to %H:%M:%OS1")
+        stop_offset <- str_c("-t ", diff_secs(stop, x$begin))
       } else {
-        stopOffset <- NULL
+        stop_offset <- NULL
       }
       
-      # cut the original file
-      exit <- system2("ffmpeg", str_c(" -i \"", x$file, "\" ", startOffset, " ", stopOffset, " -c copy -an \"", x$tempfile, "\""), stdout=FALSE, stderr=FALSE)
+      # cut the source video
+      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -c copy -an \"", x$temp_video_file, "\""), stdout=FALSE, stderr=FALSE)
       check_status(exit, str_c("Could not cut video file: ", x$file))
+      
+      ## Extract frames
+      # let us assume fps = 1/3 (one frame every 3 seconds). The frame for the first 3s will be in the middle of the segment, at 1.5s, while we would like it to match the video we just cut above, and compass record, etc. and be at 0s. So we start the video early here, by half a segment ((1/fps)/2), to account for it.
+      if (start > x$begin) {
+        start_offset <- str_c("-ss ", start_offset_num - ((1/fps)/2))
+      }
+
+      # create the temporary directory
+      dir.create(x$temp_pics_dir)
+
+      # extract frames from the source video
+      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -qscale:v 2 -vf fps=", fps, " \"", x$temp_pics_dir, "/%05d.jpg\""), stdout=FALSE, stderr=FALSE)
+      check_status(exit, str_c("Could not extract frames from video file: ", x$file))
+      
+      # list picture files and compute their timestamp
+      files <- list.files(x$temp_pics_dir)
+      timestamps <- x$begin + start_offset_num + seq(from=0, by=1/fps, length.out=length(files))
+      pics <- data.frame(origFile=files, dateTime=timestamps, stringsAsFactors=FALSE)
+      
+      return(pics)
     }, .parallel=parallel)
     if ( parallel ) {
       doParallel::stopImplicitCluster()
     }
-
-    # create complete video
-    tempfileComplete <- str_c(dir, "/tempfile_complete.mp4")
+        
+    # create complete video file
+    dest_video <- str_c(dir, ".mp4")
     # when there is only one video, just rename it
     if (n == 1) {
-      file.rename(ds$tempfile, tempfileComplete)
+      file.rename(ds$temp_video_file, dest_video)
     # when there are several videos, join them
     } else {
       # prepare the file list for ffmpeg
-      listFile <- make_path(dir, "list.txt")
-      cat(str_c("file ", ds$tempfile), file=listFile, sep="\n")
+      video_list_file <- make_path(temp, "list.txt")
+      cat(str_c("file '", ds$temp_video_file, "'"), file=video_list_file, sep="\n")
       # concatenate files
-      exit <- system2("ffmpeg", str_c("-f concat -safe 0 -i \"", listFile, "\" -c copy -an \"", tempfileComplete, 
-      "\""), stdout=FALSE, stderr=FALSE)
-      check_status(exit, str_c("Could not concatenate files: ", str_c(ds$tempfile, collapse=",")))
+      exit <- system2("ffmpeg", str_c("-f concat -safe 0 -i \"", video_list_file, "\" -c copy -an \"", dest_video,"\""), stdout=FALSE, stderr=FALSE)
+      check_status(exit, str_c("Could not concatenate files: ", str_c(ds$temp_video_file, collapse=",")))
     }
-    
-    # cleanup and remove temporary files
-    exit <- unlink(dir, recursive=TRUE)
-    check_status(exit, str_c("Could not remove ", dir))
-    
-    # extract frames from the video
-    # create the pics directory
-    picsDir <- str_replace(dir, "vids", "pics")
-    dir.create(picsDir)
-    # extract frames as high quality jpegs
-    exit <- system2("ffmpeg", str_c(" -i \"", tempfileComplete, "\" -vf fps=", fps, " -qscale:v 2 \"", picsDir, "/%d.jpg\""), stdout=FALSE, stderr=FALSE)
-    check_status(exit, "Could not extract frames from ", outputFile)
-    # when doing this, ffmpeg extracts one frame in the middle of each second plus one frame for the last image in the video. List all frames in order and discard this last one
-    picsFiles <- gtools::mixedsort(list.files(picsDir, full=TRUE))
-    file.remove(tail(picsFiles, 1))
-    picsFiles <- picsFiles[-length(picsFiles)]
-    # create the corresponding log file, with a timestamp for each picture
-    # because we shifted the video by fps/2 seconds and the first frame is taken in the middle of the segment, it is actually at time start here (which is what we want)
-    # NB: this computation is actually not totally accurate but that's probably in part because the framerate of GoPros may not be completely constant
-    picsTimes <- start + ((0:(length(picsFiles)-1))*(1/fps))
-    log <- data.frame(file=picsFiles, dateTime=picsTimes)
-    show_nb_records(log, picsDir)
-    logFile <- str_c(picsDir, "_log.csv")
-    write.csv(log, file=logFile, row.names=FALSE)
-    
-    # process images if needed (reduce size, greyscale, etc.)
-    process_images(log$file, width=width, gray=gray)
-  }
 
+    # create complete pics directory
+    dest_pics <- str_replace(dir, "vids", "pics")
+
+    # reformat the log to match the columns when taking pictures from the GoPro
+    pics$origFile <- make_path(pics$temp_pics_dir, pics$origFile)
+    pics <- pics[,c("origFile", "dateTime")]
+
+    # number pictures sequentially
+    pics$imgNb <- 1:nrow(pics)
+    pics$file <- make_path(dest_pics, str_c(pics$imgNb, ".jpg"))
+
+    # inform the user about the number of pictures
+    show_nb_records(pics, dest_pics)
+
+    # and write it to the deployment folder
+    write.csv(pics, file=str_c(dest_pics, "_log.csv"), row.names=FALSE)
+
+    # create the pictures directory for this deployment
+    dir.create(dest_pics)
+
+    # copy the original images into their destination directory
+    exit <- file.copy(pics$origFile, pics$file)
+    check_status(any(!exit), str_c(sum(!exit), " frames could not be copied to ", dir))
+    # and process them if needed
+    process_images(pics$file, width=width, gray=gray)
+    
+    
+    # clean up the temporary directory
+    unlink(dir, recursive=TRUE)
+  }
 }

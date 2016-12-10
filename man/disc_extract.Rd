@@ -30,7 +30,7 @@ disc_extract(data, start, stop, dir, ...)
 
 \item{gray}{logical; whether to convert the images to grayscale.}
 
-\item{fps}{number of frames to extract per second. 0.5 gives one frame every two seconds.}
+\item{fps}{number of frames to extract per second. 0.5 gives one frame every two seconds, 1/3 gives one frame every 3 seconds, 2 gives one frame every 0.5 seconds.}
 }
 \description{
 Extract data corresponding to one deployment from the raw data recorded by a sensor over a leg.
