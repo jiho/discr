@@ -287,6 +287,7 @@ disc_read.gopro <- function(dir, ...) {
 #' @export
 disc_read.goproVideo <- function(dir, ...) {
   # get all MP4 files
+  # NB: GoPros cut files in ~ 21 mins portions
   files <- list.files(dir, pattern=glob2rx("G*.MP4"), full.names=TRUE, recursive=TRUE)
 
   # get start time for each file
