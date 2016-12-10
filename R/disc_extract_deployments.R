@@ -152,11 +152,11 @@ disc_extract_deployments <- function(raw="raw", ids=NULL, deploy.dir=NULL, accli
     dir.create(deployDir, showWarnings=FALSE, recursive=TRUE)
 
     # get start and stop time for this deployment
-    start <- parse_date_time(str_c(x$date_start, " ", x$time_start), orders="ymd hms")
+    start <- parse_date_time(str_c(x$date_start, " ", x$time_start), orders="ymd HMS")
     start <- start + acclimation.time * 60
     stopTheoretical <- start + observation.time * 60
     # check that the stop time is compatible with the deployment duration
-    stopRecorded <- parse_date_time(str_c(x$date_stop, " ", x$time_stop), orders="ymd hms")
+    stopRecorded <- parse_date_time(str_c(x$date_stop, " ", x$time_stop), orders="ymd HMS")
     if ( stopTheoretical > stopRecorded ) {
       warning("Deployment ", x$deploy_id, " was stopped early.", call.=FALSE)
       stop <- stopRecorded
