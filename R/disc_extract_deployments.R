@@ -33,7 +33,7 @@
 #' source <- system.file("extdata", "raw", package = "discr")
 #' dest   <- tempdir()
 #' disc_extract_deployments(raw=source, deploy.dir=dest, width=NULL,
-#'                          acclimation.time=2, observation.time=2, parallel=FALSE)
+#'                          acclimation.time=2, observation.time=2)
 #' # NOTE:
 #' # - the warning about deployment 2 being stopped earlier than the expected 2 mins
 #' # - the notice that the compass (cc) has 0 records in deployment 2
