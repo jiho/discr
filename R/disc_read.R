@@ -308,7 +308,7 @@ disc_read.goproVideo <- function(dir, ...) {
   d$end <- d$begin + d$duration
   
   # gather start and end in one column
-  d <- tidyr::gather(d, key=type, value=dateTime, begin, end)
+  d <- tidyr::gather(d, key="type", value="dateTime", begin, end)
 
   # and order by time
   d <- arrange(d, dateTime, type)
