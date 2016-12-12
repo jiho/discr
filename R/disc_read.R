@@ -154,7 +154,7 @@ disc_read.dstctd <- function(dir, ...) {
   d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE)
   
   # convert the datetime numeric to something meaningful
-  d$dateTime <- parse_date_time(d$Date...Time, orders="m/d/y HM")
+  d$dateTime <- parse_date_time(d$Date...Time, orders="m/d/y HMS")
   
   # rename headers
   d <- select(d, dateTime, depth.m=Depth.m., temperature.C=Temperature..C., salinity.psu=Salinity.psu.)
