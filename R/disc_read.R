@@ -16,7 +16,7 @@
 #' @importFrom stringr str_c
 #' @importFrom lubridate parse_date_time
 disc_read <- function(dir, ...) {
-  UseMethod("disc_read")
+  UseMethod("disc_read", dir)
 }
 
 
