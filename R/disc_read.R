@@ -153,7 +153,7 @@ disc_read.dstctd <- function(dir, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.ctd_opentag <- function(dir, ...) {
+disc_read.ctdOpentag <- function(dir, ...) {
   # file <- "inst/tests/ctd_opentag_sample.csv"
 
   d <- read.csv(file, stringsAsFactors=FALSE)

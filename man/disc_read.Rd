@@ -4,7 +4,7 @@
 \alias{disc_read}
 \alias{disc_read.cc}
 \alias{disc_read.compassOpentag}
-\alias{disc_read.ctd_opentag}
+\alias{disc_read.ctdOpentag}
 \alias{disc_read.dst}
 \alias{disc_read.dstctd}
 \alias{disc_read.ez}
@@ -33,7 +33,7 @@ disc_read(dir, ...)
 
 \method{disc_read}{dstctd}(dir, ...)
 
-\method{disc_read}{ctd_opentag}(dir, ...)
+\method{disc_read}{ctdOpentag}(dir, ...)
 
 \method{disc_read}{ez}(dir, ...)
 
