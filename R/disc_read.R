@@ -19,6 +19,18 @@ disc_read <- function(dir, ...) {
   UseMethod("disc_read", dir)
 }
 
+# default method used to error out and list the available ones
+disc_read.default <- function(dir, ...) {
+  # list methods (hence sensors)
+  available_methods <- as.character(methods("disc_read"))
+  available_sensors <- stringr::str_replace(available_methods, stringr::fixed("disc_read."), "")
+  # remove the default method
+  available_sensors <- available_sensors[available_sensors!="default"]
+  
+  # inform the user about the choices
+  stop("Instrument \'", class(dir), "\' unknown. Should be one of: ", str_c(available_sensors, collapse=", "), call.=FALSE)
+}
+
 
 
 ## GPS ----
