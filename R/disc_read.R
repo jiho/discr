@@ -200,7 +200,7 @@ disc_read.ez <- function(dir, ...) {
 #' @rdname disc_read
 #' @export
 #' @importFrom lubridate parse_date_time
-disc_read.remora <- function(dir, ...) {
+disc_read.compassRemora <- function(dir, ...) {
   # file <- "inst/tests/compass_remora_sample.csv"
 
   d <- read.csv(file, stringsAsFactors=FALSE, ...)

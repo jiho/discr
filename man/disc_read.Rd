@@ -4,6 +4,7 @@
 \alias{disc_read}
 \alias{disc_read.cc}
 \alias{disc_read.compassOpentag}
+\alias{disc_read.compassRemora}
 \alias{disc_read.ctdOpentag}
 \alias{disc_read.dst}
 \alias{disc_read.dstctd}
@@ -15,7 +16,6 @@
 \alias{disc_read.hobo}
 \alias{disc_read.igotu}
 \alias{disc_read.remoraAr}
-\alias{disc_read.remoraCompass}
 \alias{disc_read.trackstick}
 \title{Raw data reading}
 \usage{
@@ -37,7 +37,7 @@ disc_read(dir, ...)
 
 \method{disc_read}{ez}(dir, ...)
 
-\method{disc_read}{remoraCompass}(dir, ...)
+\method{disc_read}{compassRemora}(dir, ...)
 
 \method{disc_read}{compassOpentag}(dir, ...)
 
