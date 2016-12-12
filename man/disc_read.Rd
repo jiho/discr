@@ -6,10 +6,12 @@
 \alias{disc_read.compassOpentag}
 \alias{disc_read.ctd_opentag}
 \alias{disc_read.dst}
+\alias{disc_read.dstctd}
 \alias{disc_read.ez}
 \alias{disc_read.gopro}
 \alias{disc_read.goproVideo}
 \alias{disc_read.gt31}
+\alias{disc_read.gw52}
 \alias{disc_read.hobo}
 \alias{disc_read.igotu}
 \alias{disc_read.remoraAr}
@@ -25,7 +27,11 @@ disc_read(dir, ...)
 
 \method{disc_read}{trackstick}(dir, ...)
 
+\method{disc_read}{gw52}(dir, ...)
+
 \method{disc_read}{dst}(dir, ...)
+
+\method{disc_read}{dstctd}(dir, ...)
 
 \method{disc_read}{ctd_opentag}(dir, ...)
 

@@ -85,6 +85,25 @@ disc_read.trackstick <- function(dir, ...) {
   return(d)
 }
 
+#' @rdname disc_read
+#' @export
+disc_read.gw52 <- function(dir, ...) {
+  # read .csv files = converted .sbp files from http://www.gpsvisualizer.com/gpsbabel/gpsbabel_convert
+  files <- list.files(dir, pattern=glob2rx("*.csv"), full.names=TRUE)
+  
+  # there should be only one per directory, but just in case, loop automatically over all files
+  d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE)
+  
+  # compute date+time for R
+  d$DATETIME <- as.POSIXct(str_c(d$DATE, " ",d$TIME), format="%m/%d/%Y %H:%M:%S")
+  
+  # keep only relevant data
+  d <- select(d, DATETIME, LATITUDE, N.S, LONGITUDE, E.W, SPEED)
+  colnames(d) <- c("datetime", "lat", "N.S", "lon", "E.W", "speed")
+  
+  return(d)
+}
+
 
 ## CTD ----
 
@@ -112,6 +131,25 @@ disc_read.dst <- function(dir, ...) {
 
   return(d)
 }
+
+#' @rdname disc_read
+#' @export
+disc_read.dstctd <- function(dir, ...) {
+  # read .csv files = converted .xlsx files from star-oddi seastar software
+  files <- list.files(dir, pattern=glob2rx("*.csv"), full.names=TRUE)
+  
+  # there should be only one per directory, but just in case, loop automatically over all files
+  d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE)
+  
+  # convert the datetime numeric to something meaningful
+  d$dateTime <- as.POSIXct(d$Date...Time, format="%m/%d/%Y %H:%M:%S")
+  
+  # rename headers
+  colnames(d) <- c("dateTime", "temp", "depth","salinity")
+  
+  return(d)
+}
+
 
 #' @rdname disc_read
 #' @export
