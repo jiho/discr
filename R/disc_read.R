@@ -94,12 +94,11 @@ disc_read.gw52 <- function(dir, ...) {
   # there should be only one per directory, but just in case, loop automatically over all files
   d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE)
   
-  # compute date+time for R
-  d$DATETIME <- as.POSIXct(str_c(d$DATE, " ",d$TIME), format="%m/%d/%Y %H:%M:%S")
+  # parse date and time
+  d$dateTime <- parse_date_time(str_c(d$DATE, " ", d$TIME), orders="ymd HMS")
   
   # keep only relevant data
-  d <- select(d, DATETIME, LATITUDE, N.S, LONGITUDE, E.W, SPEED)
-  colnames(d) <- c("datetime", "lat", "N.S", "lon", "E.W", "speed")
+  d <- select(d, dateTime, lon=LONGITUDE, lat=LATITUDE, speed=SPEED)
   
   return(d)
 }
