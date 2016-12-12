@@ -135,16 +135,17 @@ disc_read.dst <- function(dir, ...) {
 #' @export
 disc_read.dstctd <- function(dir, ...) {
   # read .csv files = converted .xlsx files from star-oddi seastar software
+  # TODO read the .xlsx directly using readxl::read_excel? If the dependency is added, it could also be used to read the leg_log and deployment_log
   files <- list.files(dir, pattern=glob2rx("*.csv"), full.names=TRUE)
   
   # there should be only one per directory, but just in case, loop automatically over all files
   d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE)
   
   # convert the datetime numeric to something meaningful
-  d$dateTime <- as.POSIXct(d$Date...Time, format="%m/%d/%Y %H:%M:%S")
+  d$dateTime <- parse_date_time(d$Date...Time, orders="m/d/y HM")
   
   # rename headers
-  colnames(d) <- c("dateTime", "temp", "depth","salinity")
+  d <- select(d, dateTime, depth.m=Depth.m., temperature.C=Temperature..C., salinity.psu=Salinity.psu.)
   
   return(d)
 }
