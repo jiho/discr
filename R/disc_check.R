@@ -30,6 +30,8 @@ disc_check <- function() {
 
   check_exec("exif")
 
+  check_exec("ffmpeg", notes="ffmpeg is only necessary to cut video and audio files")
+
   check_exec("convert", package="imagemagick")
 
   return(invisible(NULL))

@@ -47,7 +47,7 @@ check_exec <- function(exec, url="", package=exec, notes="", error.out=FALSE, ..
     } else {
       options("warn"=1)
     }
-    warning(exec, " is missing\n", install, "\n", notes, ...)
+    warning(exec, " is missing\n", install, "\nNote: ", notes, ...)
     options("warn"=warnOption)  # reset it to what it was
   } else {
     message(str_c(exec, " executable found"))
