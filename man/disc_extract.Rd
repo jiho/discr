@@ -12,10 +12,10 @@ disc_extract(data, start, stop, dir, verbose, ...)
 \method{disc_extract}{default}(data, start, stop, dir, verbose = FALSE, ...)
 
 \method{disc_extract}{gopro}(data, start, stop, dir, verbose = FALSE,
-  width = 1600, gray = FALSE, ...)
+  width = 1600, gray = FALSE, parallel = TRUE, ...)
 
 \method{disc_extract}{goproVideo}(data, start, stop, dir, verbose = FALSE,
-  fps = 1, width = 1600, gray = FALSE, ...)
+  fps = 1, width = 1600, gray = FALSE, parallel = TRUE, ...)
 }
 \arguments{
 \item{data}{data (or metadata) for this sensor, read by \code{\link{disc_read}}.}
@@ -31,6 +31,8 @@ disc_extract(data, start, stop, dir, verbose, ...)
 \item{width}{width to resize the images to, in pixels. When NULL, images are not resized.}
 
 \item{gray}{logical; whether to convert the images to grayscale.}
+
+\item{parallel}{logical, whether to process images and/or videos in parallel (should be left to TRUE by default for speed).}
 
 \item{fps}{number of frames to extract per second. 0.5 gives one frame every two seconds, 1/3 gives one frame every 3 seconds, 2 gives one frame every 0.5 seconds.}
 }

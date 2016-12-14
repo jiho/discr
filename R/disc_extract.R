@@ -45,7 +45,7 @@ disc_extract.default <- function(data, start, stop, dir, verbose=FALSE, ...) {
 
 
 # Resize images and convert them to grayscale
-process_images <- function(files, width, gray) {
+process_images <- function(files, width, gray, parallel) {
   # convert function arguments into convert/mogrify options
   if (!is.null(width)) {
     width <- str_c("-resize ", width, "x")
@@ -62,11 +62,11 @@ process_images <- function(files, width, gray) {
     return(invisible(NULL))
   }
   # other wise process images (in parallel)
-  doParallel::registerDoParallel(parallel::detectCores()-1)
+  if (parallel) doParallel::registerDoParallel(parallel::detectCores()-1)
   plyr::l_ply(files, function(x) {
     system(str_c("mogrify ", width, " ", gray, " -quality 100 \"", x, "\""))
-  }, .parallel=TRUE)
-  doParallel::stopImplicitCluster()
+  }, .parallel=parallel)
+  if (parallel) doParallel::stopImplicitCluster()
 }
 
 # Difftime in seconds
@@ -78,7 +78,7 @@ diff_secs <- function(time1, time2) {
 #' @export
 #' @param width width to resize the images to, in pixels. When NULL, images are not resized.
 #' @param gray logical; whether to convert the images to grayscale.
-disc_extract.gopro <- function(data, start, stop, dir, verbose=FALSE, width=1600, gray=FALSE, ...) {
+disc_extract.gopro <- function(data, start, stop, dir, verbose=FALSE, width=1600, gray=FALSE, parallel=TRUE, ...) {
   # get the corresponding data
   ds <- dplyr::filter(data, dateTime >= start, dateTime <= stop)
   
@@ -103,15 +103,16 @@ disc_extract.gopro <- function(data, start, stop, dir, verbose=FALSE, width=1600
     check_status(any(!exit), str_c(sum(!exit), " frames could not be copied to ", dir))
     # and process them if needed
     if (verbose) dmessage("processing images")
-    process_images(ds$file, width=width, gray=gray)
+    process_images(ds$file, width=width, gray=gray, parallel=parallel)
   }
 }
 
 #' @rdname disc_extract
 #' @export
 #' @param fps number of frames to extract per second. 0.5 gives one frame every two seconds, 1/3 gives one frame every 3 seconds, 2 gives one frame every 0.5 seconds.
+#' @param parallel logical, whether to process images and/or videos in parallel (should be left to TRUE by default for speed).
 #' @inheritParams disc_extract.gopro
-disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1, width=1600, gray=FALSE, ...) {
+disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1, width=1600, gray=FALSE, parallel=TRUE, ...) {
   
   # compute time interval for each source video
   # NB: GoPros cut files in ~ 21 mins portions
@@ -163,8 +164,7 @@ disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1
     # process each source video file (in parallel when there are more than 1)
     # = cut the video
     #   extract frames, compute time stamps and return the data
-    parallel <- (n > 1)
-    if ( parallel ) {
+    if ( parallel & n > 1) {
       doParallel::registerDoParallel(cores=min(n, parallel::detectCores()-1))
     }
     pics <- plyr::adply(ds, 1, function(x) {
@@ -214,7 +214,7 @@ disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1
       
       return(pics)
     }, .parallel=parallel)
-    if ( parallel ) {
+    if ( parallel & n > 1) {
       doParallel::stopImplicitCluster()
     }
         
@@ -261,7 +261,7 @@ disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1
     exit <- file.copy(pics$origFile, pics$file)
     check_status(any(!exit), str_c(sum(!exit), " frames could not be copied to ", dir))
     # and process them if needed
-    process_images(pics$file, width=width, gray=gray)
+    process_images(pics$file, width=width, gray=gray, parallel=parallel)
     
     
     # clean up the temporary directory
