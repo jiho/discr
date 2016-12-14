@@ -325,7 +325,7 @@ disc_read.gopro <- function(dir, ...) {
   if (any(large_steps)) {
     large_steps_indexes <- which(large_steps)
     large_steps_times <- plyr::laply(large_steps_indexes, function(x) {
-      stringr::str_c(dateTime[x:(x+1)], collapse=" -> ")
+      stringr::str_c(d$dateTime[x:(x+1)], collapse=" -> ")
     })
     warning("The camera did not record data between:\n  ", stringr::str_c(large_steps_times, collapse="\n  "), "\n  Was this expected?")
   }
