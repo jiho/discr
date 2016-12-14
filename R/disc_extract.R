@@ -5,6 +5,7 @@
 #' @param data data (or metadata) for this sensor, read by \code{\link{disc_read}}.
 #' @param start,stop start and stop times, as \code{\link[base]{POSIXct}} objects.
 #' @param dir destination directory, where the extracted data should be stored (without trailing slash, to be able to also name a file based on it).
+#' @param verbose output additional information (for debugging purposes) when extracting data.
 #' @param ... passed to the various methods.
 #'
 #' @details
@@ -13,7 +14,7 @@
 #' @seealso \code{\link{disc_read}} and \code{\link{disc_extract_deployments}}
 #'
 #' @export
-disc_extract <- function(data, start, stop, dir, ...) {
+disc_extract <- function(data, start, stop, dir, verbose, ...) {
   UseMethod("disc_extract")
 }
 
@@ -27,7 +28,7 @@ show_nb_records <- function(x, dir) {
 
 #' @rdname disc_extract
 #' @export
-disc_extract.default <- function(data, start, stop, dir, ...) {
+disc_extract.default <- function(data, start, stop, dir, verbose=FALSE, ...) {
   # get the corresponding data
   ds <- dplyr::filter(data, dateTime >= start, dateTime <= stop)
   show_nb_records(ds, dir)
@@ -35,9 +36,13 @@ disc_extract.default <- function(data, start, stop, dir, ...) {
   # if there are enough, write the selected portion of the data to the deployment folder
   if (nrow(ds) > 1) {
     write.csv(ds, file=str_c(dir, "_log.csv"), row.names=FALSE)
+    if (verbose) {
+      print(head(ds))
+    }
   }
   
 }
+
 
 # Resize images and convert them to grayscale
 process_images <- function(files, width, gray) {
@@ -73,7 +78,7 @@ diff_secs <- function(time1, time2) {
 #' @export
 #' @param width width to resize the images to, in pixels. When NULL, images are not resized.
 #' @param gray logical; whether to convert the images to grayscale.
-disc_extract.gopro <- function(data, start, stop, dir, width=1600, gray=FALSE, ...) {
+disc_extract.gopro <- function(data, start, stop, dir, verbose=FALSE, width=1600, gray=FALSE, ...) {
   # get the corresponding data
   ds <- dplyr::filter(data, dateTime >= start, dateTime <= stop)
   
@@ -93,9 +98,11 @@ disc_extract.gopro <- function(data, start, stop, dir, width=1600, gray=FALSE, .
     dir.create(dir)
 
     # copy the original images into their destination directory
+    if (verbose) dmessage("copying images")
     exit <- file.copy(ds$origFile, ds$file)
     check_status(any(!exit), str_c(sum(!exit), " frames could not be copied to ", dir))
     # and process them if needed
+    if (verbose) dmessage("processing images")
     process_images(ds$file, width=width, gray=gray)
   }
 }
@@ -104,7 +111,7 @@ disc_extract.gopro <- function(data, start, stop, dir, width=1600, gray=FALSE, .
 #' @export
 #' @param fps number of frames to extract per second. 0.5 gives one frame every two seconds, 1/3 gives one frame every 3 seconds, 2 gives one frame every 0.5 seconds.
 #' @inheritParams disc_extract.gopro
-disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, gray=FALSE, ...) {
+disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1, width=1600, gray=FALSE, ...) {
   
   # compute time interval for each source video
   # NB: GoPros cut files in ~ 21 mins portions
@@ -151,6 +158,7 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
     ds$temp_video_file <- make_path(temp, str_c("vid", ds$order, ".mp4"))
     # prepare temporary directory(ies) for the frames we will extract from the source video
     ds$temp_pics_dir   <- make_path(temp, str_c("pics", ds$order))
+    if (verbose) print(ds)
     
     # process each source video file (in parallel when there are more than 1)
     # = cut the video
@@ -161,6 +169,7 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
     }
     pics <- plyr::adply(ds, 1, function(x) {
       ## Cut source video
+      if (verbose) dmessage("cut video: ", x$file)
       
       # start of the deployment from the start of the current video
       if (start > x$begin) {
@@ -180,10 +189,12 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
       }
       
       # cut the source video
-      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -c copy -an \"", x$temp_video_file, "\""), stdout=FALSE, stderr=FALSE)
+      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -c copy -an \"", x$temp_video_file, "\""), stdout=FALSE, stderr=ifelse(verbose, "", FALSE))
       check_status(exit, str_c("Could not cut video file: ", x$file))
       
       ## Extract frames
+      if (verbose) dmessage("extract images from: ", x$file)
+      
       # let us assume fps = 1/3 (one frame every 3 seconds). The frame for the first 3s will be in the middle of the segment, at 1.5s, while we would like it to match the video we just cut above, and compass record, etc. and be at 0s. So we start the video early here, by half a segment ((1/fps)/2), to account for it.
       if (start > x$begin) {
         start_offset <- str_c("-ss ", start_offset_num - ((1/fps)/2))
@@ -193,7 +204,7 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
       dir.create(x$temp_pics_dir)
 
       # extract frames from the source video
-      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -qscale:v 2 -vf fps=", fps, " \"", x$temp_pics_dir, "/%05d.jpg\""), stdout=FALSE, stderr=FALSE)
+      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -qscale:v 2 -vf fps=", fps, " \"", x$temp_pics_dir, "/%05d.jpg\""), stdout=FALSE, stderr=ifelse(verbose, "", FALSE))
       check_status(exit, str_c("Could not extract frames from video file: ", x$file))
       
       # list picture files and compute their timestamp
@@ -208,6 +219,8 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
     }
         
     # create complete video file
+    if (verbose) dmessage("create complete video")
+    
     dest_video <- str_c(dir, ".mp4")
     # when there is only one video, just rename it
     if (n == 1) {
@@ -218,11 +231,13 @@ disc_extract.goproVideo <- function(data, start, stop, dir, fps=1, width=1600, g
       video_list_file <- make_path(temp, "list.txt")
       cat(str_c("file '", ds$temp_video_file, "'"), file=video_list_file, sep="\n")
       # concatenate files
-      exit <- system2("ffmpeg", str_c("-f concat -safe 0 -i \"", video_list_file, "\" -c copy -an \"", dest_video,"\""), stdout=FALSE, stderr=FALSE)
+      exit <- system2("ffmpeg", str_c("-f concat -safe 0 -i \"", video_list_file, "\" -c copy -an \"", dest_video,"\""), stdout=FALSE, stderr=ifelse(verbose, "", FALSE))
       check_status(exit, str_c("Could not concatenate files: ", str_c(ds$temp_video_file, collapse=",")))
     }
 
     # create complete pics directory
+    if (verbose) dmessage("collect all video frames")
+    
     dest_pics <- str_replace(dir, "vids", "pics")
 
     # reformat the log to match the columns when taking pictures from the GoPro
