@@ -139,7 +139,7 @@ disc_stats <- function(dir, bin.angle=0, sub=NULL, verbose=FALSE, ...) {
 	theme_set(
     theme_gray(10) +
     theme(
-      legend.margin=unit(0, "cm"),
+      legend.spacing=unit(0, "cm"),
       legend.position="top"
     )
   )
