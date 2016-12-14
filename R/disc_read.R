@@ -296,7 +296,7 @@ disc_read.hobo <- function(dir, ...) {
   names(d) <- c("dateTime", "temp", "light")
 
   # compute date+time for R
-  d$dateTime <- parse_date_time(d$dateTime, orders="mdy Ims p", quiet=TRUE)
+  d$dateTime <- parse_date_time(d$dateTime, orders="mdy IMS p", quiet=TRUE)
 
   return(d)
 }
