@@ -9,7 +9,6 @@
 #'
 #' @return A list with components x, containing the output coordinate (xout), and y, containing the interpolated angles (in the same circular reference as the input angles)
 #'
-#' @importFrom circular is.circular conversion.circular
 #' @export
 #'
 #' @examples
@@ -34,7 +33,7 @@
 approx_circular <- function(x, angles, xout, ...) {
   # Get circular characteristics of the angles object if it is of class circular
   # so that we can set them back on the resulting angles
-  inputIsCircular <- is.circular(angles)
+  inputIsCircular <- circular::is.circular(angles)
   if ( inputIsCircular ) {
     a <- attributes(angles)$circularp
   }
@@ -53,15 +52,15 @@ approx_circular <- function(x, angles, xout, ...) {
   incar <- pol2car(data.frame(angles,1))
 
   # Interpolate each cardinal component independently
-  xInterp <- approx(x, incar[,1], xout, ...)
-  yInterp <- approx(x, incar[,2], xout, ...)
+  xInterp <- stats::approx(x, incar[,1], xout, ...)
+  yInterp <- stats::approx(x, incar[,2], xout, ...)
 
   # Convert back in polar coordinates
   inpol <- car2pol(data.frame(xInterp$y, yInterp$y))
 
   # Convert the resulting angles to the same circular attributes
   if ( inputIsCircular ) {
-    inpol$theta <- conversion.circular(inpol$theta, type=a$type, units=a$units, template=a$template, modulo=a$modulo, zero=a$zero, rotation=a$rotation)
+    inpol$theta <- circular::conversion.circular(inpol$theta, type=a$type, units=a$units, template=a$template, modulo=a$modulo, zero=a$zero, rotation=a$rotation)
   }
 
   return(list(x=xInterp$x, y=inpol$theta))

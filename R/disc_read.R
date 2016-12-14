@@ -22,7 +22,7 @@ disc_read <- function(dir, ...) {
 # default method used to error out and list the available ones
 disc_read.default <- function(dir, ...) {
   # list methods (hence sensors)
-  available_methods <- as.character(methods("disc_read"))
+  available_methods <- as.character(utils::methods("disc_read"))
   available_sensors <- stringr::str_replace(available_methods, stringr::fixed("disc_read."), "")
   # remove the default method
   available_sensors <- available_sensors[available_sensors!="default"]

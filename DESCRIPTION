@@ -19,5 +19,8 @@ Imports:
     circular,
     assertthat,
     doParallel,
-    gtools
+    gtools,
+    stats,
+    utils,
+    grDevices
 RoxygenNote: 5.0.1
