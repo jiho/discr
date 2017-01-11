@@ -36,7 +36,7 @@ image_time <- function(files, tz="UTC") {
 
     # now guess time step and start time in each batch, between jumps
     d <- data.frame(dateTime, step=c(NA, steps), piece=c(0, cumsum(large_steps)))
-    d <- plyr::ddply(d, ~piece, fit_t0_dt)
+    d <- plyr::ddply(d, ~piece, fit_t0_dt, dt=dt)
     dateTime <- d$dateTimeFixed
   }
 
@@ -51,7 +51,8 @@ image_time <- function(files, tz="UTC") {
 #   dateTime  date and time, full seconds
 #   steps     steps between records in the dateTime column, in seconds
 # find the start time and time steps (with sub-second resolution) that find the full-second data best
-fit_t0_dt <- function(x) {
+# dt initial estimate for the time step
+fit_t0_dt <- function(x, dt) {
   # search all valid possibilities for the sub-second start and sub-second interval
   fineness <- 100 
   range_t0 <- c(0, 1)
