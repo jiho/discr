@@ -50,8 +50,8 @@ image_time <- function(files, tz="UTC") {
 # x data.frame with columns:
 #   dateTime  date and time, full seconds
 #   steps     steps between records in the dateTime column, in seconds
-# find the start time and time steps (with sub-second resolution) that find the full-second data best
 # dt initial estimate for the time step
+# find the start time and time step (with sub-second resolution) that fit the full-second data best
 fit_t0_dt <- function(x, dt) {
   # search all valid possibilities for the sub-second start and sub-second interval
   fineness <- 100 
