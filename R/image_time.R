@@ -30,7 +30,7 @@ image_time <- function(files, tz="UTC") {
     large_steps <- steps > 1
 
     # take a guess for the actual time interval
-    dt <- mean(steps[!large_steps])
+    dt <- mean(steps[!large_steps], na.rm=TRUE)
     warning("Images have been taken at < 1 s intervals but split seconds were not recorded in the EXIF data.
   The average interval between images was ", round(dt, 3), " s and is used to reconstruct sub-second times.")
 
