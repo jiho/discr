@@ -110,7 +110,7 @@ disc_extract.gopro <- function(data, start, stop, dir, verbose=FALSE, width=1600
 #' @rdname disc_extract
 #' @export
 #' @param fps number of frames to extract per second. 0.5 gives one frame every two seconds, 1/3 gives one frame every 3 seconds, 2 gives one frame every 0.5 seconds.
-#' @param parallel logical, whether to process images and/or videos in parallel (should be left to TRUE by default for speed).
+#' @param parallel logical, whether to process files in parallel (should be left to TRUE by default for speed).
 #' @inheritParams disc_extract.gopro
 disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1, width=1600, gray=FALSE, parallel=TRUE, ...) {
   
@@ -272,8 +272,8 @@ disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1
 
 #' @rdname disc_extract
 #' @export
-#' @param parallel logical, whether to process images and/or videos in parallel (should be left to TRUE by default for speed)
-disc_extract.hydrophone <- function(data, start, stop, dir, verbose=FALSE, parallel=TRUE, ...) {
+#' @inheritParams disc_extract.hydrophoneRemora
+disc_extract.hydrophoneRemora <- function(data, start, stop, dir, verbose=FALSE, parallel=TRUE, ...) {
   
   # compute time interval for each .wav file
   # NB: remora hydrophone cut files in ~ 4hr portions

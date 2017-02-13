@@ -16,8 +16,6 @@
 #' @importFrom stringr str_c
 #' @importFrom stringr str_split_fixed
 #' @importFrom lubridate parse_date_time
-#' @importFrom XML xmlTreeParse
-#' @importFrom XML xmlRoot
 disc_read <- function(dir, ...) {
   UseMethod("disc_read", dir)
 }
@@ -309,7 +307,10 @@ disc_read.hobo <- function(dir, ...) {
 
 #' @rdname disc_read
 #' @export
-disc_read.hydrophone <- function(dir, ...) {
+#' @importFrom lubridate parse_date_time
+#' @importFrom XML xmlTreeParse
+#' @importFrom XML xmlRoot
+disc_read.hydrophoneRemora <- function(dir, ...) {
   # get all remora hydrophone files
   # NB: hydrophone cuts files into ~4 hour segments
   files <- list.files(dir, pattern=glob2rx("*.xml"), full.names=TRUE, recursive=TRUE) # the log produced is in xml format, and contains start/stop data
@@ -318,8 +319,8 @@ disc_read.hydrophone <- function(dir, ...) {
   d <- plyr::ldply(files, function(file) {
     xmlParsed <- xmlTreeParse(file) # convert xml to parsed character format
     rootnodes <- xmlRoot(xmlParsed) # extract the nodes
-    startTime <- as.POSIXct(as.character(as.data.frame(str_split_fixed(rootnodes[[length(rootnodes)-5]][[1]],pattern="\"",3))[2,1]), format="%m/%d/%Y %I:%M:%S %p") # create dateTime from start node 
-    stopTime <- as.POSIXct(as.character(as.data.frame(str_split_fixed(rootnodes[[length(rootnodes)-3]][[1]],pattern="\"",3))[2,1]), format="%m/%d/%Y %I:%M:%S %p") # create dateTime from stop node
+    startTime <- parse_date_time(as.character(as.data.frame(str_split_fixed(rootnodes[[length(rootnodes)-5]][[1]],pattern="\"",3))[2,1]), orders="mdy IMS p", quiet=TRUE) # create dateTime from start node 
+    stopTime <- parse_date_time(as.character(as.data.frame(str_split_fixed(rootnodes[[length(rootnodes)-3]][[1]],pattern="\"",3))[2,1]), orders="mdy IMS p", quiet=TRUE) # create dateTime from stop node
     out <- data.frame(begin=startTime,end=stopTime) # merge them to data frame
     out$file <- str_c(str_split_fixed(file,pattern=".log",2)[1],"wav",sep=".") # identify the .wav file this log corresponds to
     return(out)
