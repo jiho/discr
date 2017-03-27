@@ -22,5 +22,6 @@ Imports:
     gtools,
     stats,
     utils,
-    grDevices
+    grDevices,
+	XML
 RoxygenNote: 5.0.1

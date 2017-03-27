@@ -14,6 +14,7 @@
 #'
 #' @importFrom dplyr rename arrange select
 #' @importFrom stringr str_c
+#' @importFrom stringr str_split_fixed
 #' @importFrom lubridate parse_date_time
 disc_read <- function(dir, ...) {
   UseMethod("disc_read", dir)
@@ -300,6 +301,43 @@ disc_read.hobo <- function(dir, ...) {
 
   return(d)
 }
+
+
+## Hydrophone data ----
+
+#' @rdname disc_read
+#' @export
+#' @importFrom lubridate parse_date_time
+#' @importFrom XML xmlTreeParse
+#' @importFrom XML xmlRoot
+disc_read.hydrophoneRemora <- function(dir, ...) {
+  # get all remora hydrophone files
+  # NB: hydrophone cuts files into ~4 hour segments
+  files <- list.files(dir, pattern=glob2rx("*.xml"), full.names=TRUE, recursive=TRUE) # the log produced is in xml format, and contains start/stop data
+  
+  # get start/stop time for each file
+  d <- plyr::ldply(files, function(file) {
+    xmlParsed <- xmlTreeParse(file) # convert xml to parsed character format
+    rootnodes <- xmlRoot(xmlParsed) # extract the nodes
+    startTime <- parse_date_time(as.character(as.data.frame(str_split_fixed(rootnodes[[length(rootnodes)-5]][[1]],pattern="\"",3))[2,1]), orders="mdy IMS p", quiet=TRUE) # create dateTime from start node 
+    stopTime <- parse_date_time(as.character(as.data.frame(str_split_fixed(rootnodes[[length(rootnodes)-3]][[1]],pattern="\"",3))[2,1]), orders="mdy IMS p", quiet=TRUE) # create dateTime from stop node
+    out <- data.frame(begin=startTime,end=stopTime) # merge them to data frame
+    out$file <- str_c(str_split_fixed(file,pattern=".log",2)[1],"wav",sep=".") # identify the .wav file this log corresponds to
+    return(out)
+  })
+  
+  # compute duration
+  d$duration <- d$end - d$begin
+  
+  # gather start and end in one column
+  d <- tidyr::gather(d, key="type", value="dateTime", begin, end)
+  
+  # and order by time
+  d <- arrange(d, dateTime, type)
+  
+  return(d)
+}
+
 
 
 ## Pictures and video ----
