@@ -189,7 +189,7 @@ disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1
       }
       
       # cut the source video
-      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -c copy -an \"", x$temp_video_file, "\""), stdout=FALSE, stderr=ifelse(verbose, "", FALSE))
+      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -c copy \"", x$temp_video_file, "\""), stdout=FALSE, stderr=ifelse(verbose, "", FALSE))
       check_status(exit, str_c("Could not cut video file: ", x$file))
       
       ## Extract frames
