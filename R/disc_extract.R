@@ -110,7 +110,7 @@ disc_extract.gopro <- function(data, start, stop, dir, verbose=FALSE, width=1600
 #' @rdname disc_extract
 #' @export
 #' @param fps number of frames to extract per second. 0.5 gives one frame every two seconds, 1/3 gives one frame every 3 seconds, 2 gives one frame every 0.5 seconds.
-#' @param parallel logical, whether to process images and/or videos in parallel (should be left to TRUE by default for speed).
+#' @param parallel logical, whether to process files in parallel (should be left to TRUE by default for speed).
 #' @inheritParams disc_extract.gopro
 disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1, width=1600, gray=FALSE, parallel=TRUE, ...) {
   
@@ -263,6 +263,113 @@ disc_extract.goproVideo <- function(data, start, stop, dir, verbose=FALSE, fps=1
     # and process them if needed
     process_images(pics$file, width=width, gray=gray, parallel=parallel)
     
+    
+    # clean up the temporary directory
+    unlink(dir, recursive=TRUE)
+  }
+}
+
+
+#' @rdname disc_extract
+#' @export
+#' @inheritParams disc_extract.hydrophoneRemora
+disc_extract.hydrophoneRemora <- function(data, start, stop, dir, verbose=FALSE, parallel=TRUE, ...) {
+  
+  # compute time interval for each .wav file
+  # NB: remora hydrophone cut files in ~ 4hr portions
+  d <- tidyr::spread(data, key="type", value="dateTime")
+  d <- dplyr::arrange(d, begin)
+  d$interval <- lubridate::interval(d$begin, d$end)
+  
+  # detect which .wav file the deployment overlaps with
+  deployInterval <- lubridate::interval(start, stop)
+  ds <- d[lubridate::int_overlaps(deployInterval, d$interval),]
+  show_nb_records(ds, dir)
+  n <- nrow(ds)
+  
+  # from each .wav file, we extract the piece we need
+  # NB: 
+  # when the deployment overlaps two .wav files, we do not concatenate the .wav files then extract the full deployment because that (i) is longer, (ii) creates a large, useless, temporary file, (iii) looses track of the start time of the .wav file
+  # => we treat each .wav file independently
+  if (n < 1) {
+    stop("No .wav file matches this deployment. Check your deployment log.")
+  } else {
+    # check time difference between .wav files if there are more than 1
+    if (n > 1) {
+      timeDifferences <- diff_secs(ds$begin[2:n], ds$end[1:(n-1)])
+      # detect jumps
+      if (any(timeDifferences > 2) ) {
+        stop("Gap of more than 2 seconds between .wav files that are supposed to span the same deployment. This should not happen. Check your deployments log.")
+      }
+    }
+    
+    # create directory for output .wav files
+    dir.create(dir)
+    # and temporary storage
+    temp <- make_path(dir, "temp")
+    dir.create(temp)
+    # TODO this could just be dir
+    
+    # record the order of files arranged by begin time
+    # (used later on to define temporary names etc.)
+    ds$order <- 1:n
+    # prepare temporary file name(s) for the file we will cut from the original .wav file
+    ds$temp_wav_file <- make_path(temp, str_c("audio", ds$order, ".wav"))
+    if (verbose) print(ds)
+    
+    # process each source .wav files (in parallel when there are more than 1)
+    # = cut the .wav file
+    #   extract frames, compute time stamps and return the data
+    if ( parallel & n > 1) {
+      doParallel::registerDoParallel(cores=min(n, parallel::detectCores()-1))
+    }
+    wavs <- plyr::adply(ds, 1, function(x) {
+      ## Cut source .wav file
+      if (verbose) dmessage("cut wav file: ", x$file)
+      
+      # start of the deployment from the start of the current .wav file
+      if (start > x$begin) {
+        start_offset_num <- diff_secs(start, x$begin)
+        start_offset <- str_c("-ss ", start_offset_num)
+      } else {
+        start_offset_num <- 0
+        start_offset <- NULL
+      }
+      
+      # end of the deployment from the *start* of the current .wav file
+      # (i.e. duration of .wav file to extract)
+      if (stop < x$end) {
+        stop_offset <- str_c("-t ", diff_secs(stop, x$begin))
+      } else {
+        stop_offset <- NULL
+      }
+      
+      # cut the source .wav file
+      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -c copy -an \"", x$temp_wav_file, "\""), stdout=FALSE, stderr=ifelse(verbose, "", FALSE))
+      check_status(exit, str_c("Could not cut .wav file: ", x$file))
+      
+      return(wavs)
+    }, .parallel=parallel)
+    if ( parallel & n > 1) {
+      doParallel::stopImplicitCluster()
+    }
+    
+    # create complete ,wav file
+    if (verbose) dmessage("create complete .wav file")
+    
+    dest_wav <- str_c(dir, ".wav")
+    # when there is only one file, just rename it
+    if (n == 1) {
+      file.rename(ds$temp_wav_file, dest_wav)
+      # when there are several files, join them
+    } else {
+      # prepare the file list for ffmpeg
+      wav_list_file <- make_path(temp, "list.txt")
+      cat(str_c("file '", ds$temp_wav_file, "'"), file=wav_list_file, sep="\n")
+      # concatenate files
+      exit <- system2("ffmpeg", str_c("-f concat -safe 0 -i \"", wav_list_file, "\" -c copy -an \"", dest_wav,"\""), stdout=FALSE, stderr=ifelse(verbose, "", FALSE))
+      check_status(exit, str_c("Could not concatenate files: ", str_c(ds$temp_wav_file, collapse=",")))
+    }
     
     # clean up the temporary directory
     unlink(dir, recursive=TRUE)
