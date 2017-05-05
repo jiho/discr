@@ -53,20 +53,27 @@ image_time <- function(files, tz="UTC") {
 # dt initial estimate for the time step
 # find the start time and time step (with sub-second resolution) that fit the full-second data best
 fit_t0_dt <- function(x, dt) {
-  # search all valid possibilities for the sub-second start and sub-second interval
-  fineness <- 100 
+  # define all valid possibilities for the sub-second start and sub-second interval
   range_t0 <- c(0, 1)
-  range_dt <- dt + c(-0.1, 0.1)
-  grid <- expand.grid(
-    t0=seq(range_t0[1], range_t0[2], length=fineness*5),
-    dt=seq(range_dt[1], range_dt[2], length=fineness+1)
-    # NB: odd number allows to fit exactly the guessed value in case it is correct
-  )
-  # compute end time and remove points that do not fit the data
+  range_dt <- dt + c(-0.01, 0.01)
+  # computethe start and end times to restrict to combinations that are valid
   startTime <- min(x$dateTime)
   endTime   <- max(x$dateTime)
-  ends <- (startTime + grid$t0) + (nrow(x)-1) * grid$dt
-  grid <- grid[ends > endTime & ends < (endTime + 1),]
+  # define a grid to search for possibilities
+  fineness <- 100
+  grid <- data.frame()
+  while ( nrow(grid) < fineness ) {
+    grid <- expand.grid(
+      t0=seq(range_t0[1], range_t0[2], length=fineness),
+      dt=seq(range_dt[1], range_dt[2], length=ifelse(fineness %% 2 == 0, fineness+1, fineness))
+      # NB: odd number allows to fit exactly the guessed value in case it is correct
+    )
+    # compute end time and remove points that do not fit the data
+    ends <- (startTime + grid$t0) + (nrow(x)-1) * grid$dt
+    grid <- grid[ends > endTime & ends < (endTime + 1),]
+    # if none fit, refine the grid
+    fineness <- round(fineness * 1.1)
+  }
   # ggplot(grid) + geom_point(aes(x=dt, y=t0))
 
   # compute the match between steps
