@@ -85,12 +85,12 @@ disc_extract.gopro <- function(data, start, stop, dir, verbose=FALSE, width=1600
   # count the number of data points
   show_nb_records(ds, dir)
 
-  # number pictures sequentially
-  ds$imgNb <- 1:nrow(ds)
-  ds$file <- make_path(dir, str_c(ds$imgNb, ".jpg"))
-
   # if there are enough
   if (nrow(ds) > 1) {
+    # number pictures sequentially
+    ds$imgNb <- 1:nrow(ds)
+    ds$file <- make_path(dir, str_c(ds$imgNb, ".jpg"))
+
     # write the selected portion of the data to the deployment folder
     write.csv(ds, file=str_c(dir, "_log.csv"), row.names=FALSE)
 
