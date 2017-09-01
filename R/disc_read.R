@@ -287,17 +287,17 @@ disc_read.socomp <- function(dir, ...) {
   files <- list.files(dir, pattern="*.csv", full.names=TRUE)
   
   # there should be only one per directory, but just in case, loop automatically over all files
-  d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE, col.names=c("dateTime", "pitch", "roll", "heading", "light"), ...)
+  d <- plyr::ldply(files, read.csv, stringsAsFactors=FALSE, col.names=c("dateTime", "tiltX", "tiltY","tiltZ","GnC","heading", "comp4P","Inclination", "MagIntensity"))
   
   # subset to only relevant columns
-  d <- d[,c("Date...Time","Comp.Head...")]
-  colnames(d) <- c("dateTime","heading")
+  d <- d[,c("dateTime","heading")]
   
   # compute date+time for R
   d$dateTime <- parse_date_time(d$dateTime, orders="ymd HMS", quiet=TRUE)
   
   return(d)
 }
+
 
 ## Light sensors ----
 
