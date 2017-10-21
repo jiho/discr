@@ -345,7 +345,7 @@ disc_extract.hydrophoneRemora <- function(data, start, stop, dir, verbose=FALSE,
       }
       
       # cut the source .wav file
-      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -c copy -an \"", x$temp_wav_file, "\""), stdout=FALSE, stderr=ifelse(verbose, "", FALSE))
+      exit <- system2("ffmpeg", str_c(" -accurate_seek ", start_offset, " -i \"", x$file, "\" ", stop_offset, " -c copy \"", x$temp_wav_file, "\""), stdout=FALSE, stderr=ifelse(verbose, "", FALSE))
       check_status(exit, str_c("Could not cut .wav file: ", x$file))
       
       return(wavs)
